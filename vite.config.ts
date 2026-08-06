@@ -160,7 +160,7 @@ const plugins = [
   vitePluginManusDebugCollector(),
   VitePWA({
     registerType: 'autoUpdate',
-    includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+    includeAssets: ['apple-touch-icon.png', 'masked-icon.svg', 'logo.jpg'],
     manifest: {
       name: 'SwapSoko',
       short_name: 'SwapSoko',
