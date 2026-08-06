@@ -304,7 +304,7 @@ function Router() {
 
   if (loading) return null;
   const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
-  const hideNav = isPreview || location === "/login" || location === "/onboarding" || (location.startsWith("/profile/") && location !== `/profile/${user?.id}`);
+  const hideNav = !isAuthenticated || isPreview || location === "/login" || location === "/onboarding" || (location.startsWith("/profile/") && location !== `/profile/${user?.id}`);
   
   return (
     <div className="app-container">
