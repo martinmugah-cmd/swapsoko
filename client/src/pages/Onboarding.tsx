@@ -113,13 +113,15 @@ export default function OnboardingPage() {
   const [username, setUsername] = useState(user?.email?.split('@')[0] || "user");
   
   useEffect(() => {
-    if (user && !fullName) {
-      setFullName(user.name || user.email?.split('@')[0] || "");
+    if (user) {
+      if (!fullName) {
+        setFullName(user.name || user.email?.split('@')[0] || "");
+      }
+      if (username === "user" && user.email) {
+        setUsername(user.email.split('@')[0]);
+      }
     }
-    if (user && username === "user" && user.email) {
-      setUsername(user.email.split('@')[0]);
-    }
-  }, [user]);
+  }, [user?.id, user?.name, user?.email]);
 
   const [locationAllowed, setLocationAllowed] = useState<boolean | null>(null);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);

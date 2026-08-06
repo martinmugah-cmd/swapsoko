@@ -22,7 +22,7 @@ export function useAuth(options?: UseAuthOptions) {
         setUser({
           id: session.user.id,
           email: session.user.email || "",
-          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || "",
+          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || "",
           avatarUrl: session.user.user_metadata?.avatar_url || "",
           isOnboarded: session.user.user_metadata?.isOnboarded || false,
           metadata: session.user.user_metadata || {},
@@ -36,7 +36,7 @@ export function useAuth(options?: UseAuthOptions) {
         setUser({
           id: session.user.id,
           email: session.user.email || "",
-          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || "",
+          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || "",
           avatarUrl: session.user.user_metadata?.avatar_url || "",
           isOnboarded: session.user.user_metadata?.isOnboarded || false,
           metadata: session.user.user_metadata || {},
@@ -68,7 +68,7 @@ export function useAuth(options?: UseAuthOptions) {
         setUser({
           id: data.user.id,
           email: data.user.email || "",
-          name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || "",
+          name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || data.user.email?.split('@')[0] || "",
           avatarUrl: data.user.user_metadata?.avatar_url || "",
           isOnboarded: data.user.user_metadata?.isOnboarded || false,
           metadata: data.user.user_metadata || {},
