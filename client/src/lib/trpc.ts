@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || import.meta.env.VITE_SUPABASE_SERVICE_KEY || supabaseKey;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://hyfcgwjaozooxtoncknb.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5ZmNnd2phb3pvb3h0b25ja25iIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5NTA5NCwiZXhwIjoyMDk3OTcxMDk0fQ.YosiwEq1KeorxMdq1CQtFRfThLX1oc_92F7qtDVEKSk';
+const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5ZmNnd2phb3pvb3h0b25ja25iIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5NTA5NCwiZXhwIjoyMDk3OTcxMDk0fQ.YosiwEq1KeorxMdq1CQtFRfThLX1oc_92F7qtDVEKSk';
 export const supabase = createClient(supabaseUrl, supabaseKey);
 export const adminSupabase = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
