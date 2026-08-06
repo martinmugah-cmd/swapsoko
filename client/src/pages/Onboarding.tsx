@@ -111,6 +111,16 @@ export default function OnboardingPage() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [fullName, setFullName] = useState(user?.name || "");
   const [username, setUsername] = useState(user?.email?.split('@')[0] || "user");
+  
+  useEffect(() => {
+    if (user && !fullName) {
+      setFullName(user.name || user.email?.split('@')[0] || "");
+    }
+    if (user && username === "user" && user.email) {
+      setUsername(user.email.split('@')[0]);
+    }
+  }, [user]);
+
   const [locationAllowed, setLocationAllowed] = useState<boolean | null>(null);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
