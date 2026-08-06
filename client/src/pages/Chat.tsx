@@ -1027,7 +1027,8 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
         audioBlobRef.current = audioBlob;
         setPreviewAudioUrl(URL.createObjectURL(audioBlob));
         stream.getTracks().forEach(track => track.stop());
@@ -1067,8 +1068,10 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
      if (!audioBlobRef.current || !user) return;
      const toastId = toast.loading("Uploading voice message...");
      try {
-       const fileName = `${user.id}/${roomId}/${Date.now()}.webm`;
-       const { error } = await supabase.storage.from('voice-notes').upload(fileName, audioBlobRef.current, { contentType: 'audio/webm' });
+       const mimeType = audioBlobRef.current.type || 'audio/webm';
+       const ext = mimeType.includes('mp4') ? 'm4a' : mimeType.includes('ogg') ? 'ogg' : 'webm';
+       const fileName = `${user.id}/${roomId}/${Date.now()}.${ext}`;
+       const { error } = await supabase.storage.from('voice-notes').upload(fileName, audioBlobRef.current, { contentType: mimeType });
        if (error) throw error;
        
        const { data } = supabase.storage.from('voice-notes').getPublicUrl(fileName);
