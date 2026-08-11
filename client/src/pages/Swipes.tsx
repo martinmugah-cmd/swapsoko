@@ -225,6 +225,36 @@ function ChameleonScore({ score }: { score: number }) {
   );
 }
 
+// ─── Special Details Parser ──────────────────────────────────────────────────
+function renderSpecialDetails(desc: string) {
+  if (!desc.startsWith('[Service Details]') && !desc.startsWith('[Donation Details]')) {
+    return <p className="text-gray-600 text-[13px] line-clamp-2 font-medium leading-relaxed">{desc.replace(/<!--[\s\S]*?-->/g, '').trim()}</p>;
+  }
+  
+  const parts = desc.replace(/<!--[\s\S]*?-->/g, '').trim().split('\n\n');
+  const detailsBlock = parts[0];
+  const actualDesc = parts.slice(1).join('\n\n');
+  
+  const fields = detailsBlock.split('\n').slice(1).map(line => {
+     const [k, ...v] = line.split(':');
+     if (!k || !v.length) return null;
+     return { key: k.trim(), val: v.join(':').trim() };
+  }).filter(Boolean);
+
+  return (
+    <div className="flex flex-col gap-2 mt-2 w-full">
+       <div className="flex flex-wrap gap-1.5 w-full">
+          {fields.map((f: any) => (
+             <div key={f.key} className="bg-slate-100 text-slate-700 text-[9px] font-bold px-2 py-1 rounded-[10px] flex items-center gap-1 border border-slate-200">
+               <span className="opacity-60">{f.key}:</span> <span className="truncate max-w-[80px]">{f.val}</span>
+             </div>
+          ))}
+       </div>
+       {actualDesc && <p className="text-gray-600 text-[12px] line-clamp-1 font-medium">{actualDesc}</p>}
+    </div>
+  );
+}
+
 // ─── Swipe Card ───────────────────────────────────────────────────────────────
 function SwipeCard({
   item,
@@ -302,7 +332,7 @@ function SwipeCard({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onTap={() => { if (!isDragging.current) setFlipped(!flipped); }}
-      className={`absolute inset-0 rounded-[32px] overflow-visible swipe-card ${flipped ? '' : 'cursor-grab active:cursor-grabbing'}`}
+      className={`absolute inset-0 rounded-[32px] overflow-visible swipe-card touch-none ${flipped ? '' : 'cursor-grab active:cursor-grabbing'}`}
     >
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
@@ -312,7 +342,12 @@ function SwipeCard({
       >
         {/* Front Face */}
         <div 
-          style={{ backfaceVisibility: "hidden" }} 
+          style={{ 
+             backfaceVisibility: "hidden", 
+             WebkitBackfaceVisibility: "hidden", 
+             MozBackfaceVisibility: "hidden", 
+             transform: "rotateY(0deg)" 
+          }} 
           className="absolute inset-0 bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden flex flex-col"
         >
           {/* Top Half: Image */}
@@ -370,9 +405,7 @@ function SwipeCard({
                 )}
               </div>
 
-              <p className="text-gray-600 text-[13px] mt-2 line-clamp-2 font-medium leading-relaxed">
-                {item.description ? item.description.replace(/<!--[\s\S]*?-->/g, '').trim() : "No description."}
-              </p>
+              {renderSpecialDetails(item.description || "No description.")}
 
               {/* Context Row: Wants & Explainability */}
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
@@ -421,8 +454,28 @@ function SwipeCard({
             {/* User Info Bar */}
             <div className="pt-3 mt-3 border-t border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-[14px] border border-gray-100 overflow-hidden gradient-green flex items-center justify-center shadow-sm">
-                  <span className="text-white text-xs font-black">{(item.profiles?.name || item.user?.name || "U").charAt(0).toUpperCase()}</span>
+                <div className="w-9 h-9 rounded-[14px] border border-gray-100 overflow-hidden bg-gray-100 flex items-center justify-center shadow-sm shrink-0">
+                  {(() => {
+                    let avatar = item.profiles?.avatarUrl || item.profiles?.avatar_url;
+                    if (!avatar) {
+                      try {
+                        const uni = JSON.parse(item.profiles?.university || "{}");
+                        avatar = uni.avatarUrl;
+                      } catch(e) {}
+                    }
+                    if (!avatar) {
+                      try {
+                        const desc = JSON.parse(item.profiles?.description || "{}");
+                        avatar = desc.avatarUrl;
+                      } catch(e) {}
+                    }
+                    if (avatar) return <img src={avatar} alt="avatar" className="w-full h-full object-cover" />;
+                    return (
+                      <div className="w-full h-full gradient-green flex items-center justify-center">
+                        <span className="text-white text-xs font-black">{(item.profiles?.name || item.user?.name || "U").charAt(0).toUpperCase()}</span>
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div>
                   <div className="flex items-center gap-1">
@@ -440,7 +493,6 @@ function SwipeCard({
                       <GraduationCap className="w-3.5 h-3.5 text-[#3B82F6]"/>
                     )}
                   </div>
-                  <span className="text-[10px] text-gray-500 font-bold">{item.profiles?.completedSwaps || 0} Swaps</span>
                 </div>
               </div>
 
@@ -456,7 +508,12 @@ function SwipeCard({
 
       {/* Back Face (Details) */}
       <div 
-        style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }} 
+        style={{ 
+           backfaceVisibility: "hidden", 
+           WebkitBackfaceVisibility: "hidden", 
+           MozBackfaceVisibility: "hidden", 
+           transform: "rotateY(180deg)" 
+        }} 
         className="absolute inset-0 bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-6 flex flex-col pointer-events-auto overflow-hidden"
       >
         <div className="flex-1 overflow-y-auto hide-scrollbar -mx-2 px-2 pb-6 flex flex-col justify-start pt-2">
@@ -465,9 +522,7 @@ function SwipeCard({
           
           {item.description && item.description.replace(/<!--[\s\S]*?-->/g, '').trim().length > 0 && (
             <div className="bg-[#F8FAFC] border border-gray-100 rounded-[24px] p-5 mb-5 shadow-inner">
-              <p className="text-[15px] text-gray-700 whitespace-pre-wrap leading-relaxed font-medium">
-                {item.description.replace(/<!--[\s\S]*?-->/g, '').trim()}
-              </p>
+               {renderSpecialDetails(item.description)}
             </div>
           )}
 
@@ -520,7 +575,7 @@ function SwipeCard({
 }
 
 // ─── Swipes Page ──────────────────────────────────────────────────────────────
-import { Map } from "@/components/Map";
+import { Feed } from "@/components/Feed/Feed";
 import { useAppStore } from "@/store";
 import L from "leaflet";
 
@@ -564,9 +619,9 @@ export default function SwipesPage() {
     setCurrentIndex(0);
   }, [filters]);
   
-  // View toggle: "swipe" or "map"
+  // View toggle: "swipe" or "feed"
   const viewMode = filters.swipesViewMode || "swipe";
-  const setViewMode = (mode: "swipe" | "map") => useAppStore.setState({ filters: { ...filters, swipesViewMode: mode } });
+  const setViewMode = (mode: "swipe" | "feed") => useAppStore.setState({ filters: { ...filters, swipesViewMode: mode } });
 
   // Active Filter Chips Logic
   const activeFilterChips = React.useMemo(() => {
@@ -770,12 +825,14 @@ export default function SwipesPage() {
       className="min-h-screen bg-[#F8FAFC] flex flex-col"
     >
       {/* Header */}
+      {viewMode !== "feed" && (
+      <>
       <div className="page-header px-4 py-3 flex items-center justify-between z-50 bg-[#F8FAFC] sticky top-0">
         <button onClick={() => window.history.back()} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 hover:bg-gray-100 transition-colors">
           <ChevronLeft className="w-6 h-6 text-[#0F172A]" />
         </button>
         
-        {/* Enhanced List/Map Toggle */}
+        {/* Enhanced List/Feed Toggle */}
         <div className="flex bg-gray-100 p-1.5 rounded-full shadow-inner border border-gray-200 flex-1 max-w-[160px] mx-3">
           <button 
             onClick={() => setViewMode("swipe")}
@@ -784,10 +841,10 @@ export default function SwipesPage() {
             Swipe
           </button>
           <button 
-            onClick={() => setViewMode("map")}
-            className={`flex-1 py-1.5 rounded-full text-xs font-bold transition-all ${viewMode === "map" ? "bg-white text-[#22C55E] shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+            onClick={() => setViewMode("feed")}
+            className={`flex-1 py-1.5 rounded-full text-xs font-bold transition-all ${viewMode === "feed" ? "bg-white text-[#22C55E] shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
           >
-            Map
+            Feed
           </button>
         </div>
 
@@ -830,33 +887,24 @@ export default function SwipesPage() {
           </button>
         </div>
       )}
+      </>
+      )}
 
-
-      {viewMode === "map" ? (
-        <div className="w-full relative bg-gray-100" style={{ height: "calc(100vh - 140px)" }}>
-           <Map 
-             locations={mapLocations} 
-             center={filters.coords ? [filters.coords.lat, filters.coords.lng] : [-1.1018, 37.0144]}
-             userLocation={filters.coords ? [filters.coords.lat, filters.coords.lng] : undefined}
-             className="absolute inset-0 w-full h-full rounded-none border-none"
-             onMarkerClick={(loc) => {
-               const listing = remaining.find((i: any) => i.id?.toString() === loc.id);
-               if(listing) {
-                 if (!isAuthenticated) {
-                    toast("Login to propose swaps!", { action: { label: "Login", onClick: () => setLocation("/login") } });
-                    return;
-                 }
-                 setProposeListing(listing);
+      {viewMode === "feed" ? (
+        <div className="fixed inset-0 z-[1000] bg-black">
+           <button 
+             onClick={() => setViewMode("swipe")}
+             className="absolute top-12 left-4 z-[1010] w-10 h-10 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 text-white"
+           >
+              <ChevronLeft className="w-6 h-6" />
+           </button>
+           <Feed onPropose={(listing) => {
+               if (!isAuthenticated) {
+                  toast("Login to propose swaps!", { action: { label: "Login", onClick: () => window.location.href = "/login" } });
+                  return;
                }
-             }}
-           />
-           {/* Overlays on Map */}
-           <div className="absolute top-3 left-3 z-[400] pointer-events-auto">
-              <div className="bg-white/90 backdrop-blur px-2.5 py-1 rounded-[16px] shadow border border-white/40 flex items-center gap-1">
-                <span className="text-[10px] font-black text-[#22C55E]">{remaining.length}</span>
-                <span className="text-[10px] font-semibold text-gray-600">swaps</span>
-              </div>
-           </div>
+               setProposeListing(listing);
+           }} />
         </div>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden relative">
