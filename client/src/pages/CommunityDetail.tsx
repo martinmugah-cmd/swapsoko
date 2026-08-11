@@ -58,7 +58,7 @@ function EditCommunityModal({ community, onClose }: { community: any, onClose: (
         onClick={e => e.stopPropagation()}
       >
         <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4" />
-        <h3 className="font-bold text-[#0F172A] text-lg">Edit Soko</h3>
+        <h3 className="font-bold text-slate-900 text-lg">Edit Soko</h3>
         
         <div className="mt-4 space-y-4">
           <div>
@@ -67,11 +67,11 @@ function EditCommunityModal({ community, onClose }: { community: any, onClose: (
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className={`w-10 h-10 rounded-[14px] flex items-center justify-center flex-shrink-0 transition-colors ${
-                  icon && icon.startsWith('data:image') ? "bg-[#22C55E]/10 border-2 border-[#22C55E] text-[#22C55E]" : "bg-gray-100 border-2 border-transparent text-gray-500"
+                className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                  icon && icon.startsWith('data:image') ? "bg-green-500/10 border-2 border-green-500 text-green-500" : "bg-gray-100 border-2 border-transparent text-gray-500"
                 }`}
               >
-                {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : icon && icon.startsWith('data:image') ? <img src={icon} className="w-full h-full object-cover rounded-[12px]" /> : <ImageIcon className="w-5 h-5" />}
+                {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : icon && icon.startsWith('data:image') ? <img src={icon} className="w-full h-full object-cover rounded-xl" /> : <ImageIcon className="w-5 h-5" />}
               </button>
               {ICONS.map(i => {
                 const IconComp = { Users, GraduationCap, Laptop: Cpu, BookOpen, Gamepad2, Stethoscope, Camera, Home }[i] || Users;
@@ -79,8 +79,8 @@ function EditCommunityModal({ community, onClose }: { community: any, onClose: (
                   <button
                     key={i}
                     onClick={() => setIcon(i)}
-                    className={`w-10 h-10 rounded-[14px] flex items-center justify-center flex-shrink-0 transition-colors ${
-                      icon === i ? "bg-[#22C55E]/10 border-2 border-[#22C55E] text-[#22C55E]" : "bg-gray-100 border-2 border-transparent text-gray-500"
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                      icon === i ? "bg-green-500/10 border-2 border-green-500 text-green-500" : "bg-gray-100 border-2 border-transparent text-gray-500"
                     }`}
                   >
                     <IconComp className="w-5 h-5" />
@@ -91,15 +91,15 @@ function EditCommunityModal({ community, onClose }: { community: any, onClose: (
           </div>
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Soko Name</label>
-            <input value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 border border-gray-200 rounded-[32px] px-3 py-2.5 text-sm outline-none focus:border-[#22C55E]" />
+            <input value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 border border-gray-200 rounded-3xl px-3 py-2.5 text-sm outline-none focus:border-green-500" />
           </div>
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Description</label>
-            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} className="w-full mt-1 border border-gray-200 rounded-[32px] px-3 py-2.5 text-sm outline-none focus:border-[#22C55E] resize-none" />
+            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} className="w-full mt-1 border border-gray-200 rounded-3xl px-3 py-2.5 text-sm outline-none focus:border-green-500 resize-none" />
           </div>
         </div>
 
-        <motion.button whileTap={{ scale: 0.97 }} onClick={handleSubmit} disabled={updateMutation.isPending} className="w-full mt-6 gradient-green text-white font-bold py-3.5 rounded-[32px] text-sm">
+        <motion.button whileTap={{ scale: 0.97 }} onClick={handleSubmit} disabled={updateMutation.isPending} className="w-full mt-6 gradient-green text-white font-bold py-3.5 rounded-3xl text-sm">
           {updateMutation.isPending ? "Saving..." : "Save Changes"}
         </motion.button>
       </motion.div>
@@ -117,21 +117,21 @@ function JoinCodeModal({ community, onClose, onJoin }: { community: any, onClose
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-white w-full max-w-sm rounded-[32px] p-6 shadow-xl"
+        className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-xl"
         onClick={e => e.stopPropagation()}
       >
-        <h3 className="font-bold text-[#0F172A] text-lg text-center mb-2">Join {community.name}</h3>
+        <h3 className="font-bold text-slate-900 text-lg text-center mb-2">Join {community.name}</h3>
         <p className="text-gray-500 text-sm text-center mb-4">Enter the invite code to join this private community.</p>
         <input
           value={code}
           onChange={e => setCode(e.target.value.toUpperCase())}
           placeholder="Invite Code"
-          className="w-full border border-gray-200 rounded-[32px] px-4 py-3 text-sm outline-none focus:border-[#22C55E] uppercase text-center font-bold tracking-widest mb-6"
+          className="w-full border border-gray-200 rounded-3xl px-4 py-3 text-sm outline-none focus:border-green-500 uppercase text-center font-bold tracking-widest mb-6"
           autoFocus
         />
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 py-3 rounded-[32px] text-sm font-bold bg-gray-100 text-gray-600">Cancel</button>
-          <button onClick={() => onJoin(code)} className="flex-1 py-3 rounded-[32px] text-sm font-bold gradient-green text-white">Join</button>
+          <button onClick={onClose} className="flex-1 py-3 rounded-3xl text-sm font-bold bg-gray-100 text-gray-600">Cancel</button>
+          <button onClick={() => onJoin(code)} className="flex-1 py-3 rounded-3xl text-sm font-bold gradient-green text-white">Join</button>
         </div>
       </motion.div>
     </motion.div>
@@ -289,7 +289,7 @@ export default function CommunityDetailPage() {
         <div className="h-56 bg-gray-200 animate-pulse w-full"></div>
         {/* Main Content Area */}
         <div className="px-5 -mt-12 relative z-10 animate-pulse">
-          <div className="w-[100px] h-[100px] rounded-[32px] bg-gray-100 border-[4px] border-[#F8FAFC] shadow-sm mb-4"></div>
+          <div className="w-[100px] h-[100px] rounded-3xl bg-gray-100 border-[4px] border-[#F8FAFC] shadow-sm mb-4"></div>
           <div className="flex justify-between items-start">
             <div className="space-y-2">
               <div className="h-8 w-48 bg-gray-200 rounded-full"></div>
@@ -303,8 +303,8 @@ export default function CommunityDetailPage() {
             <div className="h-4 w-16 bg-gray-200 rounded-full"></div>
           </div>
           <div className="mt-4 space-y-4">
-            <div className="h-32 w-full bg-gray-200 rounded-[24px]"></div>
-            <div className="h-32 w-full bg-gray-200 rounded-[24px]"></div>
+            <div className="h-32 w-full bg-gray-200 rounded-2xl"></div>
+            <div className="h-32 w-full bg-gray-200 rounded-2xl"></div>
           </div>
         </div>
       </div>
@@ -314,9 +314,9 @@ export default function CommunityDetailPage() {
   if (!community) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center px-6 text-center">
-        <div className="w-16 h-16 rounded-[24px] bg-gray-100 flex items-center justify-center text-gray-400 mx-auto mb-4"><Package className="w-8 h-8" /></div>
-        <p className="font-bold text-[#0F172A]">Community not found</p>
-        <button onClick={() => navigate("/communities")} className="mt-4 text-[#2563EB] text-sm font-semibold">
+        <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400 mx-auto mb-4"><Package className="w-8 h-8" /></div>
+        <p className="font-bold text-slate-900">Community not found</p>
+        <button onClick={() => navigate("/communities")} className="mt-4 text-blue-600 text-sm font-semibold">
           ← Back to Communities
         </button>
       </div>
@@ -332,7 +332,7 @@ export default function CommunityDetailPage() {
       className="min-h-screen bg-[#F8FAFC] bottom-nav-safe pb-24"
     >
       {/* Header */}
-      <div className="bg-[#0F172A] px-4 pt-4 pb-6 relative overflow-hidden rounded-b-[32px]">
+      <div className="bg-slate-900 px-4 pt-4 pb-6 relative overflow-hidden rounded-b-[32px]">
         {icon && (icon.startsWith("data:image") || icon.startsWith("http")) ? (
           <div className="absolute inset-0">
             <img src={icon} className="w-full h-full object-cover opacity-40" />
@@ -340,8 +340,8 @@ export default function CommunityDetailPage() {
           </div>
         ) : (
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#22C55E] rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#2563EB] rounded-full translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500 rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-600 rounded-full translate-y-1/2 -translate-x-1/2" />
           </div>
         )}
 
@@ -377,7 +377,7 @@ export default function CommunityDetailPage() {
         </div>
 
         <div className="relative flex items-center gap-4">
-          <div className="w-16 h-16 rounded-[32px] bg-white/10 flex items-center justify-center text-white overflow-hidden">
+          <div className="w-16 h-16 rounded-3xl bg-white/10 flex items-center justify-center text-white overflow-hidden">
             {(() => {
               if (icon && typeof icon === "string") {
                 if (icon.startsWith("data:image") || icon.startsWith("http")) {
@@ -397,8 +397,8 @@ export default function CommunityDetailPage() {
                 <Users className="w-3 h-3" />
                 {(community.memberCount || 0).toLocaleString()} members
               </span>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
-                community.type === "public" ? "bg-[#22C55E]/20 text-[#22C55E]" : "bg-orange-500/20 text-orange-400"
+              <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                community.type === "public" ? "bg-green-500/20 text-green-500" : "bg-orange-500/20 text-orange-400"
               }`}>
                 {community.type === "public" ? "Public" : "Private"}
               </span>
@@ -445,7 +445,7 @@ export default function CommunityDetailPage() {
                 });
               }}
               disabled={deleteMutation.isPending}
-              className="flex-1 py-2.5 rounded-[32px] text-sm font-bold transition-colors bg-red-500/20 text-red-500 border border-red-500/30"
+              className="flex-1 py-2.5 rounded-3xl text-sm font-bold transition-colors bg-red-500/20 text-red-500 border border-red-500/30"
             >
               {deleteMutation.isPending ? "..." : "Delete Soko"}
             </motion.button>
@@ -462,7 +462,7 @@ export default function CommunityDetailPage() {
                    }
                 }}
                 disabled={joinMutation.isPending || leaveMutation.isPending || (hasRequested && community.type === "private")}
-                className={`flex-1 py-2.5 rounded-[32px] text-sm font-bold transition-colors ${
+                className={`flex-1 py-2.5 rounded-3xl text-sm font-bold transition-colors ${
                   isJoined || (hasRequested && community.type === "private")
                     ? "bg-white/10 text-white border border-white/20"
                     : "gradient-green text-white"
@@ -479,7 +479,7 @@ export default function CommunityDetailPage() {
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={handleJoinLeave}
-                  className="flex-1 py-2.5 rounded-[32px] text-sm font-bold transition-colors bg-white text-[#0F172A]"
+                  className="flex-1 py-2.5 rounded-3xl text-sm font-bold transition-colors bg-white text-slate-900"
                 >
                   Request to Join
                 </motion.button>
@@ -494,7 +494,7 @@ export default function CommunityDetailPage() {
               localStorage.setItem(`notif_comm_${communityId}`, String(newVal));
               toast(newVal ? "Notifications enabled for this community" : "Notifications disabled");
             }}
-            className="w-10 h-10 bg-white/10 rounded-[32px] flex items-center justify-center"
+            className="w-10 h-10 bg-white/10 rounded-3xl flex items-center justify-center"
           >
             {notificationsEnabled ? <Bell className="w-4 h-4 text-white" /> : <BellOff className="w-4 h-4 text-white" />}
           </motion.button>
@@ -503,7 +503,7 @@ export default function CommunityDetailPage() {
 
       {/* Tabs */}
       <div className="px-4 pt-4">
-        <div className="flex gap-2 bg-gray-100 p-1 rounded-[32px]">
+        <div className="flex gap-2 bg-gray-100 p-1 rounded-3xl">
           {[
             { id: "feed", label: "Community Feed", icon: <Package className="w-3.5 h-3.5" /> },
             { id: "discussions", label: "Discussions", icon: <BookOpen className="w-3.5 h-3.5" /> },
@@ -513,8 +513,8 @@ export default function CommunityDetailPage() {
               key={tab.id}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[32px] text-xs font-semibold transition-colors ${
-                activeTab === tab.id ? "bg-white text-[#0F172A] card-shadow" : "text-gray-500"
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-3xl text-xs font-semibold transition-colors ${
+                activeTab === tab.id ? "bg-white text-slate-900 card-shadow" : "text-gray-500"
               }`}
             >
               {tab.icon} {tab.label}
@@ -537,15 +537,15 @@ export default function CommunityDetailPage() {
               {!isJoined && community.creatorId !== user?.id && community.type === "private" ? (
                 <div className="text-center py-12">
                   <Lock className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                  <p className="font-semibold text-[#0F172A]">Join to see listings</p>
+                  <p className="font-semibold text-slate-900">Join to see listings</p>
                   <p className="text-gray-400 text-sm mt-1">This is a private community</p>
                 </div>
               ) : feedQuery.isLoading || wishesQuery.isLoading ? (
                 <div className="space-y-3 mt-4">
                   {[1, 2, 3].map(i => (
-                    <div key={`sk-cfeed-${i}`} className="bg-white rounded-[24px] p-4 border border-gray-100 shadow-sm animate-pulse">
+                    <div key={`sk-cfeed-${i}`} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm animate-pulse">
                       <div className="flex gap-3">
-                        <div className="w-16 h-16 bg-gray-100 rounded-[16px]"></div>
+                        <div className="w-16 h-16 bg-gray-100 rounded-2xl"></div>
                         <div className="flex-1 space-y-2 py-1">
                           <div className="w-3/4 h-4 bg-gray-100 rounded-full"></div>
                           <div className="w-1/2 h-3 bg-gray-100 rounded-full"></div>
@@ -566,14 +566,14 @@ export default function CommunityDetailPage() {
                   return (
                     <div className="text-center py-12">
                       <Package className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                      <p className="font-semibold text-[#0F172A]">No posts yet</p>
+                      <p className="font-semibold text-slate-900">No posts yet</p>
                       {isJoined ? (
                         <>
                           <p className="text-gray-400 text-sm mt-1">Be the first to post in this community!</p>
                           <motion.button
                             whileTap={{ scale: 0.95 }}
                             onClick={() => setShowActionSheet(true)}
-                            className="mt-4 gradient-green text-white font-semibold px-6 py-2.5 rounded-[32px] text-sm"
+                            className="mt-4 gradient-green text-white font-semibold px-6 py-2.5 rounded-3xl text-sm"
                           >
                             Post Something
                           </motion.button>
@@ -592,7 +592,7 @@ export default function CommunityDetailPage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       whileTap={{ scale: 0.98 }}
-                      className="bg-white rounded-[32px] overflow-hidden card-shadow mb-3"
+                      className="bg-white rounded-3xl overflow-hidden card-shadow mb-3"
                     >
                       {(() => {
                         let images: string[] = [];
@@ -611,12 +611,12 @@ export default function CommunityDetailPage() {
                       <div className="p-3">
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="font-bold text-[#0F172A]">{item.title}</p>
+                            <p className="font-bold text-slate-900">{item.title}</p>
                             <p className="text-xs text-gray-400 mt-0.5">{item.campus?.split(",")[0]}</p>
                           </div>
                           <div className="flex gap-2">
                             {item.matchScore && (
-                              <span className="text-xs font-bold text-[#22C55E] bg-[#F0FDF4] px-2 py-0.5 rounded-full">
+                              <span className="text-xs font-bold text-green-500 bg-[#F0FDF4] px-2 py-0.5 rounded-full">
                                 {item.matchScore}% match
                               </span>
                             )}
@@ -648,10 +648,10 @@ export default function CommunityDetailPage() {
                           if (wants.length === 0) return null;
                           return (
                             <div className="mt-2">
-                              <p className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold">Wants</p>
+                              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">Wants</p>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {wants.map((w: string, i: number) => (
-                                  <span key={i} className="text-xs bg-[#EFF6FF] text-[#2563EB] px-2 py-0.5 rounded-full">{w}</span>
+                                  <span key={i} className="text-xs bg-[#EFF6FF] text-blue-600 px-2 py-0.5 rounded-full">{w}</span>
                                 ))}
                               </div>
                             </div>
@@ -664,7 +664,7 @@ export default function CommunityDetailPage() {
                           <motion.button
                             whileTap={{ scale: 0.95 }}
                             onClick={() => isJoined ? setProposeListing(item) : toast.info("Join the community to propose a swap!")}
-                            className={`w-full mt-3 text-xs font-bold py-2.5 rounded-[32px] ${isJoined ? 'gradient-green text-white' : 'bg-gray-100 text-gray-500'}`}
+                            className={`w-full mt-3 text-xs font-bold py-2.5 rounded-3xl ${isJoined ? 'gradient-green text-white' : 'bg-gray-100 text-gray-500'}`}
                           >
                             {isJoined ? "Propose Swap" : "Join to Swap"}
                           </motion.button>
@@ -716,15 +716,15 @@ export default function CommunityDetailPage() {
               {!isJoined && community.creatorId !== user?.id && community.type === "private" ? (
                 <div className="text-center py-12">
                   <Lock className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                  <p className="font-semibold text-[#0F172A]">Join to see discussions</p>
+                  <p className="font-semibold text-slate-900">Join to see discussions</p>
                   <p className="text-gray-400 text-sm mt-1">This is a private community</p>
                 </div>
               ) : (
                 <>
                   {isJoined && (
-                    <div className="bg-white rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-50 mb-6 relative overflow-hidden">
+                    <div className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-50 mb-6 relative overflow-hidden">
                       <div className="absolute top-0 left-0 w-full h-1.5 gradient-green" />
-                      <p className="font-extrabold text-[#0F172A] text-[17px] mb-4 mt-1">Post to Community</p>
+                      <p className="font-extrabold text-slate-900 text-[17px] mb-4 mt-1">Post to Community</p>
                       <form onSubmit={(e) => {
                         e.preventDefault();
                         const target = e.target as HTMLFormElement;
@@ -741,8 +741,8 @@ export default function CommunityDetailPage() {
                           }
                         });
                       }} className="space-y-4">
-                        <input name="title" placeholder="Title" className="w-full text-[14px] font-semibold bg-gray-50 border border-transparent rounded-[16px] px-4 py-3 focus:outline-none focus:bg-white focus:border-[#22C55E] focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:text-gray-400" />
-                        <textarea name="content" placeholder="Write something..." className="w-full text-[14px] font-medium bg-gray-50 border border-transparent rounded-[16px] px-4 py-3 focus:outline-none focus:bg-white focus:border-[#22C55E] focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:text-gray-400 resize-none h-24" />
+                        <input name="title" placeholder="Title" className="w-full text-[14px] font-semibold bg-gray-50 border border-transparent rounded-2xl px-4 py-3 focus:outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:text-gray-400" />
+                        <textarea name="content" placeholder="Write something..." className="w-full text-[14px] font-medium bg-gray-50 border border-transparent rounded-2xl px-4 py-3 focus:outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:text-gray-400 resize-none h-24" />
                         <div className="flex justify-between items-center pt-2">
                           {isAdmin ? (
                             <select name="type" className="text-[12px] font-extrabold text-gray-600 bg-gray-100 border-none rounded-full px-4 py-2 outline-none cursor-pointer hover:bg-gray-200 transition-colors">
@@ -752,7 +752,7 @@ export default function CommunityDetailPage() {
                           ) : (
                             <input type="hidden" name="type" value="question" />
                           )}
-                          <button type="submit" disabled={createPostMutation.isPending} className="bg-[#22C55E] text-white px-6 py-2.5 rounded-[20px] text-[13px] font-extrabold shadow-[0_4px_15px_rgba(34,197,94,0.3)] hover:scale-105 transition-transform">
+                          <button type="submit" disabled={createPostMutation.isPending} className="bg-green-500 text-white px-6 py-2.5 rounded-2xl text-sm font-extrabold shadow-[0_4px_15px_rgba(34,197,94,0.3)] hover:scale-105 transition-transform">
                             Post
                           </button>
                         </div>
@@ -763,7 +763,7 @@ export default function CommunityDetailPage() {
                   {postsQuery.isLoading ? (
                     <div className="space-y-3 mt-4">
                       {[1, 2, 3].map(i => (
-                        <div key={`sk-cpost-${i}`} className="bg-white rounded-[24px] p-5 border border-gray-100 shadow-sm animate-pulse">
+                        <div key={`sk-cpost-${i}`} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-pulse">
                            <div className="w-1/3 h-5 bg-gray-100 rounded-full mb-3"></div>
                            <div className="w-full h-4 bg-gray-100 rounded-full mb-2"></div>
                            <div className="w-4/5 h-4 bg-gray-100 rounded-full mb-4"></div>
@@ -783,12 +783,12 @@ export default function CommunityDetailPage() {
                         if (a.type !== 'announcement' && b.type === 'announcement') return 1;
                         return new Date(b.createdAt || Date.now()).getTime() - new Date(a.createdAt || Date.now()).getTime();
                       }).map((post: any) => (
-                        <div key={post.id} className={`bg-white rounded-[28px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50 relative overflow-hidden flex flex-col`}>
+                        <div key={post.id} className={`bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50 relative overflow-hidden flex flex-col`}>
                           <div className={`absolute top-0 bottom-0 left-0 w-[6px] ${post.type === 'announcement' ? 'bg-[#F97316]' : 'bg-[#3B82F6]'}`} />
                           
                           <div className="pl-3">
                             <div className="flex items-center justify-between mb-3">
-                              <span className={`text-[10px] font-black px-2.5 py-1 rounded-[8px] uppercase tracking-wider ${post.type === 'announcement' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
+                              <span className={`text-xs font-black px-2.5 py-1 rounded-lg uppercase tracking-wider ${post.type === 'announcement' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
                                 {post.type}
                               </span>
                               <div className="flex items-center gap-2">
@@ -815,12 +815,12 @@ export default function CommunityDetailPage() {
                                 )}
                               </div>
                             </div>
-                            <h4 className="font-extrabold text-[16px] text-[#0F172A] leading-snug">{post.title}</h4>
+                            <h4 className="font-extrabold text-[16px] text-slate-900 leading-snug">{post.title}</h4>
                             <p className="text-[13.5px] font-medium text-gray-600 mt-1.5 whitespace-pre-wrap leading-relaxed">{post.content}</p>
                             
                             <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] font-extrabold text-gray-400">
                               <div className="flex items-center gap-1.5">
-                                <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[9px] text-[#0F172A]">
+                                <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[9px] text-slate-900">
                                   {(post.profiles?.name || post.user?.name || "U")[0].toUpperCase()}
                                 </div>
                                 <div className="flex items-center gap-1">
@@ -846,11 +846,11 @@ export default function CommunityDetailPage() {
                             <div className="mt-4 pt-4 border-t border-gray-100">
                               <div className="space-y-2 mb-3">
                                 {(post.communityPostReplies || []).map((reply: any) => (
-                                  <div key={reply.id} className="bg-gray-50 rounded-[16px] p-3">
-                                    <p className="text-xs text-[#0F172A]">{reply.content}</p>
+                                  <div key={reply.id} className="bg-gray-50 rounded-2xl p-3">
+                                    <p className="text-xs text-slate-900">{reply.content}</p>
                                     <div className="flex justify-between items-center mt-1">
                                       <div className="flex items-center gap-1">
-                                        <p className="text-[10px] text-gray-400">@{(() => {
+                                        <p className="text-xs text-gray-400">@{(() => {
                                           try {
                                             const n = reply.profiles?.name || reply.user?.name;
                                             let uni: any = {};
@@ -864,7 +864,7 @@ export default function CommunityDetailPage() {
                                         })()}</p>
                                         {reply.profiles?.isStudentVerified && <GraduationCap className="w-3 h-3 text-[#3B82F6]" />}
                                       </div>
-                                      <p className="text-[10px] text-gray-400">{new Date(reply.createdAt || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                                      <p className="text-xs text-gray-400">{new Date(reply.createdAt || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                                     </div>
                                   </div>
                                 ))}
@@ -882,7 +882,7 @@ export default function CommunityDetailPage() {
                                 });
                               }} className="flex gap-2">
                                 <input name="replyContent" placeholder="Write a reply..." className="flex-1 bg-gray-50 rounded-full px-3 py-1.5 text-xs outline-none focus:border focus:border-green-500" />
-                                <button type="submit" disabled={createReplyMutation.isPending} className="gradient-green text-white px-3 py-1.5 rounded-full text-[10px] font-bold whitespace-nowrap">
+                                <button type="submit" disabled={createReplyMutation.isPending} className="gradient-green text-white px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">
                                   Reply
                                 </button>
                               </form>
@@ -908,7 +908,7 @@ export default function CommunityDetailPage() {
               {!isJoined && community.creatorId !== user?.id && community.type === "private" ? (
                 <div className="text-center py-12">
                   <Lock className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                  <p className="font-semibold text-[#0F172A]">Join to see members</p>
+                  <p className="font-semibold text-slate-900">Join to see members</p>
                   <p className="text-gray-400 text-sm mt-1">This is a private community</p>
                 </div>
               ) : (
@@ -918,7 +918,7 @@ export default function CommunityDetailPage() {
                     return (
                       <div 
                         key={m.id || i} 
-                        className="bg-white rounded-[32px] p-4 flex items-center justify-between card-shadow cursor-pointer transition-transform hover:scale-[1.02]"
+                        className="bg-white rounded-3xl p-4 flex items-center justify-between card-shadow cursor-pointer transition-transform hover:scale-[1.02]"
                         onClick={() => navigate(`/profile/${m.userId}`)}
                       >
                         <div className="flex items-center gap-3">
@@ -926,7 +926,7 @@ export default function CommunityDetailPage() {
                             {m.profile?.avatarUrl ? <img src={m.profile.avatarUrl} className="w-full h-full object-cover" /> : <Users className="w-5 h-5 text-gray-400" />}
                           </div>
                           <div>
-                            <p className="font-bold text-[#0F172A]">{m.userId === user?.id ? "You" : m.profile?.name}</p>
+                            <p className="font-bold text-slate-900">{m.userId === user?.id ? "You" : m.profile?.name}</p>
                             <p className="text-xs text-gray-400">
                               {m.userId === community.creatorId ? "Creator" : isMemberAdmin ? "Admin" : "Member"}
                             </p>
@@ -1004,7 +1004,7 @@ export default function CommunityDetailPage() {
       <AnimatePresence>
         {showEdit && <EditCommunityModal community={community} onClose={() => setShowEdit(false)} />}
         {showJoinCodeModal && <JoinCodeModal community={community} onClose={() => setShowJoinCodeModal(false)} onJoin={handleJoinWithCode} />}
-        <ReportModal isOpen={isReporting} onClose={() => setIsReporting(false)} targetType="community" targetId={communityId} />
+        <ReportModal isOpen={isReporting} onClose={() => setIsReporting(false)} targetType="community" targetId={String(communityId)} />
       </AnimatePresence>
       {/* Floating Action Button for Posting in Soko (Constrained to mobile frame) */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md pointer-events-none z-40 h-full">
@@ -1012,7 +1012,7 @@ export default function CommunityDetailPage() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowActionSheet(true)}
-            className="absolute bottom-24 right-4 w-14 h-14 bg-[#3B82F6] rounded-[32px] shadow-[0_8px_30px_rgba(59,130,246,0.3)] flex items-center justify-center pointer-events-auto"
+            className="absolute bottom-24 right-4 w-14 h-14 bg-[#3B82F6] rounded-3xl shadow-[0_8px_30px_rgba(59,130,246,0.3)] flex items-center justify-center pointer-events-auto"
           >
             <Plus className="w-6 h-6 text-white" />
           </motion.button>
@@ -1035,7 +1035,7 @@ export default function CommunityDetailPage() {
               onClick={e => e.stopPropagation()}
             >
               <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
-              <h3 className="font-extrabold text-[#0F172A] text-xl mb-6 text-center tracking-tight">Post to {community.name}</h3>
+              <h3 className="font-extrabold text-slate-900 text-xl mb-6 text-center tracking-tight">Post to {community.name}</h3>
               <div className="space-y-4">
                 <button
                   onClick={() => {
@@ -1043,7 +1043,7 @@ export default function CommunityDetailPage() {
                     if (!isJoined) return toast("Join the community first");
                     setShowActionSheet(false); navigate(`/post?communityId=${communityId}`); 
                   }}
-                  className="w-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#2563EB] font-extrabold py-4.5 rounded-[24px] flex items-center justify-center gap-2.5 shadow-sm hover:bg-blue-100 transition-colors"
+                  className="w-full bg-[#EFF6FF] border border-[#BFDBFE] text-blue-600 font-extrabold py-4.5 rounded-2xl flex items-center justify-center gap-2.5 shadow-sm hover:bg-blue-100 transition-colors"
                 >
                   <Package className="w-5 h-5" /> Post a Swap Listing
                 </button>
@@ -1053,13 +1053,13 @@ export default function CommunityDetailPage() {
                     if (!isJoined) return toast("Join the community first");
                     setShowActionSheet(false); setShowCreateWish(true); 
                   }}
-                  className="w-full bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-extrabold py-4.5 rounded-[24px] flex items-center justify-center gap-2.5 shadow-sm hover:bg-red-50 transition-colors"
+                  className="w-full bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-extrabold py-4.5 rounded-2xl flex items-center justify-center gap-2.5 shadow-sm hover:bg-red-50 transition-colors"
                 >
                   <Star className="w-5 h-5" /> Post a Swish (Wish)
                 </button>
                 <button
                   onClick={() => setShowActionSheet(false)}
-                  className="w-full bg-gray-50 border border-gray-100 text-gray-500 font-extrabold py-4.5 rounded-[24px] mt-2 hover:bg-gray-100 transition-colors"
+                  className="w-full bg-gray-50 border border-gray-100 text-gray-500 font-extrabold py-4.5 rounded-2xl mt-2 hover:bg-gray-100 transition-colors"
                 >
                   Cancel
                 </button>

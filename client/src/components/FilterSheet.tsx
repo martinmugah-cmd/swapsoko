@@ -64,11 +64,11 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[90vh] max-w-md mx-auto inset-x-0 bottom-0 rounded-t-[32px] px-0 pb-0 gap-0 flex flex-col bg-[#F8FAFC]">
-        <SheetHeader className="px-6 py-4 border-b bg-white rounded-t-[32px] z-10 sticky top-0 flex-shrink-0">
+      <SheetContent side="bottom" className="h-[90vh] max-w-md mx-auto inset-x-0 bottom-0 rounded-t-[32px] px-0 pb-0 gap-0 flex flex-col bg-white/80 backdrop-blur-xl border-t border-white/50 shadow-[0_-12px_40px_rgba(0,0,0,0.12)]">
+        <SheetHeader className="px-6 py-5 border-b border-gray-200/50 bg-transparent z-10 sticky top-0 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <SheetTitle className="text-xl font-extrabold flex items-center gap-2 m-0">
-              <Filter className="w-5 h-5 text-[#22C55E]" /> Filters {activeCount > 0 && <span className="bg-[#22C55E] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center leading-none">{activeCount}</span>}
+            <SheetTitle className="text-xl font-extrabold flex items-center gap-2 m-0 text-slate-900">
+              <Filter className="w-5 h-5 text-green-500" /> Filters {activeCount > 0 && <span className="bg-green-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center leading-none shadow-sm">{activeCount}</span>}
             </SheetTitle>
             <button onClick={clearAll} className="text-sm font-bold text-gray-400 hover:text-red-500 transition-colors">Clear All</button>
           </div>
@@ -88,7 +88,7 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
                     onClick={() => toggleArrayItem('categories', cat)}
                     className={`px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-sm border ${
                       isSelected('categories', cat)
-                        ? "bg-[#22C55E] text-white border-[#22C55E]"
+                        ? "bg-green-500 text-white border-green-500"
                         : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
                     }`}
                   >
@@ -187,51 +187,51 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
               </div>
             </div>
 
-            {/* Toggles */}
+            {/* Toggles (Phase 7: iOS Native Switches) */}
             <div className="space-y-4">
               <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider">Preferences</h3>
               
-              <label className="flex items-center justify-between bg-white p-3 rounded-2xl shadow-sm border border-gray-100 cursor-pointer">
+              <label className="flex items-center justify-between bg-white/60 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/50 cursor-pointer">
                 <div>
-                  <p className="font-bold text-[#0F172A] text-sm">Accepts Cash Top-up</p>
-                  <p className="text-xs text-gray-500 font-medium">Show items that accept partial cash</p>
+                  <p className="font-bold text-slate-900 text-[15px]">Accepts Cash Top-up</p>
+                  <p className="text-[13px] text-gray-500 font-medium">Show items that accept partial cash</p>
                 </div>
-                <div className={`w-12 h-6 rounded-full transition-colors relative ${filters.cashTopUpAllowed ? 'bg-[#22C55E]' : 'bg-gray-200'}`}>
+                <div className={`w-[52px] h-[32px] rounded-full transition-colors relative shadow-inner ${filters.cashTopUpAllowed ? 'bg-green-500' : 'bg-gray-200'}`}>
                   <input type="checkbox" className="sr-only" checked={!!filters.cashTopUpAllowed} onChange={e => setFilters({ cashTopUpAllowed: e.target.checked })} />
-                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${filters.cashTopUpAllowed ? 'translate-x-6' : 'translate-x-0.5'}`} />
+                  <div className={`w-[28px] h-[28px] bg-white rounded-full absolute top-[2px] shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition-transform ${filters.cashTopUpAllowed ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
                 </div>
               </label>
 
-              <label className="flex items-center justify-between bg-white p-3 rounded-2xl shadow-sm border border-gray-100 cursor-pointer">
+              <label className="flex items-center justify-between bg-white/60 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/50 cursor-pointer">
                 <div>
-                  <p className="font-bold text-[#0F172A] text-sm">Pure Barter Only</p>
-                  <p className="text-xs text-gray-500 font-medium">Hide all listings requiring cash</p>
+                  <p className="font-bold text-slate-900 text-[15px]">Pure Barter Only</p>
+                  <p className="text-[13px] text-gray-500 font-medium">Hide all listings requiring cash</p>
                 </div>
-                <div className={`w-12 h-6 rounded-full transition-colors relative ${(filters as any).noCashNeeded ? 'bg-blue-500' : 'bg-gray-200'}`}>
+                <div className={`w-[52px] h-[32px] rounded-full transition-colors relative shadow-inner ${(filters as any).noCashNeeded ? 'bg-blue-500' : 'bg-gray-200'}`}>
                   <input type="checkbox" className="sr-only" checked={!!(filters as any).noCashNeeded} onChange={e => setFilters({ /* @ts-ignore */ noCashNeeded: e.target.checked })} />
-                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${(filters as any).noCashNeeded ? 'translate-x-6' : 'translate-x-0.5'}`} />
+                  <div className={`w-[28px] h-[28px] bg-white rounded-full absolute top-[2px] shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition-transform ${(filters as any).noCashNeeded ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
                 </div>
               </label>
 
-              <label className="flex items-center justify-between bg-white p-3 rounded-2xl shadow-sm border border-gray-100 cursor-pointer">
+              <label className="flex items-center justify-between bg-white/60 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/50 cursor-pointer">
                 <div>
-                  <p className="font-bold text-[#0F172A] text-sm flex items-center gap-1.5">Verified Users <span className="bg-blue-100 text-blue-600 text-[9px] px-1.5 py-0.5 rounded-full uppercase tracking-wider">Trusted</span></p>
-                  <p className="text-xs text-gray-500 font-medium">Only show verified students/identities</p>
+                  <p className="font-bold text-slate-900 text-[15px] flex items-center gap-1.5">Verified Users <span className="bg-blue-100 text-blue-600 text-[10px] px-1.5 py-0.5 rounded-full uppercase tracking-wider">Trusted</span></p>
+                  <p className="text-[13px] text-gray-500 font-medium">Only show verified students/identities</p>
                 </div>
-                <div className={`w-12 h-6 rounded-full transition-colors relative ${filters.verifiedOnly ? 'bg-[#22C55E]' : 'bg-gray-200'}`}>
+                <div className={`w-[52px] h-[32px] rounded-full transition-colors relative shadow-inner ${filters.verifiedOnly ? 'bg-green-500' : 'bg-gray-200'}`}>
                   <input type="checkbox" className="sr-only" checked={!!filters.verifiedOnly} onChange={e => setFilters({ /* @ts-ignore */ verifiedOnly: e.target.checked })} />
-                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${filters.verifiedOnly ? 'translate-x-6' : 'translate-x-0.5'}`} />
+                  <div className={`w-[28px] h-[28px] bg-white rounded-full absolute top-[2px] shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition-transform ${filters.verifiedOnly ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
                 </div>
               </label>
               
-              <label className="flex items-center justify-between bg-white p-3 rounded-2xl shadow-sm border border-gray-100 cursor-pointer">
+              <label className="flex items-center justify-between bg-white/60 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/50 cursor-pointer">
                 <div>
-                  <p className="font-bold text-orange-600 text-sm flex items-center gap-1.5">Multi-Way Swaps</p>
-                  <p className="text-xs text-orange-400 font-medium">Include indirect trade opportunities</p>
+                  <p className="font-bold text-orange-600 text-[15px] flex items-center gap-1.5">Multi-Way Swaps</p>
+                  <p className="text-[13px] text-orange-400 font-medium">Include indirect trade opportunities</p>
                 </div>
-                <div className={`w-12 h-6 rounded-full transition-colors relative ${(filters as any).multiWayAvailable ? 'bg-orange-500' : 'bg-gray-200'}`}>
+                <div className={`w-[52px] h-[32px] rounded-full transition-colors relative shadow-inner ${(filters as any).multiWayAvailable ? 'bg-orange-500' : 'bg-gray-200'}`}>
                   <input type="checkbox" className="sr-only" checked={!!(filters as any).multiWayAvailable} onChange={e => setFilters({ /* @ts-ignore */ multiWayAvailable: e.target.checked })} />
-                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${(filters as any).multiWayAvailable ? 'translate-x-6' : 'translate-x-0.5'}`} />
+                  <div className={`w-[28px] h-[28px] bg-white rounded-full absolute top-[2px] shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition-transform ${(filters as any).multiWayAvailable ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
                 </div>
               </label>
             </div>
@@ -272,9 +272,9 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
           </div>
         </div>
         
-        <SheetFooter className="p-4 bg-white border-t sm:rounded-bl-[32px] z-10 sticky bottom-0">
+        <SheetFooter className="p-4 bg-transparent border-t border-gray-200/30 sm:rounded-bl-[32px] z-10 sticky bottom-0 backdrop-blur-xl">
            <SheetClose asChild>
-             <button className="w-full bg-[#0F172A] hover:bg-black text-white font-extrabold text-base py-4 rounded-2xl shadow-lg transition-transform active:scale-95">
+             <button className="w-full bg-slate-900 hover:bg-black text-white font-extrabold text-[15px] py-4 rounded-2xl shadow-lg transition-transform active:scale-95">
                Show Results
              </button>
            </SheetClose>

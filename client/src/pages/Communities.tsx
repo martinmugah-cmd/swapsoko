@@ -100,7 +100,7 @@ function CreateSokoModal({ onClose, myProfile }: { onClose: () => void; myProfil
             <Users className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="font-black text-2xl text-[#0F172A] tracking-tight">Create a Soko</h3>
+            <h3 className="font-black text-2xl text-slate-900 tracking-tight">Create a Soko</h3>
             <p className="text-sm text-gray-500 font-medium mt-0.5">Start a new community space</p>
           </div>
         </div>
@@ -112,11 +112,11 @@ function CreateSokoModal({ onClose, myProfile }: { onClose: () => void; myProfil
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className={`w-14 h-14 rounded-[20px] flex items-center justify-center flex-shrink-0 snap-center transition-all ${
+                className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 snap-center transition-all ${
                   icon && icon.startsWith('data:image') ? "bg-green-50 border-2 border-green-500 text-green-600 shadow-sm" : "bg-gray-50 border-2 border-dashed border-gray-300 text-gray-400 hover:bg-gray-100"
                 }`}
               >
-                {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : icon && icon.startsWith('data:image') ? <img src={icon} className="w-full h-full object-cover rounded-[16px]" /> : <ImageIcon className="w-6 h-6" />}
+                {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : icon && icon.startsWith('data:image') ? <img src={icon} className="w-full h-full object-cover rounded-2xl" /> : <ImageIcon className="w-6 h-6" />}
               </button>
               {ICONS.map(i => {
                 const IconComp = { Users, GraduationCap, Laptop: Cpu, BookOpen, Gamepad2, Stethoscope, Camera, Home }[i] || Users;
@@ -124,7 +124,7 @@ function CreateSokoModal({ onClose, myProfile }: { onClose: () => void; myProfil
                   <button
                     key={i}
                     onClick={() => setIcon(i)}
-                    className={`w-14 h-14 rounded-[20px] flex items-center justify-center flex-shrink-0 snap-center transition-all ${
+                    className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 snap-center transition-all ${
                       icon === i ? "bg-green-50 border-2 border-green-500 text-green-600 shadow-sm scale-105" : "bg-gray-50 border-2 border-transparent text-gray-500 hover:bg-gray-100"
                     }`}
                   >
@@ -211,7 +211,7 @@ function CreateSokoModal({ onClose, myProfile }: { onClose: () => void; myProfil
           )}
         </div>
 
-        <button onClick={handleSubmit} disabled={createMutation.isPending} className="w-full mt-8 gradient-green text-white font-bold py-4 rounded-[24px] shadow-lg shadow-green-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+        <button onClick={handleSubmit} disabled={createMutation.isPending} className="w-full mt-8 gradient-green text-white font-bold py-4 rounded-2xl shadow-lg shadow-green-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
           {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-5 h-5" /> Create Soko</>}
         </button>
       </motion.div>
@@ -344,9 +344,9 @@ export default function CommunitiesPage() {
       <div className="page-header px-4 py-3">
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => navigate("/")} className="w-8 h-8 flex items-center justify-center">
-            <ChevronLeft className="w-5 h-5 text-[#0F172A]" />
+            <ChevronLeft className="w-5 h-5 text-slate-900" />
           </button>
-          <h1 className="font-bold text-[#0F172A] text-base">{"Soko"}</h1>
+          <h1 className="font-bold text-slate-900 text-base">{"Soko"}</h1>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowCreate(true)}
@@ -355,13 +355,13 @@ export default function CommunitiesPage() {
             <Plus className="w-4 h-4 text-white" />
           </motion.button>
         </div>
-        <div className="flex items-center gap-2 bg-gray-100 rounded-[32px] px-3 py-2.5">
+        <div className="flex items-center gap-2 bg-gray-100 rounded-3xl px-3 py-2.5">
           <Search className="w-4 h-4 text-gray-400" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search communities..."
-            className="flex-1 bg-transparent text-sm text-[#0F172A] placeholder-gray-400 outline-none"
+            className="flex-1 bg-transparent text-sm text-slate-900 placeholder-gray-400 outline-none"
           />
         </div>
       </div>
@@ -371,13 +371,13 @@ export default function CommunitiesPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-[#0F172A] rounded-[32px] p-4 flex items-center justify-between"
+          className="bg-slate-900 rounded-3xl p-4 flex items-center justify-between"
         >
           <div>
             <p className="text-white font-bold text-base">Your Campus Hub</p>
             <p className="text-gray-400 text-xs mt-0.5">Connect with students near you</p>
           </div>
-          <div className="w-12 h-12 gradient-green rounded-[32px] flex items-center justify-center">
+          <div className="w-12 h-12 gradient-green rounded-3xl flex items-center justify-center">
             <Users className="w-6 h-6 text-white" />
           </div>
         </motion.div>
@@ -393,10 +393,10 @@ export default function CommunitiesPage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
-                  className="bg-white rounded-[32px] p-4 card-shadow flex items-center gap-3 cursor-pointer"
+                  className="bg-white rounded-3xl p-4 card-shadow flex items-center gap-3 cursor-pointer"
                   onClick={() => navigate(`/communities/${community.id}`)}
                 >
-                  <div className="w-8 h-8 rounded-[12px] bg-gray-100 flex items-center justify-center text-[#0F172A] overflow-hidden">
+                  <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center text-slate-900 overflow-hidden">
                     {community.icon?.startsWith("data:image") || community.icon?.startsWith("http") ? (
                       <img src={community.icon} className="w-full h-full object-cover" />
                     ) : (
@@ -404,7 +404,7 @@ export default function CommunitiesPage() {
                     )}
                   </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-[#0F172A] text-sm">{community.name}</p>
+                  <p className="font-bold text-slate-900 text-sm">{community.name}</p>
                   <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">
                     {(() => {
                       try {
@@ -416,11 +416,11 @@ export default function CommunitiesPage() {
                     })()}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] text-gray-400">
-                      <span className="font-semibold text-[#0F172A]">{community.memberCount || 0}</span> members
+                    <span className="text-xs text-gray-400">
+                      <span className="font-semibold text-slate-900">{community.memberCount || 0}</span> members
                     </span>
                     {community.type === "public" && (
-                      <span className="text-[10px] bg-[#F0FDF4] text-[#22C55E] px-1.5 py-0.5 rounded-full font-medium">Public</span>
+                      <span className="text-xs bg-[#F0FDF4] text-green-500 px-1.5 py-0.5 rounded-full font-medium">Public</span>
                     )}
                   </div>
                 </div>
@@ -439,11 +439,11 @@ export default function CommunitiesPage() {
                     <motion.button
                       whileTap={{ scale: 0.9 }}
                       onClick={(e) => handleJoin(e, community)}
-                      className={`px-4 py-2 rounded-[32px] text-xs font-bold flex items-center gap-1.5 flex-shrink-0 transition-colors ${
+                      className={`px-4 py-2 rounded-3xl text-xs font-bold flex items-center gap-1.5 flex-shrink-0 transition-colors ${
                         isJoined
-                          ? "bg-[#F0FDF4] text-[#22C55E] border border-[#BBF7D0]"
+                          ? "bg-[#F0FDF4] text-green-500 border border-[#BBF7D0]"
                           : community.type === "private"
-                          ? "bg-gray-100 text-[#0F172A] hover:bg-gray-200"
+                          ? "bg-gray-100 text-slate-900 hover:bg-gray-200"
                           : "gradient-green text-white shadow-md hover:shadow-lg"
                       }`}
                     >
@@ -459,7 +459,7 @@ export default function CommunitiesPage() {
         {filtered.length === 0 && (
           <div className="text-center py-12">
             <Search className="w-10 h-10 mb-3 mx-auto text-gray-300" />
-            <p className="font-semibold text-[#0F172A]">No communities found</p>
+            <p className="font-semibold text-slate-900">No communities found</p>
             <p className="text-gray-400 text-sm mt-1">Try a different search term</p>
           </div>
         )}
@@ -475,15 +475,15 @@ export default function CommunitiesPage() {
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white w-full max-w-sm rounded-[32px] p-6 shadow-xl"
+              className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-xl"
               onClick={e => e.stopPropagation()}
             >
-              <h3 className="font-bold text-[#0F172A] text-lg text-center mb-2">Join {showJoinCodeModal.name}</h3>
+              <h3 className="font-bold text-slate-900 text-lg text-center mb-2">Join {showJoinCodeModal.name}</h3>
               <p className="text-gray-500 text-sm text-center mb-4">Enter the invite code to join this private community.</p>
               <input
                 id="joinCodeInput"
                 placeholder="Invite Code"
-                className="w-full border border-gray-200 rounded-[32px] px-4 py-3 text-sm outline-none focus:border-[#22C55E] uppercase text-center font-bold tracking-widest mb-6"
+                className="w-full border border-gray-200 rounded-3xl px-4 py-3 text-sm outline-none focus:border-green-500 uppercase text-center font-bold tracking-widest mb-6"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -492,8 +492,8 @@ export default function CommunitiesPage() {
                 }}
               />
               <div className="flex gap-3">
-                <button onClick={() => setShowJoinCodeModal(null)} className="flex-1 py-3 rounded-[32px] text-sm font-bold bg-gray-100 text-gray-600">Cancel</button>
-                <button onClick={() => handleJoinWithCode((document.getElementById('joinCodeInput') as HTMLInputElement)?.value)} className="flex-1 py-3 rounded-[32px] text-sm font-bold gradient-green text-white">Join</button>
+                <button onClick={() => setShowJoinCodeModal(null)} className="flex-1 py-3 rounded-3xl text-sm font-bold bg-gray-100 text-gray-600">Cancel</button>
+                <button onClick={() => handleJoinWithCode((document.getElementById('joinCodeInput') as HTMLInputElement)?.value)} className="flex-1 py-3 rounded-3xl text-sm font-bold gradient-green text-white">Join</button>
               </div>
             </motion.div>
           </motion.div>

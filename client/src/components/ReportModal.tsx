@@ -48,7 +48,7 @@ export function ReportModal({ isOpen, onClose, targetType, targetId }: ReportMod
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -60,25 +60,30 @@ export function ReportModal({ isOpen, onClose, targetType, targetId }: ReportMod
             initial={{ y: "100%", opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-white w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] overflow-hidden shadow-2xl relative z-10 flex flex-col max-h-[90vh]"
+            transition={{ type: "spring", damping: 30, stiffness: 350 }}
+            className="bg-[#F2F2F7] w-full sm:max-w-md rounded-t-[32px] sm:rounded-3xl overflow-hidden shadow-2xl relative z-10 flex flex-col max-h-[90vh]"
           >
+            {/* Grabber for Mobile */}
+            <div className="w-full flex justify-center pt-3 pb-1 sm:hidden">
+              <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
+            </div>
+
             {/* Header */}
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white/90 backdrop-blur-md z-10">
+            <div className="px-6 py-4 flex items-center justify-between sticky top-0 z-10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-red-500" />
+                <div className="w-9 h-9 rounded-full bg-red-500/10 flex items-center justify-center">
+                  <AlertTriangle className="w-4 h-4 text-red-500" />
                 </div>
-                <h3 className="text-xl font-extrabold text-gray-900 tracking-tight">Report {targetType}</h3>
+                <h3 className="text-[22px] font-bold text-gray-900 tracking-tight">Report</h3>
               </div>
-              <button onClick={onClose} className="p-2 bg-gray-50 rounded-full text-gray-500 hover:bg-gray-100 transition-colors">
+              <button onClick={onClose} className="p-2 bg-gray-200/50 rounded-full text-gray-500 hover:bg-gray-200 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto">
+            <div className="p-4 pt-2 overflow-y-auto hide-scrollbar">
               {submitted ? (
-                <div className="py-8 flex flex-col items-center text-center space-y-4">
+                <div className="py-12 flex flex-col items-center text-center space-y-4">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -88,35 +93,33 @@ export function ReportModal({ isOpen, onClose, targetType, targetId }: ReportMod
                   </motion.div>
                   <div>
                     <h4 className="text-xl font-bold text-gray-900">Report Submitted</h4>
-                    <p className="text-gray-500 mt-2 text-sm leading-relaxed max-w-[250px] mx-auto">
+                    <p className="text-gray-500 mt-2 text-[15px] leading-relaxed max-w-[280px] mx-auto">
                       Thank you for keeping SwapSoko safe. Our Trust & Safety team will review this shortly.
                     </p>
                   </div>
                   <button 
                     onClick={onClose}
-                    className="mt-6 bg-gray-900 text-white font-bold py-3 px-8 rounded-full shadow-md hover:bg-gray-800 transition-colors"
+                    className="mt-8 bg-black text-white font-bold py-3.5 px-10 rounded-full shadow-lg hover:bg-gray-800 transition-all active:scale-95"
                   >
-                    Close
+                    Done
                   </button>
                 </div>
               ) : (
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-3">Why are you reporting this?</label>
-                    <div className="grid grid-cols-1 gap-2">
-                      {(REASONS[targetType] || []).map((r) => (
+                    <label className="block text-[13px] font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-4">Why are you reporting this?</label>
+                    <div className="bg-white rounded-[20px] overflow-hidden shadow-sm border border-gray-200/60">
+                      {(REASONS[targetType] || []).map((r, i, arr) => (
                         <button
                           key={r}
                           onClick={() => setReason(r)}
-                          className={`flex items-center justify-between w-full px-4 py-3 rounded-2xl border text-sm font-medium transition-all ${
-                            reason === r 
-                              ? "bg-red-50 border-red-200 text-red-700 shadow-sm" 
-                              : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+                          className={`flex items-center justify-between w-full px-5 py-3.5 text-left transition-colors active:bg-gray-50 ${
+                            i !== arr.length - 1 ? 'border-b border-gray-100' : ''
                           }`}
                         >
-                          {r}
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${reason === r ? "border-red-500 bg-red-500" : "border-gray-300"}`}>
-                            {reason === r && <div className="w-2 h-2 bg-white rounded-full" />}
+                          <span className={`text-[16px] font-medium ${reason === r ? 'text-red-600' : 'text-gray-900'}`}>{r}</span>
+                          <div className={`w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center transition-colors ${reason === r ? "border-red-500 bg-red-500" : "border-gray-300"}`}>
+                            {reason === r && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                           </div>
                         </button>
                       ))}
@@ -124,26 +127,30 @@ export function ReportModal({ isOpen, onClose, targetType, targetId }: ReportMod
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-2">Additional details (optional)</label>
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Please provide any extra context to help our moderators investigate..."
-                      className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all resize-none h-24"
-                    />
+                    <label className="block text-[13px] font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-4">Additional Details</label>
+                    <div className="bg-white rounded-[20px] shadow-sm border border-gray-200/60 overflow-hidden p-1">
+                      <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Provide extra context (optional)..."
+                        className="w-full bg-transparent px-4 py-3 text-[16px] text-gray-900 placeholder:text-gray-400 focus:outline-none resize-none h-24"
+                      />
+                    </div>
                   </div>
 
-                  <button
-                    onClick={handleSubmit}
-                    disabled={!reason || createReport.isLoading}
-                    className={`w-full py-4 rounded-full font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 ${
-                      !reason || createReport.isLoading
-                        ? "bg-gray-300 cursor-not-allowed shadow-none"
-                        : "bg-gradient-to-r from-red-600 to-red-500 hover:shadow-red-500/25 active:scale-[0.98]"
-                    }`}
-                  >
-                    {createReport.isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Submit Report"}
-                  </button>
+                  <div className="pt-2 pb-6">
+                    <button
+                      onClick={handleSubmit}
+                      disabled={!reason || createReport.isLoading}
+                      className={`w-full py-4 rounded-full font-bold text-[17px] text-white shadow-lg transition-all flex items-center justify-center gap-2 ${
+                        !reason || createReport.isLoading
+                          ? "bg-gray-300 cursor-not-allowed shadow-none text-gray-500"
+                          : "bg-red-500 hover:bg-red-600 hover:shadow-red-500/25 active:scale-95"
+                      }`}
+                    >
+                      {createReport.isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Submit Report"}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

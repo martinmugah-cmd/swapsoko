@@ -180,7 +180,7 @@ export function LocationSelector({ onLocationSelect, currentCampus, compact = fa
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full flex items-center gap-2 px-4 py-3 rounded-[24px] border border-gray-200 bg-white/70 backdrop-blur-md text-left hover:border-swap-green transition-colors"
+        className="w-full flex items-center gap-2 px-4 py-3 rounded-2xl border border-gray-200 bg-white/70 backdrop-blur-md text-left hover:border-swap-green transition-colors"
       >
         <MapPin size={18} className="text-swap-green shrink-0" />
         <div className="flex-1 min-w-0">
@@ -269,7 +269,7 @@ function LocationModal({
 
             {/* Header */}
             <div className="px-6 pb-4 flex items-center justify-between">
-              <h3 className="text-2xl font-extrabold text-[#0F172A] tracking-tight">Select Location</h3>
+              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">Select Location</h3>
               <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
                 <X size={16} />
               </button>
@@ -280,7 +280,7 @@ function LocationModal({
               <button
                 onClick={detectLocation}
                 disabled={detectingLocation}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-[20px] bg-[#F0FDF4] border border-[#BBF7D0] text-[#166534] font-bold text-[15px] hover:bg-[#DCFCE7] hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-wait"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-[#F0FDF4] border border-[#BBF7D0] text-[#166534] font-bold text-[15px] hover:bg-[#DCFCE7] hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-wait"
               >
                 <Navigation size={18} className={detectingLocation ? "animate-spin" : ""} />
                 {detectingLocation ? "Detecting your location..." : "Use my current location"}
@@ -290,29 +290,29 @@ function LocationModal({
             {/* Search */}
             <div className="px-6 pb-4 flex-shrink-0">
               <div className="relative group">
-                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#22C55E] transition-colors" />
+                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" />
                 <input
                   type="text"
                   placeholder="Search campus, university, or county..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 rounded-[20px] border border-transparent text-[15px] font-medium text-[#0F172A] placeholder:text-gray-400 focus:outline-none focus:border-[#22C55E] focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all shadow-inner"
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 rounded-2xl border border-transparent text-[15px] font-medium text-slate-900 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all shadow-inner"
                 />
               </div>
             </div>
 
             {/* Toggle: List / Map */}
             <div className="px-6 pb-5 flex-shrink-0">
-              <div className="flex p-1 bg-gray-100/80 rounded-[20px] border border-gray-200/50">
+              <div className="flex p-1 bg-gray-100/80 rounded-2xl border border-gray-200/50">
                 <button
                   onClick={() => setShowMap(false)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[16px] text-[14px] font-bold transition-all duration-200 ${!showMap ? "bg-white text-[#0F172A] shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-[14px] font-bold transition-all duration-200 ${!showMap ? "bg-white text-slate-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
                 >
                   <MapPin size={16} /> List View
                 </button>
                 <button
                   onClick={() => setShowMap(true)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[16px] text-[14px] font-bold transition-all duration-200 ${showMap ? "bg-white text-[#0F172A] shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-[14px] font-bold transition-all duration-200 ${showMap ? "bg-white text-slate-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
                 >
                   <MapPin size={16} className="rotate-180" /> Map View
                 </button>
@@ -334,9 +334,9 @@ function LocationModal({
                   <button
                     key={opt.value}
                     onClick={() => setDiscoveryMode(opt.value)}
-                    className={`px-4 py-2 rounded-full text-[13px] font-bold transition-all duration-200 ${
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 ${
                       discoveryMode === opt.value
-                        ? "bg-[#22C55E] text-white shadow-md shadow-[#22C55E]/20"
+                        ? "bg-green-500 text-white shadow-md shadow-[#22C55E]/20"
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
@@ -371,7 +371,7 @@ function LocationModal({
             {/* Content */}
             <div className="flex-1 overflow-y-auto px-4 pb-4">
               {showMap ? (
-                <div className="h-[400px] rounded-[24px] overflow-hidden border border-gray-200 relative z-0">
+                <div className="h-[400px] rounded-2xl overflow-hidden border border-gray-200 relative z-0">
                   <MapContainer 
                     center={selectedCampus ? [selectedCampus.lat, selectedCampus.lng] : [-1.0887, 37.0122]} 
                     zoom={12} 
@@ -411,7 +411,7 @@ function LocationModal({
                     <motion.button
                       key={campus.id}
                       onClick={() => handleSelect(campus)}
-                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-[24px] text-left transition-colors ${
+                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-2xl text-left transition-colors ${
                         selectedCampus?.id === campus.id
                           ? "bg-swap-green/10 border border-swap-green/20"
                           : "hover:bg-gray-50"

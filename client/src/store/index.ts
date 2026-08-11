@@ -1,3 +1,4 @@
+import { supabase } from "../lib/supabase";
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -37,7 +38,7 @@ interface AppState {
     directSwapOnly: boolean;
     multiWayAvailable: boolean;
     communityId: string | null;
-    swipesViewMode: "swipe" | "map";
+    swipesViewMode: "swipe" | "map" | "feed";
   };
   setFilters: (filters: Partial<AppState['filters']>) => void;
 
@@ -51,13 +52,19 @@ interface AppState {
 
   // Saved Items
   savedItemIds: string[];
+  setSavedItemIds: (ids: string[]) => void;
   toggleSavedItem: (id: string) => void;
 
   savedWishIds: string[];
+  setSavedWishIds: (ids: string[]) => void;
   toggleSavedWish: (id: string) => void;
 
   watchedCommunityIds: string[];
   toggleWatchedCommunity: (id: string) => void;
+
+  savedSearches: { id: string; query: string; createdAt: string }[];
+  saveSearch: (query: string) => void;
+  removeSavedSearch: (id: string) => void;
 
   watchedUserIds: string[];
   toggleWatchedUser: (id: string) => void;
@@ -115,20 +122,52 @@ export const useAppStore = create<AppState>()(
       setActiveChatRoomId: (activeChatRoomId) => set({ activeChatRoomId }),
 
       savedItemIds: [],
-      toggleSavedItem: (id) =>
-        set((state) => ({
-          savedItemIds: state.savedItemIds.includes(id)
-            ? state.savedItemIds.filter((itemId) => itemId !== id)
-            : [...state.savedItemIds, id],
-        })),
+      setSavedItemIds: (ids) => set({ savedItemIds: ids }),
+      toggleSavedItem: async (id) => {
+        set((state) => {
+          const isSaving = !state.savedItemIds.includes(id);
+          const next = isSaving 
+            ? [...state.savedItemIds, id] 
+            : state.savedItemIds.filter((itemId) => itemId !== id);
+            
+          // Sync with Supabase asynchronously (fire and forget)
+          supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user?.id) {
+              if (isSaving) {
+                supabase.from('saved_items').insert({ user_id: session.user.id, listing_id: parseInt(id) }).then();
+              } else {
+                supabase.from('saved_items').delete().match({ user_id: session.user.id, listing_id: parseInt(id) }).then();
+              }
+            }
+          });
+
+          return { savedItemIds: next };
+        });
+      },
 
       savedWishIds: [],
-      toggleSavedWish: (id) =>
-        set((state) => ({
-          savedWishIds: state.savedWishIds.includes(id)
-            ? state.savedWishIds.filter((x) => x !== id)
-            : [...state.savedWishIds, id],
-        })),
+      setSavedWishIds: (ids) => set({ savedWishIds: ids }),
+      toggleSavedWish: async (id) => {
+        set((state) => {
+          const isSaving = !state.savedWishIds.includes(id);
+          const next = isSaving
+            ? [...state.savedWishIds, id]
+            : state.savedWishIds.filter((x) => x !== id);
+
+          // Sync with Supabase asynchronously
+          supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user?.id) {
+              if (isSaving) {
+                supabase.from('saved_items').insert({ user_id: session.user.id, wish_id: parseInt(id) }).then();
+              } else {
+                supabase.from('saved_items').delete().match({ user_id: session.user.id, wish_id: parseInt(id) }).then();
+              }
+            }
+          });
+
+          return { savedWishIds: next };
+        });
+      },
 
       watchedCommunityIds: [],
       toggleWatchedCommunity: (id) =>
@@ -136,6 +175,18 @@ export const useAppStore = create<AppState>()(
           watchedCommunityIds: state.watchedCommunityIds.includes(id)
             ? state.watchedCommunityIds.filter((x) => x !== id)
             : [...state.watchedCommunityIds, id],
+        })),
+
+      savedSearches: [],
+      saveSearch: (query) =>
+        set((state) => ({
+          savedSearches: state.savedSearches.some(s => s.query === query) 
+            ? state.savedSearches 
+            : [...state.savedSearches, { id: Date.now().toString(), query, createdAt: new Date().toISOString() }],
+        })),
+      removeSavedSearch: (id) =>
+        set((state) => ({
+          savedSearches: state.savedSearches.filter((s) => s.id !== id),
         })),
 
       watchedUserIds: [],

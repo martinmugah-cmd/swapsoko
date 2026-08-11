@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useCallback } from "react";
@@ -17,7 +18,6 @@ const CATEGORIES = [
 const CONDITIONS = [
   { value: "brand_new", label: "Brand New", color: "bg-emerald-500" },
   { value: "like_new", label: "Like New", color: "bg-green-500" },
-  { value: "excellent", label: "Excellent", color: "bg-teal-500" },
   { value: "good", label: "Good", color: "bg-blue-500" },
   { value: "fair", label: "Fair", color: "bg-yellow-500" },
   { value: "repair", label: "Needs Repair", color: "bg-red-500" },
@@ -54,7 +54,14 @@ export default function PostPage() {
   const [cashTopUpAllowed, setCashTopUpAllowed] = useState(false);
   const [cashTopUpAmount, setCashTopUpAmount] = useState(0);
   const filters = useAppStore(state => state.filters);
-  const [campus, setCampus] = useState(filters.campus || user?.user_metadata?.campus || CAMPUSES[0].name);
+  const detectedLocationName = (() => {
+    try {
+      const loc = user?.user_metadata?.locationName ? JSON.parse(user.user_metadata.locationName) : null;
+      if (loc && loc.town) return `${loc.town}${loc.county ? `, ${loc.county}` : ''}`;
+    } catch(e) {}
+    return null;
+  })();
+  const [campus, setCampus] = useState(detectedLocationName || filters.campus || user?.user_metadata?.campus || CAMPUSES[0].name);
   const [university, setUniversity] = useState(filters.university || CAMPUSES[0].university);
   const [type, setType] = useState<"item" | "service" | "donation">("item");
   const [duration, setDuration] = useState("");
@@ -62,6 +69,11 @@ export default function PostPage() {
   const [availability, setAvailability] = useState("");
   const [skillLevel, setSkillLevel] = useState("intermediate");
   const [portfolioLink, setPortfolioLink] = useState("");
+  
+  // Video States
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   
   // Donation fields
   const [recipientType, setRecipientType] = useState("Any Student");
@@ -75,6 +87,17 @@ export default function PostPage() {
       setWantItems(prev => [...prev, wantInput.trim()]);
       setWantInput("");
     }
+  };
+
+  const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) { // 50MB max
+       toast.error("Video is too large (max 50MB)");
+       return;
+    }
+    setVideoFile(file);
+    setVideoUrl(URL.createObjectURL(file));
   };
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +143,7 @@ export default function PostPage() {
       return;
     }
     if (!title.trim()) { toast.error("Please add a title"); return; }
-    if (images.length === 0) { toast.error("Please add at least one photo"); return; }
+    if (images.length === 0 && !videoFile) { toast.error("Please add at least one photo or video"); return; }
     const finalWantItems = type === "donation" ? ["FREE / DONATION"] : wantItems;
     if (finalWantItems.length === 0) { toast.error("Please add at least one item you want"); return; }
 
@@ -152,7 +175,29 @@ export default function PostPage() {
       cashTopUpAmount,
       campus,
     }, {
-      onSuccess: () => {
+      onSuccess: async (data: any) => {
+        
+        // Upload video if provided
+        if (videoFile && data?.id) {
+           const ext = videoFile.name.split('.').pop() || 'mp4';
+           const fileName = `video_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+           toast.loading("Uploading video...");
+           
+           const { data: uploadData, error: uploadError } = await supabase.storage.from('listing-videos').upload(fileName, videoFile);
+           if (!uploadError && uploadData) {
+               const { data: publicUrlData } = supabase.storage.from('listing-videos').getPublicUrl(fileName);
+               
+               await supabase.from('listing_media').insert({
+                   listing_id: data.id,
+                   type: 'video',
+                   url: publicUrlData.publicUrl
+               });
+           } else {
+               toast.error("Video upload failed.");
+           }
+           toast.dismiss();
+        }
+
         utils.listings.feed.invalidate();
         utils.listings.myListings.invalidate();
         toast.success("Listing posted successfully!");
@@ -181,9 +226,9 @@ export default function PostPage() {
       <div className="page-header px-4 py-3">
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => step > 1 ? setStep(s => s - 1) : navigate("/")} className="w-8 h-8 flex items-center justify-center">
-            <ChevronLeft className="w-5 h-5 text-[#0F172A]" />
+            <ChevronLeft className="w-5 h-5 text-slate-900" />
           </button>
-          <h1 className="font-bold text-[#0F172A] text-base">{"Post Item"}</h1>
+          <h1 className="font-bold text-slate-900 text-base">{"Post Item"}</h1>
           <div className="w-8" />
         </div>
 
@@ -191,14 +236,14 @@ export default function PostPage() {
         <div className="flex items-center gap-2">
           {steps.map((s, i) => (
             <div key={s.id} className="flex items-center gap-2 flex-1">
-              <div className={`flex items-center gap-1.5 ${step >= s.id ? "text-[#22C55E]" : "text-gray-400"}`}>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step >= s.id ? "bg-[#22C55E] text-white" : "bg-gray-200 text-gray-400"}`}>
+              <div className={`flex items-center gap-1.5 ${step >= s.id ? "text-green-500" : "text-gray-400"}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step >= s.id ? "bg-green-500 text-white" : "bg-gray-200 text-gray-400"}`}>
                   {step > s.id ? <CheckCircle2 className="w-4 h-4" /> : s.id}
                 </div>
                 <span className="text-xs font-medium">{s.label}</span>
               </div>
               {i < steps.length - 1 && (
-                <div className={`flex-1 h-0.5 rounded-full ${step > s.id ? "bg-[#22C55E]" : "bg-gray-200"}`} />
+                <div className={`flex-1 h-0.5 rounded-full ${step > s.id ? "bg-green-500" : "bg-gray-200"}`} />
               )}
             </div>
           ))}
@@ -217,11 +262,11 @@ export default function PostPage() {
               className="bg-white rounded-[36px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] space-y-6 mb-8 border border-white"
             >
               <div>
-                <h2 className="font-extrabold text-[#0F172A] text-xl tracking-tight">Add Photos</h2>
-                <p className="text-gray-500 text-[13px] font-medium mt-1.5">Add up to 4 photos of your item (max 5MB each)</p>
+                <h2 className="font-extrabold text-slate-900 text-xl tracking-tight">Add Media</h2>
+                <p className="text-gray-500 text-sm font-medium mt-1.5">Add up to 4 photos and 1 video (max 50MB)</p>
               </div>
 
-              {/* Hidden file input */}
+              {/* Hidden file inputs */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -230,52 +275,96 @@ export default function PostPage() {
                 className="hidden"
                 onChange={handleFileSelect}
               />
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleVideoSelect}
+              />
 
-              {/* Photo grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {images.map((img, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="relative aspect-square rounded-[32px] overflow-hidden bg-gray-100"
-                  >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
-                    <motion.button
-                      whileTap={{ scale: 0.85 }}
-                      onClick={() => setImages(prev => prev.filter((_, idx) => idx !== i))}
-                      className="absolute top-2 right-2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center"
-                    >
-                      <X className="w-3 h-3 text-white" />
-                    </motion.button>
-                    {i === 0 && (
-                      <div className="absolute bottom-2 left-2 bg-[#22C55E] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        Main
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
+              {/* Photo grid (Horizontal iOS-style Carousel) */}
+              <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 -mx-2 px-2">
+                {/* Add Photo Button (Squircle) */}
                 {images.length < 4 && (
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingImages}
-                    className="aspect-square rounded-[32px] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 bg-white disabled:opacity-50"
+                    className="flex-shrink-0 w-32 h-40 rounded-[1.5rem] border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 bg-muted/30 hover:bg-muted/50 disabled:opacity-50 transition-colors snap-start"
                   >
                     {uploadingImages ? (
                       <>
-                        <Loader2 className="w-8 h-8 text-[#22C55E] animate-spin" />
-                        <span className="text-xs text-gray-400">Uploading...</span>
+                        <Loader2 className="w-8 h-8 text-green-500 animate-spin" />
+                        <span className="text-xs text-muted-foreground font-semibold">Uploading...</span>
                       </>
                     ) : (
                       <>
-                        <Camera className="w-8 h-8 text-gray-300" />
-                        <span className="text-xs text-gray-400">Add Photo</span>
-                        <span className="text-[10px] text-gray-300">Tap to upload</span>
+                        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                          <Plus className="w-6 h-6 text-green-500" strokeWidth={3} />
+                        </div>
+                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Add Photo</span>
                       </>
                     )}
                   </motion.button>
                 )}
+
+                {/* Video slot */}
+                {videoUrl ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex-shrink-0 w-32 h-40 relative rounded-[1.5rem] overflow-hidden bg-black snap-start shadow-sm"
+                  >
+                    <video src={videoUrl} autoPlay loop muted className="w-full h-full object-cover opacity-80" />
+                    <motion.button
+                      whileTap={{ scale: 0.85 }}
+                      onClick={() => { setVideoFile(null); setVideoUrl(null); }}
+                      className="absolute top-2 right-2 w-6 h-6 apple-glass-dark rounded-full flex items-center justify-center z-10"
+                    >
+                      <X className="w-3 h-3 text-white" strokeWidth={3} />
+                    </motion.button>
+                    <div className="absolute bottom-2 left-2 apple-glass-thick text-white text-[10px] font-bold px-2.5 py-1 rounded-full z-10 shadow-sm uppercase tracking-wider">
+                      Video
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => videoInputRef.current?.click()}
+                    className="flex-shrink-0 w-32 h-40 rounded-[1.5rem] border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 bg-muted/30 hover:bg-muted/50 transition-colors snap-start"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                      <Camera className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Add Video</span>
+                  </motion.button>
+                )}
+
+                {/* Uploaded Images */}
+                {images.map((img, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex-shrink-0 w-32 h-40 relative rounded-[1.5rem] overflow-hidden bg-gray-100 snap-start shadow-sm"
+                  >
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <motion.button
+                      whileTap={{ scale: 0.85 }}
+                      onClick={() => setImages(prev => prev.filter((_, idx) => idx !== i))}
+                      className="absolute top-2 right-2 w-6 h-6 apple-glass-dark rounded-full flex items-center justify-center z-10"
+                    >
+                      <X className="w-3 h-3 text-white" strokeWidth={3} />
+                    </motion.button>
+                    {i === 0 && (
+                      <div className="absolute bottom-2 left-2 bg-green-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm uppercase tracking-wider">
+                        Main
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
               </div>
 
               {/* Type selector */}
@@ -287,7 +376,7 @@ export default function PostPage() {
                       key={lt}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setType(lt)}
-                      className={`flex-1 py-2 flex justify-center items-center gap-1.5 rounded-[24px] text-xs font-semibold capitalize transition-colors ${
+                      className={`flex-1 py-2 flex justify-center items-center gap-1.5 rounded-2xl text-xs font-semibold capitalize transition-colors ${
                         type === lt ? "gradient-green text-white" : "bg-white text-gray-600 card-shadow"
                       }`}
                     >
@@ -301,7 +390,7 @@ export default function PostPage() {
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setStep(2)}
                 disabled={images.length === 0}
-                className={`w-full py-3.5 rounded-[32px] font-bold text-sm ${images.length > 0 ? "gradient-green text-white" : "bg-gray-200 text-gray-400"}`}
+                className={`w-full py-3.5 rounded-3xl font-bold text-sm ${images.length > 0 ? "gradient-green text-white" : "bg-gray-200 text-gray-400"}`}
               >
                 <div className="flex items-center justify-center gap-1.5">
                   {"Next"} <ArrowRight className="w-4 h-4" />
@@ -320,8 +409,8 @@ export default function PostPage() {
               className="bg-white rounded-[36px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] space-y-6 mb-8 border border-white"
             >
               <div>
-                <h2 className="font-extrabold text-[#0F172A] text-xl tracking-tight">Item Details</h2>
-                <p className="text-gray-500 text-[13px] font-medium mt-1.5">Tell people about what you're offering</p>
+                <h2 className="font-extrabold text-slate-900 text-xl tracking-tight">Item Details</h2>
+                <p className="text-gray-500 text-sm font-medium mt-1.5">Tell people about what you're offering</p>
               </div>
 
               <div>
@@ -330,67 +419,72 @@ export default function PostPage() {
                   value={title}
                   onChange={e => setTitle(e.target.value)}
                   placeholder={type === "service" ? "e.g. Graphic Design for 1 Month" : "e.g. iPhone 11 64GB"}
-                  className="w-full mt-1 border border-gray-200 rounded-[24px] px-3 py-2.5 text-sm outline-none focus:border-[#22C55E]"
+                  className="w-full mt-1 border border-gray-200 rounded-2xl px-3 py-2.5 text-sm outline-none focus:border-green-500"
                 />
               </div>
 
               {type === "service" && (
-                <div className="space-y-4 p-4 bg-[#EFF6FF] rounded-[24px]">
-                  <p className="text-sm font-bold text-[#2563EB] flex items-center gap-2"><Wrench className="w-4 h-4" /> Service Details</p>
+                <div className="space-y-6 p-5 bg-[#EFF6FF] rounded-[24px]">
+                  <p className="text-[15px] font-bold text-blue-600 flex items-center gap-2"><Wrench className="w-5 h-5" /> Service Details</p>
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-4">
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Duration</label>
+                      <label className="text-[11px] font-bold text-blue-500/70 uppercase tracking-widest ml-1">Duration</label>
                       <input
                         value={duration}
                         onChange={e => setDuration(e.target.value)}
                         placeholder="e.g. 2 weeks, 1 hr"
-                        className="w-full mt-1 border border-blue-200 bg-white/70 backdrop-blur-md rounded-[24px] px-3 py-2 text-sm outline-none focus:border-[#2563EB]"
+                        className="w-full mt-1.5 border border-transparent bg-white/70 backdrop-blur-md rounded-2xl px-4 py-3.5 text-sm outline-none focus:border-blue-300 focus:bg-white transition-all shadow-inner font-medium text-slate-900"
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Location</label>
-                      <select
-                        value={locationType}
-                        onChange={e => setLocationType(e.target.value)}
-                        className="w-full mt-1 border border-blue-200 bg-white/70 backdrop-blur-md rounded-[24px] px-3 py-2 text-sm outline-none focus:border-[#2563EB]"
-                      >
-                        <option value="remote">Remote</option>
-                        <option value="in-person">In-Person</option>
-                      </select>
+                      <label className="text-[11px] font-bold text-blue-500/70 uppercase tracking-widest ml-1">Location</label>
+                      <div className="flex flex-wrap gap-2 mt-1.5">
+                        {["remote", "in-person"].map(loc => (
+                          <button
+                            key={loc}
+                            onClick={() => setLocationType(loc)}
+                            className={`px-4 py-2.5 rounded-2xl text-[13px] font-bold capitalize transition-all shadow-sm ${locationType === loc ? "bg-blue-600 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
+                          >
+                            {loc}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Availability</label>
+                    <label className="text-[11px] font-bold text-blue-500/70 uppercase tracking-widest ml-1">Availability</label>
                     <input
                       value={availability}
                       onChange={e => setAvailability(e.target.value)}
                       placeholder="e.g. Weekends only, Evenings"
-                      className="w-full mt-1 border border-blue-200 bg-white/70 backdrop-blur-md rounded-[24px] px-3 py-2 text-sm outline-none focus:border-[#2563EB]"
+                      className="w-full mt-1.5 border border-transparent bg-white/70 backdrop-blur-md rounded-2xl px-4 py-3.5 text-sm outline-none focus:border-blue-300 focus:bg-white transition-all shadow-inner font-medium text-slate-900"
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-4">
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Skill Level</label>
-                      <select
-                        value={skillLevel}
-                        onChange={e => setSkillLevel(e.target.value)}
-                        className="w-full mt-1 border border-blue-200 bg-white/70 backdrop-blur-md rounded-[24px] px-3 py-2 text-sm outline-none focus:border-[#2563EB]"
-                      >
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="expert">Expert</option>
-                      </select>
+                      <label className="text-[11px] font-bold text-blue-500/70 uppercase tracking-widest ml-1">Skill Level</label>
+                      <div className="flex flex-wrap gap-2 mt-1.5">
+                        {["beginner", "intermediate", "expert"].map(level => (
+                          <button
+                            key={level}
+                            onClick={() => setSkillLevel(level)}
+                            className={`px-4 py-2.5 rounded-2xl text-[13px] font-bold capitalize transition-all shadow-sm ${skillLevel === level ? "bg-blue-600 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
+                          >
+                            {level}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Portfolio Link</label>
+                      <label className="text-[11px] font-bold text-blue-500/70 uppercase tracking-widest ml-1">Portfolio Link</label>
                       <input
                         value={portfolioLink}
                         onChange={e => setPortfolioLink(e.target.value)}
                         placeholder="e.g. behance.net/..."
-                        className="w-full mt-1 border border-blue-200 bg-white/70 backdrop-blur-md rounded-[24px] px-3 py-2 text-sm outline-none focus:border-[#2563EB]"
+                        className="w-full mt-1.5 border border-transparent bg-white/70 backdrop-blur-md rounded-2xl px-4 py-3.5 text-sm outline-none focus:border-blue-300 focus:bg-white transition-all shadow-inner font-medium text-slate-900"
                       />
                     </div>
                   </div>
@@ -398,61 +492,65 @@ export default function PostPage() {
               )}
 
               {type === "donation" && (
-                <div className="space-y-4 p-4 bg-[#F0FDF4] rounded-[24px]">
-                  <p className="text-sm font-bold text-[#22C55E] flex items-center gap-2"><Gift className="w-4 h-4" /> Donation Details</p>
+                <div className="space-y-6 p-5 bg-[#F0FDF4] rounded-[24px]">
+                  <p className="text-[15px] font-bold text-green-600 flex items-center gap-2"><Gift className="w-5 h-5" /> Donation Details</p>
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-4">
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Recipient</label>
-                      <select
-                        value={recipientType}
-                        onChange={e => setRecipientType(e.target.value)}
-                        className="w-full mt-1 border border-green-200 bg-white/70 backdrop-blur-md rounded-[24px] px-3 py-2 text-sm outline-none focus:border-[#22C55E]"
-                      >
-                        <option value="Any Student">Any Student</option>
-                        <option value="Graduating Student">Graduating Student</option>
-                        <option value="Charity/Organization">Charity/Organization</option>
-                        <option value="Anyone">Anyone</option>
-                      </select>
+                      <label className="text-[11px] font-bold text-green-600/70 uppercase tracking-widest ml-1">Recipient</label>
+                      <div className="flex gap-2 mt-1.5 overflow-x-auto hide-scrollbar pb-2 -mx-2 px-2">
+                        {["Any Student", "Graduating Student", "Charity/Organization", "Anyone"].map(rec => (
+                          <button
+                            key={rec}
+                            onClick={() => setRecipientType(rec)}
+                            className={`whitespace-nowrap px-4 py-2.5 rounded-2xl text-[13px] font-bold transition-all shadow-sm ${recipientType === rec ? "bg-green-600 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
+                          >
+                            {rec}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Pickup</label>
-                      <select
-                        value={pickupPreference}
-                        onChange={e => setPickupPreference(e.target.value)}
-                        className="w-full mt-1 border border-green-200 bg-white/70 backdrop-blur-md rounded-[24px] px-3 py-2 text-sm outline-none focus:border-[#22C55E]"
-                      >
-                        <option value="On Campus">On Campus</option>
-                        <option value="My Location">My Location</option>
-                        <option value="Public Meetup">Public Meetup</option>
-                      </select>
+                      <label className="text-[11px] font-bold text-green-600/70 uppercase tracking-widest ml-1">Pickup</label>
+                      <div className="flex gap-2 mt-1.5 overflow-x-auto hide-scrollbar pb-2 -mx-2 px-2">
+                        {["On Campus", "My Location", "Public Meetup"].map(pref => (
+                          <button
+                            key={pref}
+                            onClick={() => setPickupPreference(pref)}
+                            className={`whitespace-nowrap px-4 py-2.5 rounded-2xl text-[13px] font-bold transition-all shadow-sm ${pickupPreference === pref ? "bg-green-600 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
+                          >
+                            {pref}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Expiry</label>
-                    <select
-                      value={expiry}
-                      onChange={e => setExpiry(e.target.value)}
-                      className="w-full mt-1 border border-green-200 bg-white/70 backdrop-blur-md rounded-[24px] px-3 py-2 text-sm outline-none focus:border-[#22C55E]"
-                    >
-                      <option value="1 Week">1 Week</option>
-                      <option value="2 Weeks">2 Weeks</option>
-                      <option value="1 Month">1 Month</option>
-                      <option value="Until Claimed">Until Claimed</option>
-                    </select>
+                    <label className="text-[11px] font-bold text-green-600/70 uppercase tracking-widest ml-1">Expiry</label>
+                    <div className="flex gap-2 mt-1.5 overflow-x-auto hide-scrollbar pb-2 -mx-2 px-2">
+                      {["1 Week", "2 Weeks", "1 Month", "Until Claimed"].map(exp => (
+                        <button
+                          key={exp}
+                          onClick={() => setExpiry(exp)}
+                          className={`whitespace-nowrap px-4 py-2.5 rounded-2xl text-[13px] font-bold transition-all shadow-sm ${expiry === exp ? "bg-green-600 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
+                        >
+                          {exp}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Description</label>
+                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Description</label>
                 <textarea
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder="Describe the condition, specs, and any extras..."
                   rows={3}
-                  className="w-full mt-1 border border-gray-200 rounded-[24px] px-3 py-2.5 text-sm outline-none focus:border-[#22C55E] resize-none"
+                  className="w-full mt-1.5 border border-transparent rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all shadow-inner bg-gray-50 font-medium text-slate-900 resize-none placeholder:text-gray-400"
                 />
               </div>
 
@@ -465,8 +563,8 @@ export default function PostPage() {
                       key={cat}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => setCategory(cat)}
-                      className={`px-3 py-1.5 rounded-[24px] text-xs font-medium transition-colors ${
-                        category === cat ? "bg-[#22C55E] text-white" : "bg-white text-gray-600 card-shadow"
+                      className={`px-3 py-1.5 rounded-2xl text-xs font-medium transition-colors ${
+                        category === cat ? "bg-green-500 text-white" : "bg-white text-gray-600 card-shadow"
                       }`}
                     >
                       {cat}
@@ -479,13 +577,13 @@ export default function PostPage() {
               {type !== "service" && (
                 <div>
                   <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Condition</label>
-                <div className="flex gap-2 mt-2 overflow-x-auto scrollbar-hide">
+                <div className="flex flex-wrap gap-2 mt-2">
                   {CONDITIONS.map(c => (
                     <motion.button
                       key={c.value}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => setCondition(c.value)}
-                      className={`px-3 py-1.5 rounded-[24px] text-xs font-medium whitespace-nowrap flex-shrink-0 transition-colors ${
+                      className={`px-3 py-1.5 rounded-2xl text-xs font-medium whitespace-nowrap flex-shrink-0 transition-colors ${
                       condition === c.value ? "gradient-blue text-white" : "bg-white text-gray-600 card-shadow"
                       }`}
                     >
@@ -503,7 +601,7 @@ export default function PostPage() {
                         value={estimatedValue}
                         onChange={e => setEstimatedValue(Number(e.target.value))}
                         placeholder="e.g. 30000"
-                        className="w-full mt-1.5 px-4 py-3 rounded-[16px] text-sm card-shadow outline-none border border-transparent focus:border-[#22C55E]/30 bg-white"
+                        className="w-full mt-1.5 px-4 py-3 rounded-2xl text-sm card-shadow outline-none border border-transparent focus:border-green-500/30 bg-white"
                       />
                     </div>
                     <div>
@@ -513,7 +611,7 @@ export default function PostPage() {
                         value={originalPrice}
                         onChange={e => setOriginalPrice(Number(e.target.value))}
                         placeholder="Optional"
-                        className="w-full mt-1.5 px-4 py-3 rounded-[16px] text-sm card-shadow outline-none border border-transparent focus:border-[#22C55E]/30 bg-white"
+                        className="w-full mt-1.5 px-4 py-3 rounded-2xl text-sm card-shadow outline-none border border-transparent focus:border-green-500/30 bg-white"
                       />
                     </div>
                   </div>
@@ -524,7 +622,7 @@ export default function PostPage() {
                       value={purchaseYear}
                       onChange={e => setPurchaseYear(e.target.value)}
                       placeholder="e.g. 2024"
-                      className="w-full mt-1.5 px-4 py-3 rounded-[16px] text-sm card-shadow outline-none border border-transparent focus:border-[#22C55E]/30 bg-white"
+                      className="w-full mt-1.5 px-4 py-3 rounded-2xl text-sm card-shadow outline-none border border-transparent focus:border-green-500/30 bg-white"
                     />
                   </div>
                 </div>
@@ -540,7 +638,7 @@ export default function PostPage() {
                 />
                 {campus && (
                   <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                    <Check className="w-3 h-3 text-[#22C55E]" /> {campus} — {university}
+                    <Check className="w-3 h-3 text-green-500" /> {campus} — {university}
                   </p>
                 )}
               </div>
@@ -549,7 +647,7 @@ export default function PostPage() {
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setStep(3)}
                 disabled={!title.trim()}
-                className={`w-full py-3.5 rounded-[32px] font-bold text-sm ${title.trim() ? "gradient-green text-white" : "bg-gray-200 text-gray-400"}`}
+                className={`w-full py-3.5 rounded-3xl font-bold text-sm ${title.trim() ? "gradient-green text-white" : "bg-gray-200 text-gray-400"}`}
               >
                 <div className="flex items-center justify-center gap-1.5">
                   {"Next"} <ArrowRight className="w-4 h-4" />
@@ -568,8 +666,8 @@ export default function PostPage() {
               className="bg-white rounded-[36px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] space-y-6 mb-8 border border-white"
             >
               <div>
-                <h2 className="font-extrabold text-[#0F172A] text-xl tracking-tight">{type === "donation" ? "Confirm Donation" : "Trade Terms"}</h2>
-                <p className="text-gray-500 text-[13px] font-medium mt-1.5">{type === "donation" ? "Confirm and post your free item" : "What do you want in exchange?"}</p>
+                <h2 className="font-extrabold text-slate-900 text-xl tracking-tight">{type === "donation" ? "Confirm Donation" : "Trade Terms"}</h2>
+                <p className="text-gray-500 text-sm font-medium mt-1.5">{type === "donation" ? "Confirm and post your free item" : "What do you want in exchange?"}</p>
               </div>
 
               {type !== "donation" && (
@@ -583,12 +681,12 @@ export default function PostPage() {
                     onChange={e => setWantInput(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && addWantItem()}
                     placeholder="e.g. Laptop, iPhone..."
-                    className="flex-1 border border-gray-200 rounded-[24px] px-3 py-2.5 text-sm outline-none focus:border-[#22C55E]"
+                    className="flex-1 border border-gray-200 rounded-2xl px-3 py-2.5 text-sm outline-none focus:border-green-500"
                   />
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     onClick={addWantItem}
-                    className="w-10 h-10 gradient-green rounded-[24px] flex items-center justify-center"
+                    className="w-10 h-10 gradient-green rounded-2xl flex items-center justify-center"
                   >
                     <Plus className="w-4 h-4 text-white" />
                   </motion.button>
@@ -601,7 +699,7 @@ export default function PostPage() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
-                        className="flex items-center gap-1.5 bg-[#EFF6FF] text-[#2563EB] px-3 py-1 rounded-full text-xs font-medium"
+                        className="flex items-center gap-1.5 bg-[#EFF6FF] text-blue-600 px-3 py-1 rounded-full text-xs font-medium"
                       >
                         <Tag className="w-3 h-3" />
                         {item}
@@ -618,21 +716,21 @@ export default function PostPage() {
               </div>
 
               {/* M-Pesa Cash Bridge */}
-              <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-[32px] p-4">
+              <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-3xl p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-[#22C55E] rounded-[24px] flex items-center justify-center">
+                    <div className="w-8 h-8 bg-green-500 rounded-2xl flex items-center justify-center">
                       <span className="text-white text-xs font-black">M</span>
                     </div>
                     <div>
-                      <p className="font-semibold text-[#0F172A] text-sm">{"M-Pesa Top-Up"}</p>
-                      <p className="text-[10px] text-gray-500">Allow cash difference via M-Pesa</p>
+                      <p className="font-semibold text-slate-900 text-sm">{"M-Pesa Top-Up"}</p>
+                      <p className="text-xs text-gray-500">Allow cash difference via M-Pesa</p>
                     </div>
                   </div>
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setCashTopUpAllowed(!cashTopUpAllowed)}
-                    className={`w-12 h-6 rounded-full transition-colors ${cashTopUpAllowed ? "bg-[#22C55E]" : "bg-gray-200"}`}
+                    className={`w-12 h-6 rounded-full transition-colors ${cashTopUpAllowed ? "bg-green-500" : "bg-gray-200"}`}
                   >
                     <motion.div
                       animate={{ x: cashTopUpAllowed ? 24 : 2 }}
@@ -652,16 +750,16 @@ export default function PostPage() {
                       <div className="mt-3">
                         <label className="text-xs text-gray-500">Maximum top-up I'll accept (KES)</label>
                         <div className="relative mt-1">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#22C55E]">KES</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-green-500">KES</span>
                           <input
                             type="number"
                             value={cashTopUpAmount}
                             onChange={e => setCashTopUpAmount(Number(e.target.value))}
                             placeholder="e.g. 2000"
-                            className="w-full pl-12 pr-3 border border-[#BBF7D0] rounded-[24px] py-2 text-sm outline-none focus:border-[#22C55E] bg-white"
+                            className="w-full pl-12 pr-3 border border-[#BBF7D0] rounded-2xl py-2 text-sm outline-none focus:border-green-500 bg-white"
                           />
                         </div>
-                        <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1"><Lightbulb className="w-3 h-3" /> Payment via M-Pesa at meetup. Recommended for fair trades.</p>
+                        <p className="text-xs text-gray-400 mt-1 flex items-center gap-1"><Lightbulb className="w-3 h-3" /> Payment via M-Pesa at meetup. Recommended for fair trades.</p>
                       </div>
                     </motion.div>
                   )}
@@ -671,27 +769,27 @@ export default function PostPage() {
               )}
 
               {/* Preview */}
-              <div className="bg-white/70 backdrop-blur-md rounded-[32px] p-4 card-shadow">
-                <h3 className="font-semibold text-[#0F172A] text-sm mb-3 flex items-center gap-1.5"><ClipboardList className="w-4 h-4 text-gray-400" /> Listing Preview</h3>
+              <div className="bg-white/70 backdrop-blur-md rounded-3xl p-4 card-shadow">
+                <h3 className="font-semibold text-slate-900 text-sm mb-3 flex items-center gap-1.5"><ClipboardList className="w-4 h-4 text-gray-400" /> Listing Preview</h3>
                 <div className="flex gap-3">
                   {images[0] ? (
-                    <img src={images[0]} alt="" className="w-16 h-16 rounded-[24px] object-cover flex-shrink-0" />
+                    <img src={images[0]} alt="" className="w-16 h-16 rounded-2xl object-cover flex-shrink-0" />
                   ) : (
-                    <div className="w-16 h-16 rounded-[24px] bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0">
                       <Camera className="w-6 h-6 text-gray-300" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[#0F172A] text-sm">{title || "Your item"}</p>
+                    <p className="font-bold text-slate-900 text-sm">{title || "Your item"}</p>
                     <p className="text-xs text-gray-400 mt-0.5">{campus}</p>
                     <div className="flex gap-1 mt-1 flex-wrap">
                       {(type === "donation" ? ["FREE / DONATION"] : wantItems).slice(0, 2).map((w, i) => (
-                        <span key={i} className="bg-[#EFF6FF] text-[#2563EB] text-[10px] px-2 py-0.5 rounded-full">{w}</span>
+                        <span key={i} className="bg-[#EFF6FF] text-blue-600 text-xs px-2 py-0.5 rounded-full">{w}</span>
                       ))}
                     </div>
                     {type !== "donation" && cashTopUpAllowed && cashTopUpAmount > 0 && (
                       <div className="mt-1 flex items-center gap-1">
-                        <span className="bg-[#22C55E] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        <span className="bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                           + KES {cashTopUpAmount}
                         </span>
                       </div>
@@ -704,7 +802,7 @@ export default function PostPage() {
                 whileTap={{ scale: 0.97 }}
                 onClick={handleSubmit}
                 disabled={createMutation.isPending || (type !== "donation" && wantItems.length === 0)}
-                className={`w-full py-3.5 rounded-[32px] font-bold text-sm ${
+                className={`w-full py-3.5 rounded-3xl font-bold text-sm ${
                   !createMutation.isPending && (type === "donation" || wantItems.length > 0)
                     ? "gradient-green text-white"
                     : "bg-gray-200 text-gray-400"

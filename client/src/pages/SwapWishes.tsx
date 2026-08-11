@@ -30,22 +30,22 @@ function SwapChain({ cycle }: { cycle: { legs: any[]; type: string; matchScore?:
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="bg-white rounded-[28px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_12px_40px_rgb(0,0,0,0.1)] transition-all duration-300"
+      className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_12px_40px_rgb(0,0,0,0.1)] transition-all duration-300"
     >
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[12px] flex items-center justify-center shadow-md shadow-indigo-500/20">
+          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-500/20">
             <Repeat2 className="w-5 h-5 text-white" strokeWidth={2.5} />
           </div>
           <div>
-            <h3 className="font-extrabold text-[#0F172A] text-[15px] tracking-tight">
+            <h3 className="font-extrabold text-slate-900 text-[15px] tracking-tight">
               {cycle.type === "3way" ? "3-Way" : "4-Way"} Swap Cycle
             </h3>
             <p className="text-[11px] font-bold text-gray-500 tracking-wide uppercase mt-0.5">Automated Match</p>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          {cycle.matchScore && <span className="text-[10px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg font-bold border border-indigo-100/50">Fit {cycle.matchScore}%</span>}
+          {cycle.matchScore && <span className="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg font-bold border border-indigo-100/50">Fit {cycle.matchScore}%</span>}
           <div className="flex items-center gap-1.5">
              {cycle.distance && <span className="text-[9px] bg-gray-50 text-gray-600 px-2 py-0.5 rounded-full font-bold">Dist {cycle.distance}</span>}
              {cycle.trust && <span className="text-[9px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-bold">Trust {cycle.trust}%</span>}
@@ -54,7 +54,7 @@ function SwapChain({ cycle }: { cycle: { legs: any[]; type: string; matchScore?:
       </div>
 
       {/* Chain visualization */}
-      <div className="relative bg-gray-50/50 rounded-[24px] p-4 border border-gray-100/80 mb-5">
+      <div className="relative bg-gray-50/50 rounded-2xl p-4 border border-gray-100/80 mb-5">
         <div className="flex items-center gap-2 overflow-x-auto overflow-y-visible hide-scrollbar snap-x z-10 relative pt-2 pb-2">
           {cycle.legs.map((leg: any, i: number) => {
             const isOwn = user && leg.userId === user.id;
@@ -63,10 +63,10 @@ function SwapChain({ cycle }: { cycle: { legs: any[]; type: string; matchScore?:
                 <motion.div 
                   layoutId={`cycle-card-${leg.id || leg.receiveListingId}`}
                   onClick={() => { if (!isOwn) setPreviewLeg(leg) }} 
-                  className={`flex flex-col items-center bg-white p-3 rounded-[20px] min-w-[110px] shadow-sm border border-gray-100 relative ${isOwn ? 'ring-2 ring-indigo-500 ring-offset-2' : 'cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-300'}`}
+                  className={`flex flex-col items-center bg-white p-3 rounded-2xl min-w-[110px] shadow-sm border border-gray-100 relative ${isOwn ? 'ring-2 ring-indigo-500 ring-offset-2' : 'cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-300'}`}
                 >
                   {isOwn && <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[9px] font-black tracking-wider uppercase px-2.5 py-1 rounded-full z-20 shadow-sm">You</span>}
-                  <div className="w-16 h-16 rounded-[16px] overflow-hidden bg-gray-50 border border-gray-50 mb-2.5 relative flex items-center justify-center group mt-1">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-50 border border-gray-50 mb-2.5 relative flex items-center justify-center group mt-1">
                     {(() => {
                       let imgs: string[] = [];
                       if (Array.isArray(leg.images)) imgs = leg.images;
@@ -87,7 +87,7 @@ function SwapChain({ cycle }: { cycle: { legs: any[]; type: string; matchScore?:
                       );
                     })()}
                   </div>
-                  <p className="text-[12px] text-center text-[#0F172A] font-extrabold w-[95px] truncate px-1 tracking-tight" title={leg.title}>{leg.title}</p>
+                  <p className="text-[12px] text-center text-slate-900 font-extrabold w-[95px] truncate px-1 tracking-tight" title={leg.title}>{leg.title}</p>
                   <p className="text-[9px] text-gray-400 font-bold mt-0.5 truncate w-[95px] text-center"><PreviewUser uid={leg.userId} /></p>
                 </motion.div>
               
@@ -100,7 +100,7 @@ function SwapChain({ cycle }: { cycle: { legs: any[]; type: string; matchScore?:
           })}
           {/* Loop back indicator */}
           <div className="flex items-center gap-2 flex-shrink-0 pr-4">
-             <div className="w-10 h-10 rounded-[12px] bg-white border border-gray-200 flex items-center justify-center border-dashed shadow-sm">
+             <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center border-dashed shadow-sm">
                 <Repeat2 className="w-5 h-5 text-gray-400" />
              </div>
           </div>
@@ -122,7 +122,7 @@ function SwapChain({ cycle }: { cycle: { legs: any[]; type: string; matchScore?:
              
              <motion.div 
                 layoutId={`cycle-card-${previewLeg.id || previewLeg.receiveListingId}`}
-                className="w-full max-w-sm bg-white rounded-[32px] overflow-hidden shadow-2xl relative z-10 flex flex-col"
+                className="w-full max-w-sm bg-white rounded-3xl overflow-hidden shadow-2xl relative z-10 flex flex-col"
              >
                 <div className="w-full h-[400px] relative">
                    {(() => {
@@ -169,7 +169,7 @@ function ProposeCycleButton({ cycle }: { cycle: any }) {
   
   if (!hasMyListing) {
     return (
-      <button disabled className="px-4 py-2.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-gray-100 text-gray-400">
+      <button disabled className="px-4 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wide bg-gray-100 text-gray-400">
         Not a participant
       </button>
     );
@@ -220,7 +220,7 @@ function ProposeCycleButton({ cycle }: { cycle: any }) {
 
   if (isRejected) {
      return (
-        <button disabled className="px-4 py-2.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-red-50 text-red-400">
+        <button disabled className="px-4 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wide bg-red-50 text-red-400">
            Cycle Denied
         </button>
      );
@@ -229,21 +229,21 @@ function ProposeCycleButton({ cycle }: { cycle: any }) {
   if (state?.exists) {
     if (state?.status === 'accepted') {
        return (
-         <button disabled className="px-4 py-2.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-blue-50 text-blue-600 border border-blue-200">
+         <button disabled className="px-4 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wide bg-blue-50 text-blue-600 border border-blue-200">
            Cycle Accepted!
          </button>
        );
     }
     if (state?.joined?.length === cycle.legs.length) {
        return (
-         <button disabled className="px-4 py-2.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-indigo-500 text-white shadow-md shadow-indigo-500/20">
+         <button disabled className="px-4 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wide bg-indigo-500 text-white shadow-md shadow-indigo-500/20">
            Group Created
          </button>
        );
     }
     if (isJoined) {
        return (
-         <button disabled className="px-4 py-2.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-50 text-emerald-600 border border-emerald-200">
+         <button disabled className="px-4 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wide bg-emerald-50 text-emerald-600 border border-emerald-200">
            Joined - Waiting...
          </button>
        );
@@ -254,7 +254,7 @@ function ProposeCycleButton({ cycle }: { cycle: any }) {
            whileTap={{ scale: 0.95 }}
            onClick={() => handleAction('deny')}
            disabled={denyCycleMutation.isPending || newCycleRoomMutation.isPending}
-           className="px-4 py-2.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-red-50 text-red-600 hover:bg-red-100 transition-all"
+           className="px-4 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wide bg-red-50 text-red-600 hover:bg-red-100 transition-all"
          >
            Deny
          </motion.button>
@@ -262,7 +262,7 @@ function ProposeCycleButton({ cycle }: { cycle: any }) {
            whileTap={{ scale: 0.95 }}
            onClick={() => handleAction('join')}
            disabled={denyCycleMutation.isPending || newCycleRoomMutation.isPending}
-           className="px-4 py-2.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-[#2563EB] text-white shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all"
+           className="px-4 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wide bg-blue-600 text-white shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all"
          >
            Join In
          </motion.button>
@@ -275,8 +275,8 @@ function ProposeCycleButton({ cycle }: { cycle: any }) {
       whileTap={{ scale: 0.95 }}
       onClick={() => handleAction('join')}
       disabled={newCycleRoomMutation.isPending}
-      className={`px-4 py-2.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide transition-all ${
-        newCycleRoomMutation.isPending ? "bg-gray-100 text-gray-400" : "bg-[#22C55E] text-white shadow-[#22C55E]/30 shadow-lg hover:shadow-xl hover:bg-[#16a34a]"
+      className={`px-4 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wide transition-all ${
+        newCycleRoomMutation.isPending ? "bg-gray-100 text-gray-400" : "bg-green-500 text-white shadow-[#22C55E]/30 shadow-lg hover:shadow-xl hover:bg-[#16a34a]"
       }`}
     >
       {newCycleRoomMutation.isPending ? "Pending..." : "Propose Cycle"}
@@ -304,31 +304,31 @@ export function WishCard({ wish, onRespond, hideOfferButton }: { wish: any; onRe
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       whileTap={{ scale: 0.98 }}
-      className={`bg-white rounded-[32px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-50 relative overflow-hidden flex flex-col`}
+      className={`bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-50 relative overflow-hidden flex flex-col`}
     >
       <div className={`absolute top-0 bottom-0 left-0 w-[6px] ${uc.bg.replace('bg-', 'bg-').replace('-50', '-400')}`} />
       
       <div className="pl-2">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className={`text-[11px] font-extrabold px-3 py-1.5 rounded-[10px] flex items-center gap-1.5 uppercase tracking-wider ${uc.bg} ${uc.text}`}>{uc.label}</span>
+            <span className={`text-[11px] font-extrabold px-3 py-1.5 rounded-lg flex items-center gap-1.5 uppercase tracking-wider ${uc.bg} ${uc.text}`}>{uc.label}</span>
             <span className="text-[11px] text-gray-400 font-bold tracking-wider uppercase">{wish.campus?.split(",")[0] || "JKUAT"}</span>
           </div>
         </div>
         
         <div className="space-y-4">
           <div>
-            <p className="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest mb-1">{"Need"}</p>
-            <p className="font-extrabold text-[#0F172A] text-[20px] leading-tight">{wish.title}</p>
+            <p className="text-xs text-gray-400 font-extrabold uppercase tracking-widest mb-1">{"Need"}</p>
+            <p className="font-extrabold text-slate-900 text-[20px] leading-tight">{wish.title}</p>
           </div>
           <div>
-            <p className="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest mb-1.5">{"Offering"}</p>
+            <p className="text-xs text-gray-400 font-extrabold uppercase tracking-widest mb-1.5">{"Offering"}</p>
             <div className="flex flex-wrap gap-2">
               {offerItems.map((item: string, i: number) => (
                 <span key={i} className="bg-blue-50 text-blue-600 border border-blue-100 text-[12px] px-3 py-1.5 rounded-full font-bold shadow-sm">{item}</span>
               ))}
               {wish.cashTopUp > 0 && (
-                <span className="bg-[#22C55E] text-white border border-[#16A34A] text-[12px] font-extrabold px-3 py-1.5 rounded-full shadow-sm">+ KES {wish.cashTopUp.toLocaleString()}</span>
+                <span className="bg-green-500 text-white border border-[#16A34A] text-[12px] font-extrabold px-3 py-1.5 rounded-full shadow-sm">+ KES {wish.cashTopUp.toLocaleString()}</span>
               )}
             </div>
           </div>
@@ -340,7 +340,7 @@ export function WishCard({ wish, onRespond, hideOfferButton }: { wish: any; onRe
               <span className="text-white text-[11px] font-black">{(wish.profiles?.name || wish.user?.name || "U").charAt(0).toUpperCase()}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[13px] font-extrabold text-[#0F172A]">@{(() => {
+              <span className="text-sm font-extrabold text-slate-900">@{(() => {
                     const n = wish.profiles?.name;
                     try {
                       const desc = JSON.parse(wish.profiles?.university || "{}");
@@ -350,7 +350,7 @@ export function WishCard({ wish, onRespond, hideOfferButton }: { wish: any; onRe
                     }
                   })()}</span>
               {wish.responseCount > 0 && (
-                <span className="text-[11px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-[8px] font-bold">
+                <span className="text-[11px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-lg font-bold">
                   {wish.responseCount} offers
                 </span>
               )}
@@ -368,7 +368,7 @@ export function WishCard({ wish, onRespond, hideOfferButton }: { wish: any; onRe
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={onRespond}
-                className="bg-[#22C55E] text-white text-[13px] font-extrabold px-5 py-2 rounded-[20px] shadow-[0_4px_15px_rgba(34,197,94,0.3)] hover:scale-105 transition-transform"
+                className="bg-green-500 text-white text-sm font-extrabold px-5 py-2 rounded-2xl shadow-[0_4px_15px_rgba(34,197,94,0.3)] hover:scale-105 transition-transform"
               >
                 Offer
               </motion.button>
@@ -423,7 +423,7 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm z-50 flex items-end justify-center"
+      className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-end justify-center"
       onClick={onClose}
     >
       <motion.div
@@ -439,7 +439,7 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
         </button>
 
         <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
-        <h3 className="font-extrabold text-[#0F172A] text-2xl tracking-tight">Post a Swap Wish</h3>
+        <h3 className="font-extrabold text-slate-900 text-2xl tracking-tight">Post a Swap Wish</h3>
         <p className="text-gray-500 text-sm mt-1">Tell the community what you're looking for.</p>
 
         <div className="mt-6 space-y-4">
@@ -449,7 +449,7 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
               value={requestedItem}
               onChange={e => setRequestedItem(e.target.value)}
               placeholder="e.g. iPhone 11, Laptop..."
-              className="w-full mt-1.5 bg-gray-50 border border-transparent rounded-[16px] px-4 py-3.5 text-[15px] outline-none focus:border-[#22C55E] focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all font-medium text-[#0F172A] placeholder:text-gray-400"
+              className="w-full mt-1.5 bg-gray-50 border border-transparent rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all font-medium text-slate-900 placeholder:text-gray-400"
             />
           </div>
 
@@ -466,7 +466,7 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
                   }
                 }}
                 placeholder="Add items you can offer..."
-                className="flex-1 bg-gray-50 border border-transparent rounded-[16px] px-4 py-3.5 text-[15px] outline-none focus:border-[#22C55E] focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all font-medium text-[#0F172A] placeholder:text-gray-400"
+                className="flex-1 bg-gray-50 border border-transparent rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all font-medium text-slate-900 placeholder:text-gray-400"
               />
               <motion.button
                 whileTap={{ scale: 0.9 }}
@@ -476,7 +476,7 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
                     setOfferingInput("");
                   }
                 }}
-                className="w-14 h-14 bg-[#22C55E] rounded-[16px] flex items-center justify-center shadow-sm shadow-[#22C55E]/20"
+                className="w-14 h-14 bg-green-500 rounded-2xl flex items-center justify-center shadow-sm shadow-[#22C55E]/20"
               >
                 <Plus className="w-5 h-5 text-white" />
               </motion.button>
@@ -487,7 +487,7 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   key={i} 
-                  className="flex items-center gap-1.5 bg-[#F0FDF4] border border-[#BBF7D0] text-[#166534] font-semibold text-[13px] px-3 py-1.5 rounded-full shadow-sm"
+                  className="flex items-center gap-1.5 bg-[#F0FDF4] border border-[#BBF7D0] text-[#166534] font-semibold text-sm px-3 py-1.5 rounded-full shadow-sm"
                 >
                   {item}
                   <button onClick={() => setOfferingItems(prev => prev.filter((_, idx) => idx !== i))} className="hover:bg-[#BBF7D0] rounded-full p-0.5 transition-colors">
@@ -500,13 +500,13 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
 
           <div>
             <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">Urgency</label>
-            <div className="flex gap-2 mt-1.5 bg-gray-50 p-1 rounded-[20px] border border-gray-100">
+            <div className="flex gap-2 mt-1.5 bg-gray-50 p-1 rounded-2xl border border-gray-100">
               {(["low", "medium", "high"] as const).map(u => (
                 <button
                   key={u}
                   onClick={() => setUrgency(u)}
-                  className={`flex-1 py-2.5 rounded-[16px] text-[13px] font-bold capitalize transition-all duration-200 ${
-                    urgency === u ? "bg-white text-[#0F172A] shadow-sm ring-1 ring-gray-200/50" : "text-gray-400 hover:text-gray-600"
+                  className={`flex-1 py-2.5 rounded-2xl text-sm font-bold capitalize transition-all duration-200 ${
+                    urgency === u ? "bg-white text-slate-900 shadow-sm ring-1 ring-gray-200/50" : "text-gray-400 hover:text-gray-600"
                   }`}
                 >
                   {u === "high" ? <><Flame className={`w-3.5 h-3.5 inline mr-1 ${urgency === 'high' ? 'text-red-500' : ''}`} /> Urgent</> : 
@@ -523,7 +523,7 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
               type="date"
               value={expiryDate}
               onChange={e => setExpiryDate(e.target.value)}
-              className="w-full mt-1.5 bg-gray-50 border border-transparent rounded-[16px] px-4 py-3.5 text-[15px] outline-none focus:border-[#22C55E] focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all font-medium text-[#0F172A] text-gray-500 block appearance-none"
+              className="w-full mt-1.5 bg-gray-50 border border-transparent rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all font-medium text-slate-900 text-gray-500 block appearance-none"
             />
           </div>
         </div>
@@ -532,7 +532,7 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
           whileTap={{ scale: 0.97 }}
           onClick={handleSubmit}
           disabled={createMutation.isPending || !requestedItem.trim()}
-          className="w-full mt-6 bg-[#22C55E] text-white font-extrabold text-[15px] py-4 rounded-[16px] shadow-[0_8px_20px_rgba(34,197,94,0.25)] hover:shadow-[0_12px_25px_rgba(34,197,94,0.35)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          className="w-full mt-6 bg-green-500 text-white font-extrabold text-[15px] py-4 rounded-2xl shadow-[0_8px_20px_rgba(34,197,94,0.25)] hover:shadow-[0_12px_25px_rgba(34,197,94,0.35)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
         >
           {createMutation.isPending ? "Posting..." : "Post Wish"}
         </motion.button>
@@ -591,9 +591,9 @@ export default function SwapWishesPage() {
       <div className="page-header px-4 py-3">
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => navigate("/")} className="w-8 h-8 flex items-center justify-center">
-            <ChevronLeft className="w-5 h-5 text-[#0F172A]" />
+            <ChevronLeft className="w-5 h-5 text-slate-900" />
           </button>
-          <h1 className="font-bold text-[#0F172A] text-base flex items-center gap-1.5">
+          <h1 className="font-bold text-slate-900 text-base flex items-center gap-1.5">
             <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" /> {"Swishes"}
           </h1>
           <motion.button
@@ -615,7 +615,7 @@ export default function SwapWishesPage() {
               key={tab.id}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 py-2 rounded-[24px] text-xs font-semibold transition-colors ${
+              className={`flex-1 py-2 rounded-2xl text-xs font-semibold transition-colors ${
                 activeTab === tab.id ? "gradient-green text-white" : "bg-gray-100 text-gray-600"
               }`}
             >
@@ -638,9 +638,9 @@ export default function SwapWishesPage() {
               {wishesQuery.isLoading ? (
                 <div className="space-y-3">
                   {[1, 2, 3].map(i => (
-                    <div key={`sk-wish-${i}`} className="bg-white rounded-[24px] p-4 border border-gray-100 shadow-sm animate-pulse">
+                    <div key={`sk-wish-${i}`} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm animate-pulse">
                       <div className="flex gap-3">
-                        <div className="w-16 h-16 bg-gray-100 rounded-[16px]"></div>
+                        <div className="w-16 h-16 bg-gray-100 rounded-2xl"></div>
                         <div className="flex-1 space-y-2 py-1">
                           <div className="w-3/4 h-4 bg-gray-100 rounded-full"></div>
                           <div className="w-1/2 h-3 bg-gray-100 rounded-full"></div>
@@ -680,12 +680,12 @@ export default function SwapWishesPage() {
               {(wishesQuery.data?.items || []).length === 0 && (
                 <div className="text-center py-12">
                   <Star className="w-10 h-10 mx-auto text-yellow-400 fill-yellow-400 mb-3" />
-                  <p className="font-semibold text-[#0F172A]">No wishes yet</p>
+                  <p className="font-semibold text-slate-900">No wishes yet</p>
                   <p className="text-gray-400 text-sm mt-1">Be the first to post a wish!</p>
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setShowCreate(true)}
-                    className="mt-4 gradient-green text-white font-semibold px-6 py-2.5 rounded-[24px] text-sm"
+                    className="mt-4 gradient-green text-white font-semibold px-6 py-2.5 rounded-2xl text-sm"
                   >
                     Post a Wish
                   </motion.button>
@@ -703,7 +703,7 @@ export default function SwapWishesPage() {
               {cyclesQuery.isLoading ? (
                 <div className="space-y-4">
                   {[1, 2].map(i => (
-                    <div key={`sk-cycle-${i}`} className="bg-white rounded-[32px] p-5 shadow-sm border border-gray-100 animate-pulse">
+                    <div key={`sk-cycle-${i}`} className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 animate-pulse">
                       <div className="w-1/3 h-5 bg-gray-100 rounded-full mb-4 mx-auto"></div>
                       <div className="flex justify-between items-center px-4">
                         <div className="w-16 h-16 bg-gray-100 rounded-full"></div>
@@ -722,7 +722,7 @@ export default function SwapWishesPage() {
               ) : (
                 <div className="text-center py-12">
                   <Repeat className="w-10 h-10 mx-auto text-gray-400 mb-3" />
-                  <p className="font-semibold text-[#0F172A]">No cycles found yet</p>
+                  <p className="font-semibold text-slate-900">No cycles found yet</p>
                   <p className="text-gray-400 text-sm mt-1">Add more listings to enable multi-way swaps</p>
                 </div>
               )}

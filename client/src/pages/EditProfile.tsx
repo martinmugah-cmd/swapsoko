@@ -102,9 +102,9 @@ export default function EditProfilePage() {
       <div className="min-h-[100dvh] bg-[#F8FAFC]">
         <div className="h-48 bg-gray-200 animate-pulse w-full"></div>
         <div className="max-w-[800px] mx-auto px-4 -mt-12 relative z-10">
-          <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 mb-6 animate-pulse">
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-6 animate-pulse">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-[100px] h-[100px] rounded-[32px] bg-gray-200 border-[4px] border-[#F8FAFC]"></div>
+              <div className="w-[100px] h-[100px] rounded-3xl bg-gray-200 border-[4px] border-[#F8FAFC]"></div>
               <div className="w-32 h-6 bg-gray-200 rounded-full"></div>
               <div className="w-24 h-4 bg-gray-200 rounded-full"></div>
             </div>
@@ -459,17 +459,17 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
   return (
     <div className="min-h-[100dvh] bg-[#F8FAFC] pb-24">
       {/* Header */}
-      <div className="bg-[#0F172A] px-5 pt-4 pb-12 relative overflow-hidden rounded-b-[40px] shadow-[0_10px_40px_rgba(15,23,42,0.15)]">
+      <div className="bg-slate-900 px-5 pt-4 pb-12 relative overflow-hidden rounded-b-[40px] shadow-[0_10px_40px_rgba(15,23,42,0.15)]">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-[#22C55E] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#2563EB] rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-0 right-0 w-40 h-40 bg-green-500 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-600 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
         </div>
         <div className="relative z-10 flex items-center justify-between">
           <button onClick={() => navigate("/profile")} className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors">
             <ChevronLeft className="w-5 h-5" />
           </button>
           <h1 className="font-bold text-white text-lg">Edit Profile</h1>
-          <button onClick={handleSave} disabled={loading || !hasChanges} className={`px-4 py-1.5 rounded-full font-bold text-xs tracking-wide transition-colors ${hasChanges ? 'text-[#22C55E] bg-white/10 hover:bg-white/20' : 'text-gray-400 bg-white/5 cursor-not-allowed'}`}>
+          <button onClick={handleSave} disabled={loading || !hasChanges} className={`px-4 py-1.5 rounded-full font-bold text-xs tracking-wide transition-colors ${hasChanges ? 'text-green-500 bg-white/10 hover:bg-white/20' : 'text-gray-400 bg-white/5 cursor-not-allowed'}`}>
             {loading ? "..." : (hasChanges ? "Save" : "Saved")}
           </button>
         </div>
@@ -478,7 +478,7 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
       <div className="max-w-2xl mx-auto px-4 -mt-8 relative z-20 space-y-5">
         
         {/* Profile Summary */}
-        <div className="bg-white/70 backdrop-blur-md rounded-[24px] p-6 card-shadow text-center relative overflow-hidden">
+        <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 card-shadow text-center relative overflow-hidden">
           <div className="w-24 h-24 mx-auto rounded-full bg-gray-100 mb-4 relative group overflow-hidden border-4 border-white shadow-md">
             {avatarUrl ? (
               <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera w-8 h-8"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>`; }} />
@@ -500,22 +500,22 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
               />
             </label>
           </div>
-          <h2 className="text-xl font-bold text-[#0F172A]">{firstName} {lastName}</h2>
+          <h2 className="text-xl font-bold text-slate-900">{firstName} {lastName}</h2>
           <div className="flex items-center gap-1 justify-center mb-2 mt-0.5">
             <p className="text-sm text-gray-500">@{username}</p>
             {isStudentVerified && <GraduationCap className="w-3.5 h-3.5 text-blue-500" />}
           </div>
           <div className="flex justify-center mt-1">
             {isOther ? (
-              <span className="trust-badge py-0.5 px-2 text-[10px] bg-gray-100 text-gray-500 border border-gray-200 flex items-center gap-1 rounded-full font-bold w-max">
+              <span className="trust-badge py-0.5 px-2 text-xs bg-gray-100 text-gray-500 border border-gray-200 flex items-center gap-1 rounded-full font-bold w-max">
                 <CheckCircle className="w-3 h-3" /> Not a student
               </span>
             ) : isStudentVerified ? (
-              <span className="trust-badge-green trust-badge py-0.5 px-2 text-[10px] flex items-center gap-1 w-max">
+              <span className="trust-badge-green trust-badge py-0.5 px-2 text-xs flex items-center gap-1 w-max">
                 <CheckCircle className="w-3 h-3" /> Verified Student
               </span>
             ) : (
-              <span className="trust-badge py-0.5 px-2 text-[10px] bg-orange-50 text-orange-600 border border-orange-200 flex items-center gap-1 rounded-full font-bold w-max">
+              <span className="trust-badge py-0.5 px-2 text-xs bg-orange-50 text-orange-600 border border-orange-200 flex items-center gap-1 rounded-full font-bold w-max">
                 <AlertCircle className="w-3 h-3" /> Student Not Verified
               </span>
             )}
@@ -525,11 +525,11 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
             <div className="mt-4 bg-gray-50 rounded-xl p-3 text-left">
               <div className="flex justify-between items-center mb-1 text-xs font-semibold">
                 <span className="text-gray-600">Profile Completion</span>
-                <span className="text-[#2563EB]">{profileComplete}%</span>
+                <span className="text-blue-600">{profileComplete}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-1.5">
                  <motion.div 
-                   className="h-full bg-[#2563EB] rounded-full"
+                   className="h-full bg-blue-600 rounded-full"
                    animate={{ width: `${profileComplete}%` }}
                  />
               </div>
@@ -538,17 +538,17 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
         </div>
 
         {/* Verification Card */}
-        <div className="bg-white/70 backdrop-blur-md rounded-[24px] p-5 card-shadow">
-          <h3 className="font-bold text-[#0F172A] mb-3 flex items-center gap-2"><Shield className="w-4 h-4 text-[#22C55E]" /> Verifications</h3>
+        <div className="bg-white/70 backdrop-blur-md rounded-2xl p-5 card-shadow">
+          <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2"><Shield className="w-4 h-4 text-green-500" /> Verifications</h3>
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm text-gray-700">
-              <CheckCircle className="w-4 h-4 text-[#22C55E]" /> Email Verified
+              <CheckCircle className="w-4 h-4 text-green-500" /> Email Verified
             </div>
             <div className="flex items-center gap-2 text-sm w-full">
               {university === "Other / Not a student" ? (
                 <><CheckCircle className="w-4 h-4 text-gray-400" /> <span className="text-gray-600">Not a student</span></>
               ) : isStudentVerified ? (
-                <><CheckCircle className="w-4 h-4 text-[#22C55E]" /> <span className="text-gray-700">Student Verified</span></>
+                <><CheckCircle className="w-4 h-4 text-green-500" /> <span className="text-gray-700">Student Verified</span></>
               ) : (
                 <div className="flex flex-col w-full gap-2">
                   <div className="flex items-center justify-between w-full">
@@ -570,7 +570,7 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
                            {verifyingOtp ? "..." : "Verify"}
                          </button>
                        </div>
-                       <button onClick={() => setOtpSent(false)} className="text-[10px] text-orange-400 mt-2 hover:underline">Cancel / Change Email</button>
+                       <button onClick={() => setOtpSent(false)} className="text-xs text-orange-400 mt-2 hover:underline">Cancel / Change Email</button>
                     </div>
                   )}
                 </div>
@@ -581,57 +581,57 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
 
         {/* Stats Card */}
         <div className="grid grid-cols-1 gap-3">
-          <div className="bg-white p-4 rounded-[20px] card-shadow text-center">
+          <div className="bg-white p-4 rounded-2xl card-shadow text-center">
             <p className="text-xs text-gray-500 font-semibold uppercase">Completed Swaps</p>
-            <p className="text-2xl font-black text-[#0F172A] mt-1">{profile?.completedSwaps || 0}</p>
+            <p className="text-2xl font-black text-slate-900 mt-1">{profile?.completedSwaps || 0}</p>
           </div>
         </div>
 
         {/* Personal Info */}
-        <div className="bg-white/70 backdrop-blur-md rounded-[32px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
-          <h3 className="font-extrabold text-[#0F172A] pb-2 border-b border-gray-100">Personal Information</h3>
+        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
+          <h3 className="font-extrabold text-slate-900 pb-2 border-b border-gray-100">Personal Information</h3>
           
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">First Name</label>
-              <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-[#0F172A] focus:bg-white focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all" />
+              <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">First Name</label>
+              <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all" />
             </div>
             <div>
-              <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Last Name</label>
-              <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-[#0F172A] focus:bg-white focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all" />
+              <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Last Name</label>
+              <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all" />
             </div>
           </div>
 
           <div>
-            <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Username</label>
-            <div className="flex items-center mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 focus-within:bg-white focus-within:border-[#22C55E] focus-within:ring-2 focus-within:ring-[#22C55E]/20 transition-all">
+            <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Username</label>
+            <div className="flex items-center mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 focus-within:bg-white focus-within:border-green-500 focus-within:ring-2 focus-within:ring-[#22C55E]/20 transition-all">
               <span className="text-gray-400 font-bold mr-1.5">@</span>
-              <input type="text" value={username} onChange={e => setUsername(e.target.value)} className="w-full text-sm font-bold text-[#0F172A] outline-none bg-transparent" />
+              <input type="text" value={username} onChange={e => setUsername(e.target.value)} className="w-full text-sm font-bold text-slate-900 outline-none bg-transparent" />
             </div>
           </div>
 
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Bio</label>
-              <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{bio.length}/150</span>
+              <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Bio</label>
+              <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{bio.length}/150</span>
             </div>
-            <textarea maxLength={150} value={bio} onChange={e => setBio(e.target.value)} className="w-full bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-[#0F172A] focus:bg-white focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all resize-none" rows={3} placeholder="Tell the community about yourself..." />
+            <textarea maxLength={150} value={bio} onChange={e => setBio(e.target.value)} className="w-full bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all resize-none" rows={3} placeholder="Tell the community about yourself..." />
           </div>
 
           <div>
-            <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Email</label>
+            <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Email</label>
             <input type="email" disabled value={user.email} className="w-full mt-1.5 bg-gray-100 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-400 outline-none" />
           </div>
         </div>
 
         {/* Education */}
         {university !== "Other / Not a student" && (
-          <div className="bg-white/70 backdrop-blur-md rounded-[32px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
-            <h3 className="font-extrabold text-[#0F172A] pb-2 border-b border-gray-100">Education</h3>
+          <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
+            <h3 className="font-extrabold text-slate-900 pb-2 border-b border-gray-100">Education</h3>
             
             <div>
-              <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">University</label>
-              <div className="w-full mt-1.5 bg-white border border-[#22C55E] ring-1 ring-[#22C55E]/20 rounded-xl px-4 py-2.5 text-sm font-bold text-[#0F172A] flex items-center justify-between">
+              <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">University</label>
+              <div className="w-full mt-1.5 bg-white border border-green-500 ring-1 ring-[#22C55E]/20 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 flex items-center justify-between">
                 <span>{university}</span>
               </div>
             </div>
@@ -639,36 +639,36 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
             {university && (
               <div className="space-y-4">
                 <div>
-                  <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Campus</label>
-                  <select value={campus} onChange={e => setCampus(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-[#0F172A] focus:bg-white focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all appearance-none">
+                  <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Campus</label>
+                  <select value={campus} onChange={e => setCampus(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all appearance-none">
                     <option value="">Select Campus</option>
                     {UNIVERSITIES.find(u => u.name === university)?.campuses.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Course</label>
-                  <input type="text" value={course} onChange={e => setCourse(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-[#0F172A] focus:bg-white focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all" placeholder="e.g. Computer Science" />
+                  <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Course</label>
+                  <input type="text" value={course} onChange={e => setCourse(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all" placeholder="e.g. Computer Science" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Year of Study</label>
-                    <select value={yearOfStudy} onChange={e => setYearOfStudy(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-[#0F172A] focus:bg-white focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all appearance-none">
+                    <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Year of Study</label>
+                    <select value={yearOfStudy} onChange={e => setYearOfStudy(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all appearance-none">
                       <option value="">Select Year</option>
                       {[1, 2, 3, 4, 5, 6].map(y => <option key={y} value={y}>Year {y}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Graduation Year</label>
-                    <select value={graduationYear} onChange={e => setGraduationYear(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-[#0F172A] focus:bg-white focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all appearance-none">
+                    <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Graduation Year</label>
+                    <select value={graduationYear} onChange={e => setGraduationYear(e.target.value)} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-[#22C55E]/20 outline-none transition-all appearance-none">
                       <option value="">Select Year</option>
                       {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(y => <option key={y} value={y}>{y}</option>)}
                     </select>
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Student Email</label>
+                  <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Student Email</label>
                   <input type="email" disabled value={studentEmail} className="w-full mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-400 outline-none cursor-not-allowed" />
-                  <p className="text-[10px] text-gray-400 mt-1">Bound to your verified account domain.</p>
+                  <p className="text-xs text-gray-400 mt-1">Bound to your verified account domain.</p>
                 </div>
               </div>
             )}
@@ -676,13 +676,13 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
         )}
 
         {/* Location */}
-        <div className="bg-white/70 backdrop-blur-md rounded-[32px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
-          <h3 className="font-extrabold text-[#0F172A] pb-2 border-b border-gray-100">Location</h3>
+        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
+          <h3 className="font-extrabold text-slate-900 pb-2 border-b border-gray-100">Location</h3>
           
           <div>
-            <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Current Location</label>
+            <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Current Location</label>
             <div className="flex items-center justify-between mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5">
-              <span className="text-[#0F172A] text-sm font-bold truncate pr-2">
+              <span className="text-slate-900 text-sm font-bold truncate pr-2">
                  {(() => {
                     try {
                       const l = JSON.parse(locationName);
@@ -693,7 +693,7 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
                     }
                  })()}
               </span>
-              <button onClick={handleLocationUpdate} className="text-[#2563EB] text-[10px] font-extrabold uppercase tracking-wide flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-full hover:bg-blue-100 transition-colors shrink-0">
+              <button onClick={handleLocationUpdate} className="text-blue-600 text-xs font-extrabold uppercase tracking-wide flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-full hover:bg-blue-100 transition-colors shrink-0">
                 <MapPin className="w-3 h-3" /> Update
               </button>
             </div>
@@ -701,26 +701,26 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
           
           <div className="pt-2">
             <div className="flex justify-between items-center mb-3">
-              <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Search Radius</label>
-              <span className="text-sm font-black text-[#22C55E] bg-green-50 px-3 py-1 rounded-full">{radius} KM</span>
+              <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Search Radius</label>
+              <span className="text-sm font-black text-green-500 bg-green-50 px-3 py-1 rounded-full">{radius} KM</span>
             </div>
             <input type="range" min={5} max={50} step={5} value={radius} onChange={e => setRadius(parseInt(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#22C55E]" />
-            <div className="flex justify-between text-[10px] font-extrabold text-gray-400 mt-2">
+            <div className="flex justify-between text-xs font-extrabold text-gray-400 mt-2">
               <span>5 KM</span><span>50 KM</span>
             </div>
           </div>
         </div>
 
         {/* Interests */}
-        <div className="bg-white/70 backdrop-blur-md rounded-[32px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white">
-          <h3 className="font-extrabold text-[#0F172A] pb-3 border-b border-gray-100 mb-4">Interests</h3>
+        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white">
+          <h3 className="font-extrabold text-slate-900 pb-3 border-b border-gray-100 mb-4">Interests</h3>
           <div className="flex flex-wrap gap-2">
             {ALL_INTERESTS.map(interest => {
               const selected = interests.has(interest.id);
               return (
                 <button
                   key={interest.id} onClick={() => toggleInterest(interest.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-[16px] text-xs font-bold transition-all ${
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-bold transition-all ${
                     selected ? `${interest.color} shadow-sm scale-105 border-2 border-transparent` : 'bg-gray-50 border-2 border-gray-100 text-gray-500 hover:bg-gray-100'
                   }`}
                 >
@@ -733,13 +733,13 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
         </div>
 
         {/* Preferences & Privacy */}
-        <div className="bg-white/70 backdrop-blur-md rounded-[32px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
-          <h3 className="font-extrabold text-[#0F172A] pb-2 border-b border-gray-100">Preferences & Privacy</h3>
+        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
+          <h3 className="font-extrabold text-slate-900 pb-2 border-b border-gray-100">Preferences & Privacy</h3>
           
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#0F172A] font-bold">Profile Visibility</span>
-              <select value={privacy.visibility} onChange={e => setPrivacy({...privacy, visibility: e.target.value})} className="text-xs font-extrabold uppercase tracking-wide text-[#2563EB] bg-blue-50 px-4 py-2 rounded-[16px] outline-none appearance-none cursor-pointer">
+              <span className="text-sm text-slate-900 font-bold">Profile Visibility</span>
+              <select value={privacy.visibility} onChange={e => setPrivacy({...privacy, visibility: e.target.value})} className="text-xs font-extrabold uppercase tracking-wide text-blue-600 bg-blue-50 px-4 py-2 rounded-2xl outline-none appearance-none cursor-pointer">
                 <option>Public</option>
                 <option>SwapSoko Users</option>
               </select>
@@ -753,16 +753,16 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
             <ToggleRow label="Push Notifications" checked={prefs.notifications} onChange={c => setPrefs({...prefs, notifications: c})} />
           </div>
         </div>        {/* Account */}
-        <div className="bg-white/70 backdrop-blur-md rounded-[32px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-2">
-          <h3 className="font-extrabold text-[#0F172A] pb-2 border-b border-gray-100 mb-2">Account</h3>
+        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-2">
+          <h3 className="font-extrabold text-slate-900 pb-2 border-b border-gray-100 mb-2">Account</h3>
           
-          <button onClick={() => setShowPasswordModal(true)} className="w-full flex items-center gap-3 p-3 rounded-[16px] bg-gray-50/50 border border-gray-100 hover:bg-white hover:border-gray-200 text-[#0F172A] transition-all text-sm font-bold">
+          <button onClick={() => setShowPasswordModal(true)} className="w-full flex items-center gap-3 p-3 rounded-2xl bg-gray-50/50 border border-gray-100 hover:bg-white hover:border-gray-200 text-slate-900 transition-all text-sm font-bold">
             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
               <Lock className="w-4 h-4 text-gray-500" />
             </div>
             Change Password
           </button>
-          <button onClick={() => setShowEmailModal(true)} className="w-full flex items-center gap-3 p-3 rounded-[16px] bg-gray-50/50 border border-gray-100 hover:bg-white hover:border-gray-200 text-[#0F172A] transition-all text-sm font-bold">
+          <button onClick={() => setShowEmailModal(true)} className="w-full flex items-center gap-3 p-3 rounded-2xl bg-gray-50/50 border border-gray-100 hover:bg-white hover:border-gray-200 text-slate-900 transition-all text-sm font-bold">
             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
               <Mail className="w-4 h-4 text-gray-500" />
             </div>
@@ -770,7 +770,7 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
           </button>
           
           <div className="pt-2">
-            <button onClick={logout} className="w-full flex items-center gap-3 p-3 rounded-[16px] bg-red-50 hover:bg-red-100 text-red-600 transition-all text-sm font-extrabold">
+            <button onClick={logout} className="w-full flex items-center gap-3 p-3 rounded-2xl bg-red-50 hover:bg-red-100 text-red-600 transition-all text-sm font-extrabold">
               <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
                 <LogOut className="w-4 h-4 text-red-500" />
               </div>
@@ -797,9 +797,9 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
 
       {showPasswordModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-white/70 backdrop-blur-md rounded-[24px] p-6 w-full max-w-sm">
-            <h3 className="font-bold text-[#0F172A] mb-4">Change Password</h3>
-            <input type="password" placeholder="New Password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#22C55E] mb-4" />
+          <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 w-full max-w-sm">
+            <h3 className="font-bold text-slate-900 mb-4">Change Password</h3>
+            <input type="password" placeholder="New Password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-green-500 mb-4" />
             <div className="flex gap-3">
               <button onClick={() => setShowPasswordModal(false)} className="flex-1 py-3 text-gray-500 font-bold bg-gray-100 rounded-xl">Cancel</button>
               <button onClick={handleChangePassword} className="flex-1 py-3 text-white font-bold gradient-green rounded-xl">Update</button>
@@ -810,9 +810,9 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
 
       {showEmailModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-white/70 backdrop-blur-md rounded-[24px] p-6 w-full max-w-sm">
-            <h3 className="font-bold text-[#0F172A] mb-4">Change Email</h3>
-            <input type="email" placeholder="New Email Address" value={newEmail} onChange={e => setNewEmail(e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#22C55E] mb-4" />
+          <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 w-full max-w-sm">
+            <h3 className="font-bold text-slate-900 mb-4">Change Email</h3>
+            <input type="email" placeholder="New Email Address" value={newEmail} onChange={e => setNewEmail(e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-green-500 mb-4" />
             <div className="flex gap-3">
               <button onClick={() => setShowEmailModal(false)} className="flex-1 py-3 text-gray-500 font-bold bg-gray-100 rounded-xl">Cancel</button>
               <button onClick={handleChangeEmail} className="flex-1 py-3 text-white font-bold gradient-green rounded-xl">Update</button>
@@ -830,7 +830,7 @@ function ToggleRow({ label, checked, onChange }: { label: string, checked: boole
       <span className="text-sm text-gray-700">{label}</span>
       <button 
         onClick={() => onChange(!checked)}
-        className={`w-11 h-6 rounded-full relative transition-colors ${checked ? 'bg-[#22C55E]' : 'bg-gray-200'}`}
+        className={`w-11 h-6 rounded-full relative transition-colors ${checked ? 'bg-green-500' : 'bg-gray-200'}`}
       >
         <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${checked ? 'left-6' : 'left-1'}`} />
       </button>

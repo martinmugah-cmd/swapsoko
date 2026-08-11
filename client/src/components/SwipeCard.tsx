@@ -62,7 +62,7 @@ export function SwipeCard({ listing, onSwipeRight, onSwipeLeft, onSave, isTop = 
       whileDrag={{ cursor: "grabbing" }}
       initial={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 10 }}
     >
-      <div className="relative w-full h-full rounded-[32px] overflow-hidden card-shadow-lg bg-white">
+      <div className="relative w-full h-full rounded-3xl overflow-hidden card-shadow-lg bg-white">
         {/* Image */}
         <div className="relative h-[60%] overflow-hidden">
           <img
@@ -76,7 +76,7 @@ export function SwipeCard({ listing, onSwipeRight, onSwipeLeft, onSave, isTop = 
 
           {/* SWAP indicator (right swipe) */}
           <motion.div
-            className="absolute top-6 left-6 px-4 py-2 rounded-[24px] border-3 border-swap-green bg-swap-green/20 glass"
+            className="absolute top-6 left-6 px-4 py-2 rounded-2xl border-3 border-swap-green bg-swap-green/20 glass"
             style={{ opacity: swapOpacity }}
           >
             <span className="text-swap-green font-bold text-xl tracking-wider">SWAP</span>
@@ -84,7 +84,7 @@ export function SwipeCard({ listing, onSwipeRight, onSwipeLeft, onSave, isTop = 
 
           {/* SKIP indicator (left swipe) */}
           <motion.div
-            className="absolute top-6 right-6 px-4 py-2 rounded-[24px] border-3 border-red-500 bg-red-500/20 glass"
+            className="absolute top-6 right-6 px-4 py-2 rounded-2xl border-3 border-red-500 bg-red-500/20 glass"
             style={{ opacity: skipOpacity }}
           >
             <span className="text-red-500 font-bold text-xl tracking-wider">SKIP</span>
@@ -129,15 +129,19 @@ export function SwipeCard({ listing, onSwipeRight, onSwipeLeft, onSave, isTop = 
 
           <div className="flex items-center justify-between pt-3 border-t border-gray-100">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-swap-green/20 flex items-center justify-center text-xs font-bold text-swap-green">
-                {listing.ownerName.charAt(0)}
-              </div>
+              {listing.ownerAvatar ? (
+                <img src={listing.ownerAvatar} alt={listing.ownerName} className="w-7 h-7 rounded-full object-cover" />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-swap-green/20 flex items-center justify-center text-xs font-bold text-swap-green">
+                  {listing.ownerName.charAt(0)}
+                </div>
+              )}
               <div>
                 <p className="text-xs font-medium text-dark flex items-center gap-1">
                   {listing.ownerName}
                   {listing.isStudentVerified && <GraduationCap className="w-3 h-3 text-[#3B82F6]" />}
                 </p>
-                <p className="text-[10px] text-gray-500">{listing.campus}</p>
+                <p className="text-xs text-gray-500">{listing.campus}</p>
               </div>
             </div>
 

@@ -13,9 +13,9 @@ export function DashboardLayoutSkeleton() {
 
         {/* Menu items */}
         <div className="space-y-2 px-2">
-          <Skeleton className="h-10 w-full rounded-[16px]" />
-          <Skeleton className="h-10 w-full rounded-[16px]" />
-          <Skeleton className="h-10 w-full rounded-[16px]" />
+          <Skeleton className="h-10 w-full rounded-2xl" />
+          <Skeleton className="h-10 w-full rounded-2xl" />
+          <Skeleton className="h-10 w-full rounded-2xl" />
         </div>
 
         {/* User profile area at bottom */}
@@ -33,13 +33,13 @@ export function DashboardLayoutSkeleton() {
       {/* Main content skeleton */}
       <div className="flex-1 p-4 space-y-4">
         {/* Content blocks */}
-        <Skeleton className="h-12 w-48 rounded-[16px]" />
+        <Skeleton className="h-12 w-48 rounded-2xl" />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Skeleton className="h-32 rounded-[24px]" />
-          <Skeleton className="h-32 rounded-[24px]" />
-          <Skeleton className="h-32 rounded-[24px]" />
+          <Skeleton className="h-32 rounded-2xl" />
+          <Skeleton className="h-32 rounded-2xl" />
+          <Skeleton className="h-32 rounded-2xl" />
         </div>
-        <Skeleton className="h-64 rounded-[24px]" />
+        <Skeleton className="h-64 rounded-2xl" />
       </div>
     </div>
   );

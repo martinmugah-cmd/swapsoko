@@ -37,22 +37,22 @@ export default function Safety() {
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <div className="sticky top-0 z-40 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-b-[32px]">
-        <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-[20px] bg-gray-50 hover:bg-gray-100 transition-colors">
-          <ChevronLeft size={24} className="text-[#0F172A]" />
+        <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors">
+          <ChevronLeft size={24} className="text-slate-900" />
         </button>
-        <h1 className="text-lg font-black text-[#0F172A]">Safety First</h1>
+        <h1 className="text-lg font-black text-slate-900">Safety First</h1>
       </div>
 
       <div className="p-4 pb-28 space-y-6">
         <motion.div 
-          className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 text-center"
+          className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
             <Shield size={32} className="text-green-500" />
           </div>
-          <h2 className="text-xl font-black text-[#0F172A] mb-2">Your Safety Matters</h2>
+          <h2 className="text-xl font-black text-slate-900 mb-2">Your Safety Matters</h2>
           <p className="text-sm text-gray-500">
             SwapSoko is a community built on trust. Follow these guidelines to ensure every swap is safe, secure, and successful.
           </p>
@@ -62,21 +62,21 @@ export default function Safety() {
           {tips.map((tip, idx) => (
             <motion.div 
               key={idx}
-              className="bg-white rounded-[32px] p-5 shadow-sm border border-gray-100 flex gap-4"
+              className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex gap-4"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
             >
               <div className="shrink-0 mt-1">{tip.icon}</div>
               <div>
-                <h3 className="font-bold text-[#0F172A] mb-1">{tip.title}</h3>
+                <h3 className="font-bold text-slate-900 mb-1">{tip.title}</h3>
                 <p className="text-xs text-gray-600 leading-relaxed">{tip.desc}</p>
               </div>
             </motion.div>
           ))}
           
           <motion.div 
-            className="bg-[#EFF6FF] rounded-[32px] p-5 border border-[#BFDBFE] flex gap-4"
+            className="bg-[#EFF6FF] rounded-3xl p-5 border border-[#BFDBFE] flex gap-4"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}

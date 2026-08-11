@@ -204,6 +204,29 @@ import AuthPage from "./pages/Auth";
 import OnboardingPage from "./pages/Onboarding";
 import EditProfilePage from "./pages/EditProfile";
 import AdminPage from "./pages/Admin";
+import AppealsPage from "./pages/Appeals";
+import VerificationPage from "./pages/Verification";
+
+import { useAppStore } from "./store";
+
+function SavedItemsSyncer() {
+  const { isAuthenticated, user } = useAuth();
+  const { setSavedItemIds, setSavedWishIds } = useAppStore();
+
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+    supabase.from('saved_items').select('listing_id, wish_id').eq('user_id', user.id).then(({ data }) => {
+      if (data) {
+        const itemIds = data.filter(d => d.listing_id).map(d => d.listing_id.toString());
+        const wishIds = data.filter(d => d.wish_id).map(d => d.wish_id.toString());
+        if (itemIds.length > 0) setSavedItemIds(itemIds);
+        if (wishIds.length > 0) setSavedWishIds(wishIds);
+      }
+    });
+  }, [isAuthenticated, user]);
+
+  return null;
+}
 
 function LocationTracker() {
   const { isAuthenticated, user } = useAuth();
@@ -305,6 +328,7 @@ function Router() {
   
   return (
     <div className="app-container">
+      <SavedItemsSyncer />
       <LocationTracker />
       <div className="flex-1 overflow-hidden relative">
         <AnimatePresence>
@@ -380,7 +404,6 @@ function App() {
           <TooltipProvider>
             <Toaster
               position="top-center"
-              toastOptions={{}}
             />
             <Router />
           </TooltipProvider>

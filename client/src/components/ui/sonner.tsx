@@ -8,32 +8,22 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      {...props}
       toastOptions={{
-        style: {
-          background: "rgba(255, 255, 255, 0.85)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
-          borderRadius: "24px",
-          fontSize: "14px",
-          fontWeight: "700",
-          color: "#0F172A",
-          padding: "16px 20px",
-          border: "1px solid rgba(255, 255, 255, 0.6)",
-          boxShadow: "0 10px 40px -10px rgba(0,0,0,0.1)",
-        },
+        ...props.toastOptions,
         classNames: {
           toast:
-            "group toast group-[.toaster]:bg-white/80 group-[.toaster]:backdrop-blur-xl group-[.toaster]:text-[#0F172A] group-[.toaster]:border-white/60 group-[.toaster]:shadow-[0_12px_40px_rgb(0,0,0,0.08)] group-[.toaster]:rounded-[24px] group-[.toaster]:px-5 group-[.toaster]:py-4 group-[.toaster]:font-bold",
-          description: "group-[.toast]:text-gray-500 group-[.toast]:font-medium",
+            "group toast !bg-white/80 !backdrop-blur-[30px] !border !border-white/60 !shadow-[0_12px_40px_rgba(0,0,0,0.12)] !rounded-full !px-5 !py-3.5 !font-semibold !text-[14px] !text-slate-900 flex items-center justify-between !w-auto !min-w-[300px]",
+          description: "!text-slate-500 !font-medium",
           actionButton:
-            "group-[.toast]:bg-[#0F172A] group-[.toast]:text-white group-[.toast]:rounded-full group-[.toast]:px-4 group-[.toast]:py-2 group-[.toast]:font-bold hover:group-[.toast]:bg-gray-800 transition-colors",
+            "!bg-slate-900 !text-white !rounded-full !px-5 !py-2 !font-semibold !text-[13px] hover:!bg-black transition-all !shadow-sm !ml-auto",
           cancelButton:
-            "group-[.toast]:bg-gray-100 group-[.toast]:text-gray-600 group-[.toast]:rounded-full group-[.toast]:px-4 group-[.toast]:py-2 group-[.toast]:font-bold hover:group-[.toast]:bg-gray-200 transition-colors",
-          success: "group-[.toaster]:bg-[#F0FDF4]/90 group-[.toaster]:text-[#16A34A] group-[.toaster]:border-[#BBF7D0]/50",
-          error: "group-[.toaster]:bg-[#FEF2F2]/90 group-[.toaster]:text-[#DC2626] group-[.toaster]:border-[#FECACA]/50",
+            "!bg-slate-100 !text-slate-600 !rounded-full !px-5 !py-2 !font-semibold !text-[13px] hover:!bg-slate-200 transition-all",
+          success: "!bg-[#F0FDF4]/90 !text-[#16A34A] !border-[#BBF7D0]/50",
+          error: "!bg-[#FEF2F2]/90 !text-[#DC2626] !border-[#FECACA]/50",
+          ...props.toastOptions?.classNames,
         },
       }}
-      {...props}
     />
   );
 };

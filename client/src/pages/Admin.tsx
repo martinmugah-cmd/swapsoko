@@ -10,6 +10,16 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
 export default function AdminDashboard() {
   const [location, navigate] = useLocation();
   const { isAuthenticated, user, loading } = useAuth();
@@ -44,10 +54,10 @@ export default function AdminDashboard() {
 
   if (isChecking || loading) {
     return (
-      <div className="min-h-screen bg-[#F4F7F9] p-6 space-y-6">
-        <div className="h-16 bg-white/50 animate-pulse rounded-[32px] w-full max-w-4xl mx-auto" />
-        <div className="h-12 bg-white/50 animate-pulse rounded-[24px] w-full max-w-4xl mx-auto" />
-        <div className="h-[400px] bg-white/50 animate-pulse rounded-[40px] w-full max-w-4xl mx-auto" />
+      <div className="min-h-screen bg-muted p-6 space-y-6">
+        <div className="h-16 bg-white/50 animate-pulse rounded-3xl w-full max-w-4xl mx-auto" />
+        <div className="h-12 bg-white/50 animate-pulse rounded-2xl w-full max-w-4xl mx-auto" />
+        <div className="h-[400px] bg-white/50 animate-pulse rounded-3xl w-full max-w-4xl mx-auto" />
       </div>
     );
   }
@@ -66,60 +76,55 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F7F9] pb-32 font-sans selection:bg-[#22C55E]/30">
+    <div className="min-h-screen bg-muted pb-32 font-sans">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-[#F4F7F9]/80 backdrop-blur-2xl border-b border-white/50 px-6 pt-12 pb-6 shadow-[0_4px_30px_rgba(0,0,0,0.02)]">
+      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border px-6 pt-12 pb-6">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-5">
-            <div className="w-14 h-14 bg-[#0F172A] rounded-[20px] flex items-center justify-center border-2 border-white shadow-sm overflow-hidden relative">
-              <Shield className="w-6 h-6 text-white relative z-10" />
+            <div className="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center shadow-sm overflow-hidden">
+              <Shield className="w-6 h-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-3xl font-black text-[#0F172A] tracking-tight">{isModerator ? 'Moderator Console' : 'Admin Console'}</h1>
-              <p className="text-[#22C55E] text-xs font-bold uppercase tracking-[0.2em] mt-1">{isModerator ? 'MODERATOR WORKSPACE' : (isSuperAdmin ? 'SUPER ADMIN WORKSPACE' : 'ADMIN WORKSPACE')}</p>
+              <h1 className="text-h1">{isModerator ? 'Moderator Console' : 'Admin Console'}</h1>
+              <p className="text-caption mt-1">{isModerator ? 'MODERATOR WORKSPACE' : (isSuperAdmin ? 'SUPER ADMIN WORKSPACE' : 'ADMIN WORKSPACE')}</p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-6 mt-8">
-        {/* Sleek Tabs */}
-        <div className="flex overflow-x-auto no-scrollbar gap-3 pb-2 mb-8">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-shrink-0 flex items-center gap-2.5 px-6 py-3.5 rounded-[24px] whitespace-nowrap transition-all duration-300 ease-out ${
-                  isActive
-                    ? "bg-white text-[#0F172A] shadow-[0_8px_30px_rgba(0,0,0,0.06)] scale-[1.02]"
-                    : "bg-transparent text-gray-500 hover:bg-white/50 hover:text-gray-900"
-                }`}
-              >
-                <tab.icon className={`w-5 h-5 transition-colors ${isActive ? "text-[#22C55E]" : "text-gray-400"}`} strokeWidth={isActive ? 2.5 : 2} />
-                <span className={`text-sm ${isActive ? "font-bold" : "font-semibold"}`}>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="flex overflow-x-auto no-scrollbar pb-4 mb-6 border-b border-border">
+            <TabsList className="bg-transparent h-10 p-0 gap-2 border-none">
+              {tabs.map((tab) => (
+                <TabsTrigger
+                  key={tab.id}
+                  value={tab.id}
+                  className="gap-2 rounded-full px-5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm data-[state=inactive]:bg-transparent data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground border border-transparent data-[state=inactive]:hover:bg-muted/50 transition-all h-full"
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span>{tab.label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
-        {/* Content Area - Animated Switch */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="w-full"
-          >
-            {activeTab === "analytics" && <AdminAnalytics />}
-            {activeTab === "users" && <AdminUsersList isSuperAdmin={isSuperAdmin} />}
-            {activeTab === "reports" && <AdminReportsList />}
-            {activeTab === "logs" && <AdminAuditLogs />}
-          </motion.div>
-        </AnimatePresence>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="w-full"
+            >
+              <TabsContent value="analytics" className="mt-0 outline-none"><AdminAnalytics /></TabsContent>
+              <TabsContent value="users" className="mt-0 outline-none"><AdminUsersList isSuperAdmin={isSuperAdmin} /></TabsContent>
+              <TabsContent value="reports" className="mt-0 outline-none"><AdminReportsList /></TabsContent>
+              <TabsContent value="logs" className="mt-0 outline-none"><AdminAuditLogs /></TabsContent>
+            </motion.div>
+          </AnimatePresence>
+        </Tabs>
       </div>
     </div>
   );
@@ -143,32 +148,36 @@ function AdminAnalytics() {
         <MetricCard title="System Events" value={totalLogs.toLocaleString()} icon={Activity} color="text-green-500" bg="bg-green-500/10" isLoading={logsQuery.isLoading} />
       </div>
 
-      <div className="bg-white rounded-[40px] p-8 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white flex flex-col items-center justify-center h-64">
-        <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
-          <BarChart2 className="w-8 h-8 text-gray-300" />
-        </div>
-        <h3 className="text-xl font-bold text-gray-900">Advanced Analytics</h3>
-        <p className="text-gray-500 text-sm mt-2 text-center max-w-sm">Detailed metrics and charts will appear here as the platform gathers more data over time.</p>
-      </div>
+      <Card className="h-64 flex flex-col items-center justify-center text-center">
+        <CardContent className="pt-6">
+          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4 mx-auto">
+            <BarChart2 className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <CardTitle className="text-xl">Advanced Analytics</CardTitle>
+          <CardDescription className="mt-2 max-w-sm">Detailed metrics and charts will appear here as the platform gathers more data over time.</CardDescription>
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
 function MetricCard({ title, value, icon: Icon, color, bg, isLoading }: any) {
-  if (isLoading) return <div className="h-32 bg-white/60 animate-pulse rounded-[32px] w-full border border-white" />;
+  if (isLoading) return <Card className="h-32 animate-pulse bg-muted" />;
   return (
-    <div className="bg-white rounded-[32px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white relative overflow-hidden group hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all">
-      <div className="flex items-start justify-between relative z-10">
-        <div>
-          <p className="text-[13px] font-bold text-gray-500 uppercase tracking-wider">{title}</p>
-          <p className="text-4xl font-black text-[#0F172A] mt-2 tracking-tight">{value}</p>
+    <Card className="overflow-hidden relative group">
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between relative z-10">
+          <div>
+            <p className="text-caption">{title}</p>
+            <p className="text-3xl font-bold mt-2 text-foreground">{value}</p>
+          </div>
+          <div className={`w-12 h-12 rounded-xl ${bg} flex items-center justify-center`}>
+            <Icon className={`w-6 h-6 ${color}`} />
+          </div>
         </div>
-        <div className={`w-12 h-12 rounded-[20px] ${bg} flex items-center justify-center`}>
-          <Icon className={`w-6 h-6 ${color}`} />
-        </div>
-      </div>
-      <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full opacity-50 blur-2xl group-hover:scale-150 transition-transform duration-500" />
-    </div>
+        <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-muted/50 to-muted rounded-full opacity-50 blur-2xl group-hover:scale-150 transition-transform duration-500" />
+      </CardContent>
+    </Card>
   );
 }
 
@@ -197,7 +206,7 @@ function AdminReportsList() {
    if (reportsQuery.isLoading) {
      return (
        <div className="space-y-4">
-         {[1,2,3].map(i => <div key={i} className="h-40 bg-white/60 animate-pulse rounded-[32px] w-full border border-white" />)}
+         {[1,2,3].map(i => <div key={i} className="h-40 bg-white/60 animate-pulse rounded-3xl w-full border border-white" />)}
        </div>
      );
    }
@@ -265,14 +274,14 @@ function AdminReportsList() {
                }
 
                return (
-               <div key={r.id} className="bg-white p-6 rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all flex flex-col gap-6 relative overflow-hidden group">
+               <div key={r.id} className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all flex flex-col gap-6 relative overflow-hidden group">
                    
                    {r.priority === 'high' && <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500 rounded-l-[32px]" />}
                    
                    {/* Header Row */}
                    <div className="flex items-center justify-between">
                        <div className="flex items-center gap-3">
-                         <span className={`px-3 py-1.5 rounded-[12px] text-[11px] font-black uppercase tracking-widest ${
+                         <span className={`px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest ${
                              r.priority === 'high' ? 'bg-red-50 text-red-600' :
                              r.priority === 'medium' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'
                          }`}>{r.priority} Priority</span>
@@ -286,11 +295,11 @@ function AdminReportsList() {
                        {/* Report Details */}
                        <div className="flex-1 space-y-3">
                            <div className="flex items-center gap-2">
-                             <h4 className="font-extrabold text-[#0F172A] text-xl">{r.reason}</h4>
-                             <span className="bg-gray-100 text-gray-500 px-2.5 py-1 rounded-[8px] text-[10px] font-bold uppercase tracking-wider">{r.targetType}</span>
+                             <h4 className="font-extrabold text-slate-900 text-xl">{r.reason}</h4>
+                             <span className="bg-gray-100 text-gray-500 px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">{r.targetType}</span>
                            </div>
                            {r.description ? (
-                             <p className="text-gray-600 text-sm bg-gray-50 p-5 rounded-[24px] border border-gray-100 leading-relaxed shadow-inner">
+                             <p className="text-gray-600 text-sm bg-gray-50 p-5 rounded-2xl border border-gray-100 leading-relaxed shadow-inner">
                                 {r.description}
                              </p>
                            ) : (
@@ -299,12 +308,12 @@ function AdminReportsList() {
                        </div>
 
                        {/* Target Context */}
-                       <div className="w-full md:w-1/3 bg-blue-50/50 rounded-[24px] p-5 border border-blue-100/50 flex flex-col justify-between">
+                       <div className="w-full md:w-1/3 bg-blue-50/50 rounded-2xl p-5 border border-blue-100/50 flex flex-col justify-between">
                            <div>
                                <h5 className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-3">Reported Entity</h5>
                                {r.targetInfo ? (
                                    <div className="space-y-1">
-                                       <p className="font-bold text-[#0F172A] truncate">
+                                       <p className="font-bold text-slate-900 truncate">
                                           {(() => {
                                               if (r.targetType === 'message' || r.targetType === 'chat') return 'Chat Conversation';
                                               let n = r.targetInfo.name || r.targetInfo.title;
@@ -357,7 +366,7 @@ function AdminReportsList() {
                            initial={{ opacity: 0, scale: 0.95 }}
                            animate={{ opacity: 1, scale: 1 }}
                            exit={{ opacity: 0, scale: 0.95 }}
-                           className="bg-white w-full max-w-lg rounded-[32px] overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]"
+                           className="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]"
                        >
                            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white/90 backdrop-blur-md z-10">
                                <h3 className="text-xl font-extrabold text-gray-900">Moderator Decision</h3>
@@ -446,7 +455,7 @@ function AdminReportsList() {
                            {/* Modal Header */}
                            <div className="flex items-center justify-between px-8 py-5 border-b border-gray-100 bg-white z-10">
                                <div>
-                                   <h3 className="font-extrabold text-[#0F172A] text-xl">Context Preview</h3>
+                                   <h3 className="font-extrabold text-slate-900 text-xl">Context Preview</h3>
                                    <p className="text-sm text-gray-500 mt-0.5">Read-only view of the reported resource.</p>
                                </div>
                                <button 
@@ -481,7 +490,7 @@ function AdminAuditLogs() {
     if (logsQuery.isLoading) {
       return (
         <div className="space-y-4">
-          {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white/60 animate-pulse rounded-[24px] w-full border border-white" />)}
+          {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white/60 animate-pulse rounded-2xl w-full border border-white" />)}
         </div>
       );
     }
@@ -501,17 +510,17 @@ function AdminAuditLogs() {
     return (
         <div className="bg-white rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white overflow-hidden p-2">
             {logs.map((log: any, i: number) => (
-                <div key={log.id} className={`p-5 flex items-start gap-4 hover:bg-gray-50/80 transition-colors rounded-[32px] ${i !== logs.length - 1 ? 'border-b border-gray-50/50' : ''}`}>
-                    <div className="w-10 h-10 rounded-[16px] bg-[#0F172A] flex items-center justify-center flex-shrink-0 mt-1">
+                <div key={log.id} className={`p-5 flex items-start gap-4 hover:bg-gray-50/80 transition-colors rounded-3xl ${i !== logs.length - 1 ? 'border-b border-gray-50/50' : ''}`}>
+                    <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center flex-shrink-0 mt-1">
                         <Activity className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex-1">
                         <div className="flex justify-between items-center mb-1">
-                            <h4 className="font-extrabold text-[#0F172A]">{log.action}</h4>
-                            <span className="text-[11px] font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-[8px]">{formatDistanceToNow(new Date(log.created_at || Date.now()), { addSuffix: true })}</span>
+                            <h4 className="font-extrabold text-slate-900">{log.action}</h4>
+                            <span className="text-[11px] font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">{formatDistanceToNow(new Date(log.created_at || Date.now()), { addSuffix: true })}</span>
                         </div>
-                        <p className="text-[13px] text-gray-500 font-medium mb-2">Actor: <span className="font-bold text-gray-700">{log.actorName || log.profiles?.name || log.actorId || log.actor_id}</span></p>
-                        <div className="bg-gray-50 border border-gray-100 rounded-[16px] p-3 text-xs font-mono text-gray-600">
+                        <p className="text-sm text-gray-500 font-medium mb-2">Actor: <span className="font-bold text-gray-700">{log.actorName || log.profiles?.name || log.actorId || log.actor_id}</span></p>
+                        <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3 text-xs font-mono text-gray-600">
                             Resource: {log.resourceType || log.resource_type} • {log.resourceName ? log.resourceName : log.resourceId || log.resource_id}
                         </div>
                     </div>
@@ -545,8 +554,8 @@ function AdminUsersList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
    if (usersQuery.isLoading) {
      return (
        <div className="space-y-4">
-         <div className="h-16 bg-white/60 animate-pulse rounded-[24px] w-full" />
-         {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white/60 animate-pulse rounded-[32px] w-full border border-white" />)}
+         <div className="h-16 bg-white/60 animate-pulse rounded-2xl w-full" />
+         {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white/60 animate-pulse rounded-3xl w-full border border-white" />)}
        </div>
      );
    }
@@ -558,18 +567,18 @@ function AdminUsersList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
 
    return (
       <div className="space-y-6">
-         <div className="relative">
-           <Search className="w-5 h-5 text-gray-400 absolute left-5 top-1/2 -translate-y-1/2" />
-           <input 
+         <div className="relative mb-6">
+           <Search className="w-5 h-5 text-muted-foreground absolute left-4 top-1/2 -translate-y-1/2" />
+           <Input 
              type="text"
              placeholder="Search by name or email..."
              value={searchQuery}
              onChange={e => setSearchQuery(e.target.value)}
-             className="w-full bg-white border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-[24px] py-4 pl-14 pr-6 text-sm font-medium outline-none focus:ring-2 focus:ring-[#22C55E]/20 focus:border-[#22C55E] transition-all"
+             className="pl-12 h-14 bg-background border-border shadow-sm rounded-2xl"
            />
          </div>
 
-         <div className="bg-white rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white p-2">
+         <Card className="overflow-hidden">
             {filteredUsers.length === 0 ? (
                <div className="p-12 text-center text-gray-500 font-medium">No users found matching "{searchQuery}"</div>
             ) : (
@@ -582,22 +591,22 @@ function AdminUsersList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                  const userId = u.userId || u.user_id || u.id;
                  
                  return (
-                 <div key={userId} className={`p-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors rounded-[32px] ${i !== filteredUsers.length - 1 ? "border-b border-gray-50/50" : ""}`}>
+                 <div key={userId} className={`p-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors rounded-3xl ${i !== filteredUsers.length - 1 ? "border-b border-gray-50/50" : ""}`}>
                     <div className="flex items-center gap-4">
-                       <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-white shadow-sm overflow-hidden relative">
+                       <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-white shadow-sm overflow-hidden relative">
                           {avatarUrl ? <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-gray-400" />}
-                          {userRole === "super_admin" && <div className="absolute inset-0 border-2 border-yellow-400 rounded-[20px]" />}
+                          {userRole === "super_admin" && <div className="absolute inset-0 border-2 border-yellow-400 rounded-2xl" />}
                        </div>
                        <div>
-                          <p className="font-extrabold text-[15px] text-[#0F172A]">{displayName}</p>
-                          <p className="text-[13px] text-gray-500 font-medium mt-0.5">{email}</p>
+                          <p className="font-extrabold text-[15px] text-slate-900">{displayName}</p>
+                          <p className="text-sm text-gray-500 font-medium mt-0.5">{email}</p>
                        </div>
                     </div>
                     
                     {editingUser === userId ? (
-                       <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-[20px] border border-gray-100">
+                       <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-2xl border border-gray-100">
                           <select 
-                             className="text-sm border-none bg-white rounded-[14px] px-3 py-2 font-bold text-[#0F172A] shadow-sm outline-none focus:ring-2 focus:ring-[#22C55E]/50"
+                             className="text-sm border-none bg-white rounded-xl px-3 py-2 font-bold text-slate-900 shadow-sm outline-none focus:ring-2 focus:ring-[#22C55E]/50"
                              defaultValue={userRole}
                              onChange={(e) => {
                                updateRoleMutation.mutate({ userId: userId, role: e.target.value });
@@ -608,22 +617,22 @@ function AdminUsersList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                              <option value="admin" disabled={!isSuperAdmin}>Admin</option>
                              <option value="super_admin" disabled={!isSuperAdmin}>Super Admin</option>
                           </select>
-                          <button onClick={() => setEditingUser(null)} className="p-2 text-gray-400 hover:text-red-500 transition-colors bg-white rounded-[14px] shadow-sm">
+                          <button onClick={() => setEditingUser(null)} className="p-2 text-gray-400 hover:text-red-500 transition-colors bg-white rounded-xl shadow-sm">
                             <XCircle className="w-5 h-5" />
                           </button>
                        </div>
                     ) : (
                        <div className="flex items-center gap-3">
-                          <span className={`text-[11px] font-black px-3 py-1.5 rounded-[12px] uppercase tracking-wider ${
+                          <span className={`text-[11px] font-black px-3 py-1.5 rounded-xl uppercase tracking-wider ${
                              userRole === 'super_admin' ? 'bg-purple-50 text-purple-600' :
-                             userRole === 'admin' ? 'bg-[#2563EB]/10 text-[#2563EB]' :
+                             userRole === 'admin' ? 'bg-blue-600/10 text-blue-600' :
                              userRole === 'moderator' ? 'bg-orange-50 text-orange-600' :
                              'bg-gray-100 text-gray-500'
                           }`}>
                              {userRole.replace("_", " ")}
                           </span>
                           {(isSuperAdmin || (userRole === "user")) && userRole !== "super_admin" && (
-                             <button onClick={() => setEditingUser(userId)} className="w-10 h-10 bg-white border border-gray-100 rounded-[16px] hover:bg-gray-50 hover:border-gray-200 text-gray-500 flex items-center justify-center transition-all shadow-sm">
+                             <button onClick={() => setEditingUser(userId)} className="w-10 h-10 bg-white border border-gray-100 rounded-2xl hover:bg-gray-50 hover:border-gray-200 text-gray-500 flex items-center justify-center transition-all shadow-sm">
                                 <UserCog className="w-4 h-4" />
                              </button>
                           )}
@@ -634,7 +643,7 @@ function AdminUsersList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                  );
               })
             )}
-         </div>
+          </Card>
       </div>
    );
 }

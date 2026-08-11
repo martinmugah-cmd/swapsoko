@@ -4,7 +4,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import {
-  ChevronLeft, Send, Mic, Image, Check, CheckCheck,
+  ChevronLeft, ShieldCheck, Send, Mic, Image, Check, CheckCheck,
   Phone, MoreVertical, MessageCircle, Plus, X, Smile, Star, Square, MapPin, Handshake, Repeat2, CheckCircle, XCircle, GraduationCap
 } from "lucide-react";
 import { useLocation, useParams } from "wouter";
@@ -28,6 +28,24 @@ L.Icon.Default.mergeOptions({
   iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
+
+const TIPS = [
+  "Meet in well-lit public spaces.",
+  "Check items thoroughly before leaving.",
+  "Never send money before meeting.",
+  "Bring a friend for high-value swaps.",
+  "Trust your instincts. If it feels off, cancel.",
+  "Test electronics with a power bank.",
+  "Confirm university ID if on campus."
+];
+
+function getStableTip(seed: string) {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return TIPS[Math.abs(hash) % TIPS.length];
+}
 
 // ─── Quick Reply Chips ────────────────────────────────────────────────────────
 const QUICK_REPLIES = [
@@ -65,13 +83,13 @@ function ParticipantRow({ pid, isYou }: { pid: string, isYou: boolean }) {
    } catch(e) {}
 
    return (
-      <div className="flex items-center gap-4 p-4 rounded-[24px] bg-white border border-gray-100 shadow-sm">
+      <div className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-gray-100 shadow-sm">
          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#22C55E]/20 to-[#3B82F6]/20 flex items-center justify-center border border-gray-100 overflow-hidden">
-            {avatarUrl ? <img src={avatarUrl} className="w-full h-full object-cover" /> : <span className="text-[#0F172A] font-bold">{partnerName.slice(0,2).toUpperCase()}</span>}
+            {avatarUrl ? <img src={avatarUrl} className="w-full h-full object-cover" /> : <span className="text-slate-900 font-bold">{partnerName.slice(0,2).toUpperCase()}</span>}
          </div>
          <div>
-            <p className="font-bold text-[#0F172A]">@{partnerName}</p>
-            {isYou && <p className="text-xs text-[#22C55E] font-bold">You</p>}
+            <p className="font-bold text-slate-900">@{partnerName}</p>
+            {isYou && <p className="text-xs text-green-500 font-bold">You</p>}
          </div>
       </div>
    );
@@ -122,35 +140,35 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
            <div className="flex justify-center my-6 w-full">
               <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 max-w-sm w-full text-center relative overflow-hidden">
                  <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full mix-blend-multiply blur-xl -translate-y-1/2 translate-x-1/4"></div>
-                 <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-1 rounded-md mb-3 inline-block relative z-10">Counter Proposal</span>
+                 <span className="text-xs font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-1 rounded-md mb-3 inline-block relative z-10">Counter Proposal</span>
                  <p className="text-sm text-gray-800 font-medium relative z-10">
                    {msg.senderId ? <PreviewUser uid={msg.senderId} /> : (actionData.userName ? `@${actionData.userName}` : 'A user')} has proposed new terms for the swap.
                  </p>
                  {actionData.changes && (
                    <div className="mt-3 flex flex-col gap-2 relative z-10">
                       {actionData.changes.message && (
-                         <div className="bg-gray-50/70 rounded-[16px] px-5 py-4 text-[13px] italic text-gray-700 border border-gray-100 text-left mx-1 shadow-sm mb-3">
+                         <div className="bg-gray-50/70 rounded-2xl px-5 py-4 text-sm italic text-gray-700 border border-gray-100 text-left mx-1 shadow-sm mb-3">
                             "{actionData.changes.message}"
                          </div>
                       )}
                       {actionData.changes.cashTopUp && (
-                         <div className="flex flex-col bg-green-50/70 rounded-[16px] px-5 py-4 border border-green-100 text-left mb-3 mx-1 shadow-sm">
-                            <span className="text-[10px] font-extrabold text-green-800 uppercase tracking-widest mb-1">Cash Top-up</span>
+                         <div className="flex flex-col bg-green-50/70 rounded-2xl px-5 py-4 border border-green-100 text-left mb-3 mx-1 shadow-sm">
+                            <span className="text-xs font-extrabold text-green-800 uppercase tracking-widest mb-1">Cash Top-up</span>
                             {actionData.changes.topUpPayerId ? (
-                               <span className="text-[13px] font-medium text-green-900 leading-snug">
+                               <span className="text-sm font-medium text-green-900 leading-snug">
                                   <PreviewUser uid={actionData.changes.topUpPayerId} /> will pay <PreviewUser uid={actionData.changes.topUpReceiverId} /> <span className="font-black">+ KES {actionData.changes.cashTopUp}</span>
                                </span>
                             ) : (
-                               <span className="text-[13px] font-medium text-green-900 leading-snug">
+                               <span className="text-sm font-medium text-green-900 leading-snug">
                                   A cash top-up of <span className="font-black">+ KES {actionData.changes.cashTopUp}</span> was requested.
                                </span>
                             )}
                          </div>
                       )}
                       {actionData.changes.meetingLocation && (
-                         <div className="flex flex-col bg-purple-50/70 rounded-[16px] px-5 py-4 border border-purple-100 text-left mx-1 shadow-sm">
-                            <span className="text-[10px] font-extrabold text-purple-800 uppercase tracking-widest mb-1">Meeting Suggested</span>
-                            <span className="text-[13px] font-bold text-purple-900 leading-snug">{actionData.changes.meetingLocation}</span>
+                         <div className="flex flex-col bg-purple-50/70 rounded-2xl px-5 py-4 border border-purple-100 text-left mx-1 shadow-sm">
+                            <span className="text-xs font-extrabold text-purple-800 uppercase tracking-widest mb-1">Meeting Suggested</span>
+                            <span className="text-sm font-bold text-purple-900 leading-snug">{actionData.changes.meetingLocation}</span>
                             {(actionData.changes.meetingDate || actionData.changes.meetingTime) && (
                                <span className="text-[11px] text-purple-700 mt-1 font-medium">
                                  {actionData.changes.meetingDate} {actionData.changes.meetingTime && `at ${actionData.changes.meetingTime}`}
@@ -197,7 +215,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                     url = query.data?.avatarUrl || "";
                  }
                  if (url) return <img src={url} className="w-full h-full object-cover" />;
-                 return <span className="text-white text-[10px] font-bold">{initial}</span>;
+                 return <span className="text-white text-xs font-bold">{initial}</span>;
               };
               return <ProfileAvatar uid={msg.senderId} />;
            })()}
@@ -205,18 +223,18 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
       )}
       <div className={`max-w-[75%] ${isOwn ? "items-end" : "items-start"} flex flex-col`}>
         {isVoice ? (
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-[32px] ${isOwn ? "gradient-green rounded-br-sm text-white" : "bg-white card-shadow rounded-bl-sm"}`}>
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-3xl ${isOwn ? "gradient-green rounded-br-sm text-white" : "bg-white card-shadow rounded-bl-sm"}`}>
             <VoicePlayer url={msg.content} isOwn={isOwn} />
           </div>
         ) : isImage ? (
           <div 
             onClick={() => onImageClick?.(msg.imageUrl || msg.content)}
-            className={`rounded-[24px] overflow-hidden cursor-pointer ${isOwn ? "border-2 border-[#22C55E]" : "border-2 border-white shadow-sm"}`}
+            className={`rounded-2xl overflow-hidden cursor-pointer ${isOwn ? "border-2 border-green-500" : "border-2 border-white shadow-sm"}`}
           >
             <img src={msg.imageUrl || msg.content} alt="shared" className="w-48 h-auto max-h-64 object-cover" />
           </div>
         ) : isQuickReply ? (
-          <div className={`px-4 py-2 rounded-[32px] border-2 ${isOwn ? "border-[#22C55E] text-[#22C55E] bg-[#F0FDF4]" : "border-[#2563EB] text-[#2563EB] bg-[#EFF6FF]"}`}>
+          <div className={`px-4 py-2 rounded-3xl border-2 ${isOwn ? "border-green-500 text-green-500 bg-[#F0FDF4]" : "border-[#2563EB] text-blue-600 bg-[#EFF6FF]"}`}>
             <span className="text-xs font-semibold">{msg.content}</span>
           </div>
         ) : isProposal ? (
@@ -257,25 +275,25 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
             }
             
             return (
-              <div className={`w-64 rounded-[24px] p-5 shadow-sm border ${isOwn ? "bg-gradient-to-br from-[#22C55E]/10 to-[#10B981]/10 border-[#22C55E]/30 backdrop-blur-md" : "bg-white/90 backdrop-blur-md border-gray-100"}`}>
+              <div className={`w-64 rounded-2xl p-5 shadow-sm border ${isOwn ? "bg-gradient-to-br from-[#22C55E]/10 to-[#10B981]/10 border-green-500/30 backdrop-blur-md" : "bg-white/90 backdrop-blur-md border-gray-100"}`}>
                 <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200/50">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isOwn ? "bg-[#22C55E]/20 text-[#22C55E]" : "bg-[#2563EB]/20 text-[#2563EB]"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isOwn ? "bg-green-500/20 text-green-500" : "bg-blue-600/20 text-blue-600"}`}>
                     <Handshake className="w-4 h-4" />
                   </div>
-                  <h4 className="font-extrabold text-[#0F172A] text-[15px]">{pData.wishId ? "Swish Offer" : "Swap Offer"}</h4>
+                  <h4 className="font-extrabold text-slate-900 text-[15px]">{pData.wishId ? "Swish Offer" : "Swap Offer"}</h4>
                 </div>
                 {pData.listingTitle && (
-                  <div className="flex items-center gap-3 mb-3 bg-white/50 p-2.5 rounded-[16px]">
+                  <div className="flex items-center gap-3 mb-3 bg-white/50 p-2.5 rounded-2xl">
                      {!pData.wishId && (
                        pData.listingImage ? (
-                          <img src={pData.listingImage} alt="Listing" className="w-10 h-10 rounded-[10px] object-cover shrink-0 shadow-sm" />
+                          <img src={pData.listingImage} alt="Listing" className="w-10 h-10 rounded-lg object-cover shrink-0 shadow-sm" />
                        ) : (
-                          <div className="w-10 h-10 rounded-[10px] bg-gray-100 flex items-center justify-center shrink-0">
+                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                              <Image className="w-4 h-4 text-gray-400" />
                           </div>
                        )
                      )}
-                     <p className="text-[13px] font-extrabold text-[#0F172A] line-clamp-2">
+                     <p className="text-sm font-extrabold text-slate-900 line-clamp-2">
                         {pData.wishId && !pData.listingTitle.startsWith('Wish:') ? `Wish: ${pData.listingTitle}` : pData.listingTitle}
                      </p>
                   </div>
@@ -288,15 +306,15 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                   </div>
                 )}
                 {pData.cashTopUp > 0 && (
-                  <p className="text-xs font-bold text-[#22C55E] mb-2">+ KES {pData.cashTopUp}</p>
+                  <p className="text-xs font-bold text-green-500 mb-2">+ KES {pData.cashTopUp}</p>
                 )}
                 {!isOwn && !pData.status && (
                   <div className="flex flex-col gap-2 mt-4">
-                    <button onClick={() => onOpenAgreement?.(pData.listingId, msg.id, false, pData)} className="w-full bg-[#0F172A] text-white text-xs font-bold py-2.5 rounded-full shadow-[0_4px_14px_rgba(0,0,0,0.1)] hover:bg-[#1E293B] transition-all">
+                    <button onClick={() => onOpenAgreement?.(pData.listingId, msg.id, false, pData)} className="w-full bg-slate-900 text-white text-xs font-bold py-2.5 rounded-full shadow-[0_4px_14px_rgba(0,0,0,0.1)] hover:bg-[#1E293B] transition-all">
                       Accept Offer
                     </button>
                     <div className="flex gap-2">
-                      <button onClick={() => onCounterProposal?.(pData, msg.id)} className="flex-1 bg-white border border-gray-200 text-[#0F172A] text-xs font-bold py-2.5 rounded-full hover:bg-gray-50 transition-all">
+                      <button onClick={() => onCounterProposal?.(pData, msg.id)} className="flex-1 bg-white border border-gray-200 text-slate-900 text-xs font-bold py-2.5 rounded-full hover:bg-gray-50 transition-all">
                         Counter
                       </button>
                       <button onClick={() => onRejectProposal?.(pData, msg.id)} className="flex-1 bg-[#FEF2F2] border border-red-100 text-red-600 text-xs font-bold py-2.5 rounded-full hover:bg-red-50 transition-all">
@@ -306,9 +324,9 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                   </div>
                 )}
                 {pData.status ? (
-                  <p className={`text-[10px] mt-2 text-center uppercase tracking-wider font-bold ${pData.status === 'rejected' ? 'text-red-500' : pData.status === 'accepted' ? 'text-green-500' : 'text-blue-500'}`}>Offer {pData.status}</p>
+                  <p className={`text-xs mt-2 text-center uppercase tracking-wider font-bold ${pData.status === 'rejected' ? 'text-red-500' : pData.status === 'accepted' ? 'text-green-500' : 'text-blue-500'}`}>Offer {pData.status}</p>
                 ) : isOwn ? (
-                  <p className="text-[10px] text-gray-400 mt-2 text-center uppercase tracking-wider font-bold">Offer Sent</p>
+                  <p className="text-xs text-gray-400 mt-2 text-center uppercase tracking-wider font-bold">Offer Sent</p>
                 ) : null}
               </div>
             );
@@ -323,7 +341,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
             const cycleStatus = latestRevision.status;
             
             return (
-              <div className="w-72 bg-gradient-to-br from-[#22C55E] via-[#10B981] to-[#3B82F6] rounded-[24px] p-1 shadow-lg mt-2 mb-4 relative">
+              <div className="w-72 bg-gradient-to-br from-[#22C55E] via-[#10B981] to-[#3B82F6] rounded-2xl p-1 shadow-lg mt-2 mb-4 relative">
                 <div className="bg-white/95 backdrop-blur-md rounded-[22px] p-4 h-full relative overflow-hidden">
                   <div className="absolute -top-6 -right-6 w-24 h-24 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
                   <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
@@ -334,7 +352,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                     </div>
                     <div>
                       <h4 className="font-extrabold text-gray-900 text-sm tracking-tight">{cycle.type === '3-way' ? '3-Way' : 'Multi-Way'} Swap Cycle</h4>
-                      <p className="text-[10px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#22C55E] to-[#3B82F6] uppercase tracking-widest">
+                      <p className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#22C55E] to-[#3B82F6] uppercase tracking-widest">
                          Proposal {cycleInfo.revisions ? `(Rev ${cycleInfo.revisions.length})` : ''}
                       </p>
                     </div>
@@ -370,7 +388,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                                     onPreviewClick?.(leg);
                                  }
                               }} 
-                              className={`absolute left-1/2 top-1/2 w-36 h-48 bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-[3px] border-white overflow-hidden ${isOwnListing ? 'cursor-default' : 'cursor-pointer hover:shadow-[0_12px_40px_rgb(0,0,0,0.2)] hover:z-50'}`} 
+                              className={`absolute left-1/2 top-1/2 w-36 h-48 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-[3px] border-white overflow-hidden ${isOwnListing ? 'cursor-default' : 'cursor-pointer hover:shadow-[0_12px_40px_rgb(0,0,0,0.2)] hover:z-50'}`} 
                               style={{ marginLeft: "-4.5rem", marginTop: "-6rem", zIndex }}
                               initial={{ y: yOffset, scale, rotate: rotation }}
                               animate={{ y: yOffset, scale, rotate: rotation }}
@@ -393,7 +411,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                                 <p className="text-xs font-black text-white leading-tight line-clamp-2 shadow-sm">{leg.title || leg.receiveTitle}</p>
                                 <div className="flex items-center justify-between mt-1">
                                   <p className="text-[9px] text-white/80 font-bold truncate"><PreviewUser uid={leg.userId} /></p>
-                                  {isOwnListing && <span className="text-[8px] font-black text-[#22C55E] bg-white px-2 py-0.5 rounded-full shadow-sm">YOU</span>}
+                                  {isOwnListing && <span className="text-[8px] font-black text-green-500 bg-white px-2 py-0.5 rounded-full shadow-sm">YOU</span>}
                                 </div>
                               </div>
                             </motion.div>
@@ -411,10 +429,10 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                   {cycleStatus === 'pending' && latestRevision.accepted_users?.includes(currentUserId) && (
                      <div className="flex flex-col gap-2 relative z-10 mt-3 pt-2 border-t border-gray-100">
                         <div className="text-center">
-                           <span className="text-[10px] font-bold text-gray-600 bg-white/50 px-3 py-1.5 rounded-full uppercase tracking-widest shadow-sm">Waiting for responses...</span>
+                           <span className="text-xs font-bold text-gray-600 bg-white/50 px-3 py-1.5 rounded-full uppercase tracking-widest shadow-sm">Waiting for responses...</span>
                         </div>
                         <div className="flex justify-center mt-1">
-                           <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); console.log('counter 2 clicked'); onCounterProposal?.(cycle, msg.id, msg.content); }} className="bg-white border border-gray-200 text-gray-700 text-[10px] font-bold px-4 py-1.5 rounded-full hover:bg-gray-50">Change Mind & Counter</button>
+                           <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); console.log('counter 2 clicked'); onCounterProposal?.(cycle, msg.id, msg.content); }} className="bg-white border border-gray-200 text-gray-700 text-xs font-bold px-4 py-1.5 rounded-full hover:bg-gray-50">Change Mind & Counter</button>
                         </div>
                      </div>
                   )}
@@ -424,7 +442,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                         <div className="flex justify-center items-center gap-2">
                           <span className={`text-xs font-bold uppercase tracking-wider ${['active', 'accepted', 'completed'].includes(cycleStatus) ? 'text-green-500' : 'text-red-500'}`}>{cycleStatus}</span>
                           {['accepted', 'scheduled', 'completed'].includes(cycleStatus) && (
-                            <button onClick={() => onViewReceipt?.(cycleInfo)} className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold shadow-sm hover:bg-blue-100 transition-colors ml-2">View Certificate</button>
+                            <button onClick={() => onViewReceipt?.(cycleInfo)} className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-bold shadow-sm hover:bg-blue-100 transition-colors ml-2">View Certificate</button>
                           )}
                         </div>
                         {['accepted', 'scheduled'].includes(cycleStatus) && (
@@ -435,19 +453,19 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                                const isCompleted = allReceipts.size >= (latestRevision.participants?.length || 0);
                                
                                if (isCompleted) {
-                                  return <p className="text-center text-[10px] text-[#22C55E] font-bold uppercase mt-2 border-t border-gray-100 pt-2">Cycle Completed ✓</p>;
+                                  return <p className="text-center text-xs text-green-500 font-bold uppercase mt-2 border-t border-gray-100 pt-2">Cycle Completed ✓</p>;
                                }
                                if (!myReceiptSent) {
                                   return (
                                     <button 
                                       onClick={(e) => { e.stopPropagation(); onConfirmReceipt?.(0); }} 
-                                      className="w-full bg-green-50 text-green-600 border border-green-200 py-1.5 rounded-full text-[10px] font-bold hover:bg-green-100 transition-colors"
+                                      className="w-full bg-green-50 text-green-600 border border-green-200 py-1.5 rounded-full text-xs font-bold hover:bg-green-100 transition-colors"
                                     >
                                       Confirm Items Received
                                     </button>
                                   );
                                }
-                               return <p className="text-center text-[10px] font-bold text-gray-500 uppercase tracking-widest">{allReceipts.size} of {latestRevision.participants?.length} confirmed</p>;
+                               return <p className="text-center text-xs font-bold text-gray-500 uppercase tracking-widest">{allReceipts.size} of {latestRevision.participants?.length} confirmed</p>;
                              })()}
                           </div>
                         )}
@@ -479,7 +497,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                     })()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-[#0F172A] truncate flex items-center gap-1.5">
+                    <p className="text-xs font-bold text-slate-900 truncate flex items-center gap-1.5">
                       {listing.title}
                       {listing.user_id && (
                         <div className="w-4 h-4 rounded-full overflow-hidden bg-gray-200 inline-block align-middle">
@@ -497,20 +515,20 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                                    url = query.data?.avatarUrl || "";
                                 }
                                 if (url) return <img src={url} className="w-full h-full object-cover" />;
-                                return <div className="w-full h-full bg-[#22C55E] text-white flex items-center justify-center text-[8px] font-bold">{initial}</div>;
+                                return <div className="w-full h-full bg-green-500 text-white flex items-center justify-center text-[8px] font-bold">{initial}</div>;
                              };
                              return <ProfileAvatar uid={listing.user_id} />;
                           })()}
                         </div>
                       )}
                     </p>
-                    <p className="text-[9px] text-[#22C55E] font-medium truncate">
+                    <p className="text-[9px] text-green-500 font-medium truncate">
                       {communityName ? `${communityName} Swap` : 'Swap Tag'}
                     </p>
                   </div>
                 </div>
                 {listing.status !== 'finalized' && currentUserId !== listing.user_id && (
-                  <button onClick={(e) => { e.stopPropagation(); onOpenAgreement?.(listing.id); }} className="w-56 text-[11px] font-bold bg-[#F0FDF4] text-[#22C55E] py-1.5 rounded-full border border-[#BBF7D0] hover:bg-green-100 transition-colors">
+                  <button onClick={(e) => { e.stopPropagation(); onOpenAgreement?.(listing.id); }} className="w-56 text-[11px] font-bold bg-[#F0FDF4] text-green-500 py-1.5 rounded-full border border-[#BBF7D0] hover:bg-green-100 transition-colors">
                     Create Swap Agreement
                   </button>
                 )}
@@ -525,7 +543,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                   <Star className="w-5 h-5 text-yellow-500" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-[#0F172A] truncate">{wish.title}</p>
+                  <p className="text-xs font-bold text-slate-900 truncate">{wish.title}</p>
                   <p className="text-[9px] text-yellow-600 font-medium truncate">Swish Tag</p>
                 </div>
               </div>
@@ -539,29 +557,29 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                       <div onClick={() => onReceiptClick?.(rData)} className="bg-white w-64 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 overflow-hidden cursor-pointer hover:shadow-[0_12px_40px_rgb(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-300">
                         <div className="bg-gradient-to-r from-[#22C55E] to-[#3B82F6] p-4 text-center">
                           <CheckCircle className="w-8 h-8 text-white mx-auto mb-1 opacity-90" />
-                          <h3 className="font-black text-white tracking-widest uppercase text-[10px]">Transaction Receipt</h3>
+                          <h3 className="font-black text-white tracking-widest uppercase text-xs">Transaction Receipt</h3>
                         </div>
                         <div className="p-5 bg-[#FAFAFA] relative">
                           <div className="absolute -top-3 left-4 w-6 h-6 rounded-full bg-white shadow-sm border border-gray-100"></div>
                           <div className="absolute -top-3 right-4 w-6 h-6 rounded-full bg-white shadow-sm border border-gray-100"></div>
                           <div className="space-y-3">
                             <div className="flex justify-between items-center pb-3 border-b border-gray-200 border-dashed">
-                               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Date</span>
-                               <span className="text-xs font-black text-[#0F172A]">{new Date(rData.timestamp).toLocaleDateString()}</span>
+                               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Date</span>
+                               <span className="text-xs font-black text-slate-900">{new Date(rData.timestamp).toLocaleDateString()}</span>
                             </div>
                             {rData.type === 'cycle' ? (
                               <div className="flex justify-between items-center pb-3 border-b border-gray-200 border-dashed">
-                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Cycle Action</span>
-                                 <span className="text-xs font-black text-[#0F172A]">Accepted</span>
+                                 <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Cycle Action</span>
+                                 <span className="text-xs font-black text-slate-900">Accepted</span>
                               </div>
                             ) : (
                               <div className="flex justify-between items-center pb-3 border-b border-gray-200 border-dashed">
-                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Partner</span>
-                                 <span className="text-xs font-black text-[#0F172A]">{partnerFullName || rData.partnerName}</span>
+                                 <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Partner</span>
+                                 <span className="text-xs font-black text-slate-900">{partnerFullName || rData.partnerName}</span>
                               </div>
                             )}
                             <div className="pb-3 border-b border-gray-200 border-dashed">
-                               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Items Included</span>
+                               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Items Included</span>
                                {rData.type === 'cycle' && rData.cycle?.legs ? (
                                    <div className="flex flex-col gap-2 mt-1">
                                       {rData.cycle.legs.map((leg: any, i: number) => {
@@ -570,14 +588,14 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                                          return (
                                             <div key={i} className="flex justify-between items-center bg-gray-50 p-2 rounded-lg border border-gray-100">
                                               <div className="flex flex-col flex-1 min-w-0 pr-1">
-                                                 <span className="text-[10px] font-bold text-gray-800 truncate"><PreviewUser uid={leg.userId} /></span>
+                                                 <span className="text-xs font-bold text-gray-800 truncate"><PreviewUser uid={leg.userId} /></span>
                                                  <span className="text-[9px] text-gray-500 font-medium truncate">gives: {leg.title || leg.receiveTitle}</span>
                                               </div>
                                               <div className="mx-1 text-gray-300 shrink-0">
                                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
                                               </div>
                                               <div className="flex flex-col items-end flex-1 min-w-0 pl-1 text-right">
-                                                 <span className="text-[10px] font-bold text-gray-800 truncate"><PreviewUser uid={nextLeg.userId} /></span>
+                                                 <span className="text-xs font-bold text-gray-800 truncate"><PreviewUser uid={nextLeg.userId} /></span>
                                                  {cash > 0 && (
                                                     <span className="text-[9px] font-bold text-red-500 truncate">- KES {cash}</span>
                                                  )}
@@ -589,7 +607,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                                 ) : (
                                    <>
                                       <p className="text-xs font-bold text-gray-800 leading-snug">{rData.itemsExchanged}</p>
-                                      {rData.cashTopUp && <p className="text-[10px] font-bold text-[#22C55E] mt-1">+ KES {rData.cashTopUp}</p>}
+                                      {rData.cashTopUp && <p className="text-xs font-bold text-green-500 mt-1">+ KES {rData.cashTopUp}</p>}
                                    </>
                                 )}
                             </div>
@@ -598,7 +616,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                                <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex gap-2">
                                   <span className="text-blue-500 text-sm mt-0.5">💡</span>
                                   <div>
-                                     <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-0.5">Safety Tip</p>
+                                     <p className="text-xs font-black text-blue-900 uppercase tracking-widest mb-0.5">Safety Tip</p>
                                      <p className="text-[11px] font-medium text-blue-800 leading-tight">
                                         {getStableTip(rData?.id || String(msg?.id) || "tip")}
                                      </p>
@@ -608,10 +626,10 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                             )}
                             {rData.cycle?.meetingLocation && (
                                <div className="pb-3 border-b border-gray-200 border-dashed">
-                                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Meeting Arranged</span>
+                                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Meeting Arranged</span>
                                   <p className="text-xs font-bold text-purple-700 leading-snug">{rData.cycle.meetingLocation}</p>
                                   {(rData.cycle.meetingDate || rData.cycle.meetingTime) && (
-                                     <p className="text-[10px] font-medium text-purple-600 mt-0.5">
+                                     <p className="text-xs font-medium text-purple-600 mt-0.5">
                                         {rData.cycle.meetingDate} {rData.cycle.meetingTime && `at ${rData.cycle.meetingTime}`}
                                      </p>
                                   )}
@@ -633,22 +651,22 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                     const isSigned = contentText.startsWith("[AGREEMENT_SIGNED]");
                     const aData = JSON.parse(contentText.replace(isSigned ? "[AGREEMENT_SIGNED]" : "[AGREEMENT]", ""));
                     return (
-                      <div className="bg-white w-56 rounded-[16px] shadow-sm border border-gray-200 p-3">
+                      <div className="bg-white w-56 rounded-2xl shadow-sm border border-gray-200 p-3">
                          <div className="flex items-center gap-2 mb-2">
-                           <Handshake className={`w-4 h-4 ${isSigned ? "text-[#22C55E]" : "text-[#2563EB]"}`} />
-                           <h4 className="font-bold text-[#0F172A] text-xs">Swap Agreement Form</h4>
+                           <Handshake className={`w-4 h-4 ${isSigned ? "text-green-500" : "text-blue-600"}`} />
+                           <h4 className="font-bold text-slate-900 text-xs">Swap Agreement Form</h4>
                          </div>
-                         <p className="text-[10px] text-gray-500 mb-3">{isSigned ? "Agreement has been signed and finalized." : "Proposed terms for the swap. Review and finalize to lock it in."}</p>
+                         <p className="text-xs text-gray-500 mb-3">{isSigned ? "Agreement has been signed and finalized." : "Proposed terms for the swap. Review and finalize to lock it in."}</p>
                          {!isSigned && !isOwn && (
                       <button 
                              onClick={() => onOpenAgreement?.(aData.listingId, msg.id, !isOwn, aData)}
-                             className="w-full bg-[#EFF6FF] text-[#2563EB] text-[11px] font-bold py-1.5 rounded-full hover:bg-blue-100 transition-colors"
+                             className="w-full bg-[#EFF6FF] text-blue-600 text-[11px] font-bold py-1.5 rounded-full hover:bg-blue-100 transition-colors"
                            >
                              Review & Finalize
                            </button>
                          )}
                          {!isSigned && isOwn && (
-                           <p className="text-[10px] text-gray-400 mt-2 text-center uppercase tracking-wider font-bold">Form Sent</p>
+                           <p className="text-xs text-gray-400 mt-2 text-center uppercase tracking-wider font-bold">Form Sent</p>
                          )}
                          {isSigned && (
                            <>
@@ -659,18 +677,18 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
 
                                return (
                                  <div className="mt-2 pt-2 border-t border-gray-100">
-                                   <p className="text-center text-[10px] text-[#22C55E] font-bold uppercase mb-2">Swap Agreed ✓</p>
+                                   <p className="text-center text-xs text-green-500 font-bold uppercase mb-2">Swap Agreed ✓</p>
                                    {!myReceiptSent ? (
                                      <button 
                                        onClick={(e) => { e.stopPropagation(); onConfirmReceipt?.(aData.listingId); }} 
-                                       className="w-full bg-green-50 text-green-600 border border-green-200 py-1.5 rounded-full text-[10px] font-bold hover:bg-green-100 transition-colors"
+                                       className="w-full bg-green-50 text-green-600 border border-green-200 py-1.5 rounded-full text-xs font-bold hover:bg-green-100 transition-colors"
                                      >
                                        Confirm Items Received
                                      </button>
                                    ) : !isCompleted ? (
-                                     <p className="text-center text-[10px] font-bold text-gray-500 uppercase tracking-widest">Waiting for partner...</p>
+                                     <p className="text-center text-xs font-bold text-gray-500 uppercase tracking-widest">Waiting for partner...</p>
                                    ) : (
-                                     <p className="text-center text-[10px] text-[#22C55E] font-bold uppercase">Swap Completed ✓</p>
+                                     <p className="text-center text-xs text-green-500 font-bold uppercase">Swap Completed ✓</p>
                                    )}
                                  </div>
                                );
@@ -682,17 +700,17 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                   } catch(e) { return <div>Invalid agreement form</div>; }
                 })()
               ) : contentText.startsWith("[REJECT]") ? (
-                <div className={`w-56 rounded-[16px] shadow-sm border p-4 ${isOwn ? "bg-red-50 border-red-100" : "bg-white border-gray-100"}`}>
+                <div className={`w-56 rounded-2xl shadow-sm border p-4 ${isOwn ? "bg-red-50 border-red-100" : "bg-white border-gray-100"}`}>
                    <div className="flex items-center gap-2 mb-2">
                       <XCircle className="w-5 h-5 text-red-500" />
                       <span className="text-[11px] font-black tracking-widest text-red-900 uppercase">Offer Rejected</span>
                    </div>
-                   <p className="text-xs font-medium text-gray-700 leading-relaxed bg-white/50 p-2.5 rounded-[12px]">
+                   <p className="text-xs font-medium text-gray-700 leading-relaxed bg-white/50 p-2.5 rounded-xl">
                       {contentText.replace("[REJECT]", "").trim()}
                    </p>
                 </div>
               ) : (
-                <div className={`px-4 py-3 rounded-[24px] text-[15px] leading-relaxed whitespace-pre-wrap shadow-[0_2px_10px_rgba(0,0,0,0.02)] ${isOwn ? "bg-gradient-to-br from-[#22C55E] to-[#10B981] text-white rounded-br-sm border border-[#22C55E]/20" : "bg-white/90 backdrop-blur-md border border-gray-100 text-[#0F172A] rounded-bl-sm"}`}>
+                <div className={`px-4 py-3 rounded-2xl text-[15px] leading-relaxed whitespace-pre-wrap shadow-sm ${isOwn ? "gradient-green text-white rounded-br-[4px]" : "apple-glass-dark text-white rounded-bl-[4px]"}`}>
                   {locationCoords ? (
                     <div className="flex flex-col gap-2">
                       <p className="font-medium">{contentText.split('\n')[0] || "Shared Location"}</p>
@@ -728,7 +746,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
           </span>
           {isOwn && (
             msg.isRead
-              ? <CheckCheck className="w-3 h-3 text-[#22C55E]" />
+              ? <CheckCheck className="w-3 h-3 text-green-500" />
               : <Check className="w-3 h-3 text-gray-300" />
           )}
         </div>
@@ -1163,7 +1181,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
       {/* Header */}
       <div className="page-header px-4 py-3 flex items-center gap-3 z-50">
         <button onClick={onBack} className="p-1 -ml-1">
-          <ChevronLeft className="w-6 h-6 text-[#0F172A]" />
+          <ChevronLeft className="w-6 h-6 text-slate-900" />
         </button>
         <button onClick={() => { if (room?.user2Id === null) setShowMenu(true); else setViewingProfile(partnerId); }} className="flex items-center gap-2 flex-1 min-w-0 text-left">
           <div className="w-10 h-10 rounded-full gradient-green flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -1175,15 +1193,18 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1 min-w-0">
-              <p className="font-bold text-[#0F172A] text-[15px] truncate">{partnerName}</p>
+              <p className="font-bold text-slate-900 text-[15px] truncate">{partnerName}</p>
               {room?.user2Id !== null && profileQuery.data?.isStudentVerified && <GraduationCap className="w-4 h-4 text-[#3B82F6] flex-shrink-0" />}
             </div>
-            <p className="text-[11px] text-[#22C55E] font-medium">{room?.user2Id === null ? `${(typeof room.metadata === 'string' ? JSON.parse(room.metadata || '{}') : (room.metadata || {})).participantIds?.length || room?.cycleData?.participants?.length || 0} Members` : 'Active now'}</p>
+            <p className="text-[11px] text-green-500 font-medium">{room?.user2Id === null ? `${(typeof room.metadata === 'string' ? JSON.parse(room.metadata || '{}') : (room.metadata || {})).participantIds?.length || room?.cycleData?.participants?.length || 0} Members` : 'Active now'}</p>
           </div>
         </button>
-        <div className="flex items-center gap-1 relative">
+        <div className="flex items-center gap-2 relative">
+          <button onClick={() => navigate('/verify')} className="p-2 bg-green-50 rounded-full hover:bg-green-100 transition-colors" title="In-Person Verification">
+            <ShieldCheck className="w-5 h-5 text-green-600" />
+          </button>
           <button onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }} className="p-1">
-            <MoreVertical className="w-6 h-6 text-[#0F172A]" />
+            <MoreVertical className="w-6 h-6 text-slate-900" />
           </button>
           
           <AnimatePresence>
@@ -1213,7 +1234,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
              
              <motion.div 
                 layoutId={`cycle-card-${previewLeg.id || previewLeg.receiveListingId}`}
-                className="w-full max-w-sm bg-white rounded-[32px] overflow-hidden shadow-2xl relative z-10 flex flex-col"
+                className="w-full max-w-sm bg-white rounded-3xl overflow-hidden shadow-2xl relative z-10 flex flex-col"
              >
                 <div className="w-full h-[400px] relative">
                    {(() => {
@@ -1247,20 +1268,20 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
              <div className="page-header px-4 py-3 flex items-center justify-between border-b border-gray-100 z-50 sticky top-0 bg-white/90 backdrop-blur-md">
                <div className="flex items-center gap-3">
                  <button onClick={() => setShowGroupInfo(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-700 hover:bg-gray-100"><ChevronLeft className="w-6 h-6" /></button>
-                 <h2 className="font-bold text-[#0F172A] text-lg">Cycle Group Chat</h2>
+                 <h2 className="font-bold text-slate-900 text-lg">Cycle Group Chat</h2>
                </div>
              </div>
              <div className="p-6 pb-20">
                 <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-[#22C55E] to-[#3B82F6] flex items-center justify-center mb-6 shadow-lg shadow-blue-500/20">
                    <Repeat2 className="w-10 h-10 text-white" />
                 </div>
-                <h2 className="text-2xl font-black text-center text-[#0F172A] mb-8">Group Members</h2>
+                <h2 className="text-2xl font-black text-center text-slate-900 mb-8">Group Members</h2>
                 <div className="flex flex-col gap-4 mb-8">
                    {room?.metadata && JSON.parse(room.metadata).participantIds?.map((pid: string) => (
                       <ParticipantRow key={pid} pid={pid} isYou={pid === user?.id} />
                    ))}
                 </div>
-                <button onClick={() => handleMenuAction("delete")} className="w-full bg-[#FEF2F2] text-red-600 font-bold py-4 rounded-[24px] shadow-sm border border-red-100 hover:bg-red-50">
+                <button onClick={() => handleMenuAction("delete")} className="w-full bg-[#FEF2F2] text-red-600 font-bold py-4 rounded-2xl shadow-sm border border-red-100 hover:bg-red-50">
                    Leave Cycle Chat
                 </button>
              </div>
@@ -1509,10 +1530,10 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
               animate={{ scale: 1 }}
               exit={{ scale: 0.95 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-[32px] p-6 w-full max-w-sm"
+              className="bg-white rounded-3xl p-6 w-full max-w-sm"
             >
               <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-xl text-[#0F172A]">Reject Offer</h3>
+                <h3 className="font-bold text-xl text-slate-900">Reject Offer</h3>
                 <button onClick={() => { setRejectState({isOpen: false}); setCustomRejectMsg(""); }} className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200">
                   <X className="w-5 h-5" />
                 </button>
@@ -1559,9 +1580,9 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
           <div className="flex flex-col gap-4 py-4 px-2">
             {[1, 2, 3].map((i) => (
               <div key={`sk-msg-${i}`} className={`flex ${i % 2 === 0 ? 'justify-end' : 'justify-start'} animate-pulse`}>
-                <div className={`max-w-[75%] rounded-[24px] p-3 ${i % 2 === 0 ? 'bg-[#22C55E]/20 rounded-tr-[4px]' : 'bg-gray-100 rounded-tl-[4px]'}`}>
-                  <div className={`h-4 ${i % 2 === 0 ? 'bg-[#22C55E]/30' : 'bg-gray-200'} rounded-full w-${i % 2 === 0 ? '32' : '48'} mb-2`}></div>
-                  {i === 2 && <div className={`h-4 ${i % 2 === 0 ? 'bg-[#22C55E]/30' : 'bg-gray-200'} rounded-full w-24`}></div>}
+                <div className={`max-w-[75%] rounded-2xl p-3 ${i % 2 === 0 ? 'bg-green-500/20 rounded-tr-[4px]' : 'bg-gray-100 rounded-tl-[4px]'}`}>
+                  <div className={`h-4 ${i % 2 === 0 ? 'bg-green-500/30' : 'bg-gray-200'} rounded-full w-${i % 2 === 0 ? '32' : '48'} mb-2`}></div>
+                  {i === 2 && <div className={`h-4 ${i % 2 === 0 ? 'bg-green-500/30' : 'bg-gray-200'} rounded-full w-24`}></div>}
                 </div>
               </div>
             ))}
@@ -1632,7 +1653,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
             onClick={() => setFullscreenReceipt(null)}
             className="fixed inset-0 z-[120] bg-black/90 flex items-center justify-center p-4 cursor-pointer backdrop-blur-sm"
           >
-            <div className="bg-white w-full max-w-sm rounded-[32px] shadow-2xl border border-gray-100 overflow-hidden relative" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-gray-100 overflow-hidden relative" onClick={(e) => e.stopPropagation()}>
               <div className="bg-gradient-to-r from-[#22C55E] to-[#3B82F6] p-6 text-center">
                 <CheckCircle className="w-12 h-12 text-white mx-auto mb-2 opacity-90" />
                 <h3 className="font-black text-white tracking-widest uppercase text-sm">Transaction Receipt</h3>
@@ -1645,20 +1666,20 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                   <div className="flex justify-between items-center pb-4 border-b border-gray-200 border-dashed">
                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Date & Time</span>
                      <div className="text-right">
-                       <p className="text-sm font-black text-[#0F172A]">{new Date(fullscreenReceipt.timestamp).toLocaleDateString()}</p>
-                       <p className="text-[10px] font-bold text-gray-400">{new Date(fullscreenReceipt.timestamp).toLocaleTimeString()}</p>
+                       <p className="text-sm font-black text-slate-900">{new Date(fullscreenReceipt.timestamp).toLocaleDateString()}</p>
+                       <p className="text-xs font-bold text-gray-400">{new Date(fullscreenReceipt.timestamp).toLocaleTimeString()}</p>
                      </div>
                   </div>
                   
                   {fullscreenReceipt.type === 'cycle' ? (
                     <div className="flex justify-between items-center pb-4 border-b border-gray-200 border-dashed">
                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Cycle Action</span>
-                       <span className="text-sm font-black text-[#0F172A]">Accepted</span>
+                       <span className="text-sm font-black text-slate-900">Accepted</span>
                     </div>
                   ) : (
                     <div className="flex justify-between items-center pb-4 border-b border-gray-200 border-dashed">
                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Partner</span>
-                       <span className="text-sm font-black text-[#0F172A]">{partnerFullName || fullscreenReceipt.partnerName}</span>
+                       <span className="text-sm font-black text-slate-900">{partnerFullName || fullscreenReceipt.partnerName}</span>
                     </div>
                   )}
                   
@@ -1678,7 +1699,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                                  <div key={i} className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
                                    <div className="flex flex-col flex-1 min-w-0 pr-2">
                                       <span className="text-xs font-bold text-gray-800 truncate"><PreviewUser uid={leg.userId} /></span>
-                                      <span className="text-[10px] text-gray-500 font-medium truncate mt-0.5">gives: {leg.title || leg.receiveTitle}</span>
+                                      <span className="text-xs text-gray-500 font-medium truncate mt-0.5">gives: {leg.title || leg.receiveTitle}</span>
                                    </div>
                                    <div className="mx-2 text-gray-300 shrink-0">
                                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
@@ -1686,7 +1707,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                                    <div className="flex flex-col items-end flex-1 min-w-0 pl-2 text-right">
                                       <span className="text-xs font-bold text-gray-800 truncate"><PreviewUser uid={nextLeg.userId} /></span>
                                       {cash > 0 && (
-                                         <span className="text-[10px] font-bold text-red-500 truncate mt-0.5">- KES {cash}</span>
+                                         <span className="text-xs font-bold text-red-500 truncate mt-0.5">- KES {cash}</span>
                                       )}
                                    </div>
                                  </div>
@@ -1696,7 +1717,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                      ) : (
                         <>
                            <p className="text-sm font-bold text-gray-800 leading-snug">{fullscreenReceipt.itemsExchanged}</p>
-                           {fullscreenReceipt.cashTopUp && <p className="text-xs font-bold text-[#22C55E] mt-1">+ KES {fullscreenReceipt.cashTopUp}</p>}
+                           {fullscreenReceipt.cashTopUp && <p className="text-xs font-bold text-green-500 mt-1">+ KES {fullscreenReceipt.cashTopUp}</p>}
                         </>
                      )}
                   </div>
@@ -1706,7 +1727,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                         <span className="text-blue-500 text-lg mt-0.5">💡</span>
                         <div>
                            <p className="text-[11px] font-black text-blue-900 uppercase tracking-widest mb-1">Safety Tip</p>
-                           <p className="text-[13px] font-medium text-blue-800 leading-relaxed">
+                           <p className="text-sm font-medium text-blue-800 leading-relaxed">
                               {getStableTip(fullscreenReceipt?.id || "modal")}
                            </p>
                         </div>
@@ -1717,8 +1738,8 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                   {(fullscreenReceipt.meetupPlace || fullscreenReceipt.timeWindow) && (
                     <div className="pb-4 border-b border-gray-200 border-dashed">
                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Meetup Details</span>
-                       <p className="flex justify-between text-sm mb-1"><span className="font-bold text-gray-600">Location:</span> <span className="font-bold text-[#0F172A]">{fullscreenReceipt.meetupPlace}</span></p>
-                       <p className="flex justify-between text-sm"><span className="font-bold text-gray-600">Time:</span> <span className="font-bold text-[#0F172A]">{fullscreenReceipt.timeWindow}</span></p>
+                       <p className="flex justify-between text-sm mb-1"><span className="font-bold text-gray-600">Location:</span> <span className="font-bold text-slate-900">{fullscreenReceipt.meetupPlace}</span></p>
+                       <p className="flex justify-between text-sm"><span className="font-bold text-gray-600">Time:</span> <span className="font-bold text-slate-900">{fullscreenReceipt.timeWindow}</span></p>
                     </div>
                   )}
                   
@@ -1729,7 +1750,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                 
                 <div className="mt-6 pt-4 flex flex-col items-center justify-center opacity-40">
                    <div className="w-full h-2 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNCAyMCI+PHJlY3Qgd2lkdGg9IjIiIGhlaWdodD0iMjAiIGZpbGw9IiMwMDAiLz48L3N2Zz4=')] bg-repeat-x mb-2"></div>
-                   <p className="text-[10px] font-black tracking-[0.2em] text-gray-400 mt-2">SWAPSOKO VERIFIED</p>
+                   <p className="text-xs font-black tracking-[0.2em] text-gray-400 mt-2">SWAPSOKO VERIFIED</p>
                 </div>
               </div>
               <button onClick={() => setFullscreenReceipt(null)} className="absolute top-4 right-4 w-8 h-8 bg-black/10 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/20"><X className="w-4 h-4" /></button>
@@ -1769,7 +1790,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                   key={i}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleSend(reply, "quick_reply")}
-                  className="px-3 py-1.5 rounded-full border border-[#22C55E] text-[#22C55E] text-xs font-medium"
+                  className="px-3 py-1.5 rounded-full border border-green-500 text-green-500 text-xs font-medium"
                 >
                   {reply}
                 </motion.button>
@@ -1783,19 +1804,19 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
       {/* Input */}
       {!isPreview && (
       <div className="pb-4 px-4 bg-transparent mt-2 shrink-0 relative z-[60]">
-        <div className="bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.1)] rounded-[32px] p-2 flex items-center gap-2">
+        <div className="bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.1)] rounded-3xl p-2 flex items-center gap-2">
           {previewAudioUrl ? (
             <>
               <button onClick={cancelRecording} className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0">
                 <X className="w-5 h-5 text-red-500" />
               </button>
-              <div className="flex-1 bg-[#F8FAFC]/50 rounded-[24px] px-3 py-1 border border-gray-100/50 overflow-hidden">
+              <div className="flex-1 bg-[#F8FAFC]/50 rounded-2xl px-3 py-1 border border-gray-100/50 overflow-hidden">
                  <VoicePlayer url={previewAudioUrl} />
               </div>
               <motion.button
                 whileTap={{ scale: 0.85 }}
                 onClick={sendVoiceNote}
-                className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-[#22C55E] shadow-[#22C55E]/30 shadow-md"
+                className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-green-500 shadow-[#22C55E]/30 shadow-md"
               >
                 <Send className="w-4 h-4 ml-0.5 text-white" />
               </motion.button>
@@ -1821,7 +1842,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                <motion.button
                   whileTap={{ scale: 0.85 }}
                   onClick={stopRecording}
-                  className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-[#22C55E]"
+                  className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-green-500"
                >
                  <Check className="w-5 h-5 text-white" />
                </motion.button>
@@ -1837,13 +1858,13 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
               </motion.button>
               {mentionState.active && room?.cycleData?.participants && (
                 <div className="absolute bottom-[80px] left-4 bg-white border border-gray-100 shadow-xl rounded-xl p-2 w-48 z-50">
-                  <p className="text-[10px] font-bold text-gray-400 px-2 py-1 uppercase tracking-widest">Mention</p>
+                  <p className="text-xs font-bold text-gray-400 px-2 py-1 uppercase tracking-widest">Mention</p>
                   {room.cycleData.participants.map((pid: string) => (
                      <MentionOption key={pid} pid={pid} input={input} setInput={setInput} setMentionState={setMentionState} query={mentionState.query} />
                   ))}
                 </div>
               )}
-              <div className="flex-1 flex items-center bg-[#F8FAFC]/50 rounded-[24px] px-4 py-2.5 border border-gray-100/50">
+              <div className="flex-1 flex items-center bg-[#F8FAFC]/50 rounded-2xl px-4 py-2.5 border border-gray-100/50">
                 <input
                   value={input}
                   onChange={e => {
@@ -1858,14 +1879,14 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                   }}
                   onKeyDown={e => e.key === "Enter" && handleSend()}
                   placeholder="Type a message..."
-                  className="flex-1 bg-transparent text-sm text-[#0F172A] placeholder-gray-400 outline-none w-full"
+                  className="flex-1 bg-transparent text-sm text-slate-900 placeholder-gray-400 outline-none w-full"
                 />
               </div>
               {input.trim() ? (
                 <motion.button
                   whileTap={{ scale: 0.85 }}
                   onClick={() => handleSend()}
-                  className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-[#22C55E] shadow-[#22C55E]/30 shadow-md"
+                  className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-green-500 shadow-[#22C55E]/30 shadow-md"
                 >
                   <Send className="w-4 h-4 ml-0.5 text-white" />
                 </motion.button>
@@ -1873,9 +1894,9 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                 <motion.button
                   whileTap={{ scale: 0.85 }}
                   onClick={startRecording}
-                  className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-[#22C55E]/10"
+                  className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-green-500/10"
                 >
-                  <Mic className="w-5 h-5 text-[#22C55E]" />
+                  <Mic className="w-5 h-5 text-green-500" />
                 </motion.button>
               )}
             </>
@@ -1915,7 +1936,7 @@ function ChatRoomItem({ room, user, onSelectRoom }: { room: any; user: any; onSe
       animate={{ opacity: 1, y: 0 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onSelectRoom(room.id)}
-      className="w-[calc(100%-2rem)] mx-auto flex items-center gap-3 px-4 py-3.5 bg-white/70 backdrop-blur-md border border-gray-100 rounded-[24px] mb-3 shadow-sm hover:shadow-md transition-all"
+      className="w-[calc(100%-2rem)] mx-auto flex items-center gap-3 px-4 py-3.5 bg-white/70 backdrop-blur-md border border-gray-100 rounded-2xl mb-3 shadow-sm hover:shadow-md transition-all"
     >
       <div className="relative flex-shrink-0">
         <div className="w-12 h-12 rounded-full gradient-green flex items-center justify-center overflow-hidden">
@@ -1927,15 +1948,15 @@ function ChatRoomItem({ room, user, onSelectRoom }: { room: any; user: any; onSe
             <span className="text-white font-bold">{partnerName[0]?.toUpperCase()}</span>
           )}
         </div>
-        <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#22C55E] rounded-full border-2 border-white" />
+        <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />
       </div>
       <div className="flex-1 min-w-0 text-left">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1 min-w-0 pr-2">
-            <p className="font-bold text-[#0F172A] text-sm truncate">{partnerName}</p>
+            <p className="font-bold text-slate-900 text-sm truncate">{partnerName}</p>
             {!room.isCycle && profileQuery.data?.isStudentVerified && <GraduationCap className="w-3.5 h-3.5 text-[#3B82F6] flex-shrink-0" />}
           </div>
-          <span className="text-[10px] text-gray-400 flex-shrink-0">
+          <span className="text-xs text-gray-400 flex-shrink-0">
             {formatDistanceToNow(new Date(room.lastMessageAt || Date.now()), { addSuffix: true })}
           </span>
         </div>
@@ -1974,17 +1995,17 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
       >
         <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-[12px] bg-[#F0FDF4] flex items-center justify-center">
-            <Handshake className="w-5 h-5 text-[#22C55E]" />
+          <div className="w-10 h-10 rounded-xl bg-[#F0FDF4] flex items-center justify-center">
+            <Handshake className="w-5 h-5 text-green-500" />
           </div>
-          <h3 className="font-extrabold text-[#0F172A] text-xl tracking-tight">Swap Agreement</h3>
+          <h3 className="font-extrabold text-slate-900 text-xl tracking-tight">Swap Agreement</h3>
         </div>
-        <p className="text-gray-500 text-[13px] font-medium mb-6">Lock in terms with <span className="font-bold text-[#0F172A]">{partnerName.startsWith('@') ? partnerName : '@' + partnerName}</span> before meeting.</p>
+        <p className="text-gray-500 text-sm font-medium mb-6">Lock in terms with <span className="font-bold text-slate-900">{partnerName.startsWith('@') ? partnerName : '@' + partnerName}</span> before meeting.</p>
 
         <div className="space-y-4">
           <div>
             <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Item in Transaction</label>
-            <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-[16px] border border-gray-100">
+            <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-2xl border border-gray-100">
                <div className="w-16 h-16 rounded-xl bg-gray-200 overflow-hidden flex-shrink-0">
                   {listingQuery.data?.images ? (
                      <img src={(typeof listingQuery.data.images === 'string' ? JSON.parse(listingQuery.data.images || '[]') : listingQuery.data.images)[0]} className="w-full h-full object-cover" />
@@ -1993,10 +2014,10 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
                   )}
                </div>
                <div>
-                  <h4 className="font-bold text-[#0F172A] text-sm leading-tight mb-1">{listingQuery.data?.title || autoItemsExchanged}</h4>
+                  <h4 className="font-bold text-slate-900 text-sm leading-tight mb-1">{listingQuery.data?.title || autoItemsExchanged}</h4>
                   <div className="flex items-center gap-1">
-                     <span className="bg-[#22C55E]/10 text-[#22C55E] text-[10px] font-black uppercase tracking-wider pl-1 pr-2 py-0.5 rounded-full flex items-center gap-1">
-        {partnerAvatar ? <img src={partnerAvatar} className="w-3.5 h-3.5 rounded-full object-cover" /> : <div className="w-3.5 h-3.5 rounded-full bg-[#22C55E] text-white flex items-center justify-center text-[8px]">{partnerName.replace('@', '').charAt(0).toUpperCase()}</div>}
+                     <span className="bg-green-500/10 text-green-500 text-xs font-black uppercase tracking-wider pl-1 pr-2 py-0.5 rounded-full flex items-center gap-1">
+        {partnerAvatar ? <img src={partnerAvatar} className="w-3.5 h-3.5 rounded-full object-cover" /> : <div className="w-3.5 h-3.5 rounded-full bg-green-500 text-white flex items-center justify-center text-[8px]">{partnerName.replace('@', '').charAt(0).toUpperCase()}</div>}
         {partnerName.startsWith('@') ? partnerName : '@' + partnerName}
     </span>
                   </div>
@@ -2005,7 +2026,7 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
             
           <div>
              <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Full Agreement Details</label>
-             <div className="bg-gray-50 border border-gray-100 rounded-[16px] px-4 py-3 text-[14px] font-semibold text-[#0F172A]">
+             <div className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900">
                 {initialData?.itemsExchanged || (initialData?.offerItems ? `${initialData.offerItems} for ${listingQuery.data?.title || autoItemsExchanged}` : autoItemsExchanged)}
              </div>
           </div>
@@ -2017,7 +2038,7 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
               value={cashTopUp}
               onChange={e => setCashTopUp(e.target.value)}
               placeholder="e.g. 0 or 500 via M-Pesa"
-              className="w-full bg-gray-50 border border-transparent rounded-[16px] px-4 py-3 text-[14px] font-semibold text-[#0F172A] outline-none focus:bg-white focus:border-[#22C55E] focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+              className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -2027,7 +2048,7 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
                 value={meetupPlace}
                 onChange={e => setMeetupPlace(e.target.value)}
                 placeholder="e.g. JKUAT Gate A"
-                className="w-full bg-gray-50 border border-transparent rounded-[16px] px-4 py-3 text-[14px] font-semibold text-[#0F172A] outline-none focus:bg-white focus:border-[#22C55E] focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+                className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
               />
             </div>
             <div>
@@ -2036,7 +2057,7 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
                 value={timeWindow}
                 onChange={e => setTimeWindow(e.target.value)}
                 placeholder="e.g. Tomorrow 2PM-3PM"
-                className="w-full bg-gray-50 border border-transparent rounded-[16px] px-4 py-3 text-[14px] font-semibold text-[#0F172A] outline-none focus:bg-white focus:border-[#22C55E] focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+                className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
               />
             </div>
           </div>
@@ -2046,20 +2067,20 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
               value={conditionNotes}
               onChange={e => setConditionNotes(e.target.value)}
               placeholder="e.g. Minor scratch on screen, fully functional"
-              className="w-full bg-gray-50 border border-transparent rounded-[16px] px-4 py-3 text-[14px] font-semibold text-[#0F172A] outline-none focus:bg-white focus:border-[#22C55E] focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+              className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
             />
           </div>
           
           {isReview && (
-            <div className="bg-orange-50 border border-orange-100 rounded-[20px] p-4 mt-2">
+            <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4 mt-2">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input 
                   type="checkbox" 
                   checked={accepted} 
                   onChange={e => setAccepted(e.target.checked)}
-                  className="mt-1 w-5 h-5 text-[#22C55E] border-gray-300 rounded-[6px] focus:ring-[#22C55E]"
+                  className="mt-1 w-5 h-5 text-green-500 border-gray-300 rounded-[6px] focus:ring-[#22C55E]"
                 />
-                <span className="text-[13px] text-orange-900 leading-snug font-bold">
+                <span className="text-sm text-orange-900 leading-snug font-bold">
                   I have checked these terms and agree to proceed. I understand this serves as our final agreement before the swap.
                 </span>
               </label>
@@ -2076,7 +2097,7 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
               toast.success("Swap Agreement signed & finalized!");
               onClose();
             }}
-            className={`w-full mt-6 font-extrabold py-4 rounded-[24px] text-[15px] transition-colors shadow-sm ${accepted ? "gradient-green text-white shadow-[0_8px_20px_rgba(34,197,94,0.3)] hover:scale-[1.02]" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
+            className={`w-full mt-6 font-extrabold py-4 rounded-2xl text-[15px] transition-colors shadow-sm ${accepted ? "gradient-green text-white shadow-[0_8px_20px_rgba(34,197,94,0.3)] hover:scale-[1.02]" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
           >
             Sign & Finalize Swap
           </motion.button>
@@ -2096,7 +2117,7 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
               toast.success("Agreement sent for review!");
               onClose();
             }}
-            className="w-full mt-6 font-extrabold py-4 rounded-[24px] text-[15px] transition-colors gradient-green text-white shadow-[0_8px_20px_rgba(34,197,94,0.3)] hover:scale-[1.02]"
+            className="w-full mt-6 font-extrabold py-4 rounded-2xl text-[15px] transition-colors gradient-green text-white shadow-[0_8px_20px_rgba(34,197,94,0.3)] hover:scale-[1.02]"
           >
             Send Agreement Form
           </motion.button>
@@ -2151,9 +2172,9 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
       >
         <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="font-extrabold text-[#0F172A] text-xl tracking-tight">Counter Offer</h3>
+          <h3 className="font-extrabold text-slate-900 text-xl tracking-tight">Counter Offer</h3>
         </div>
-        <p className="text-gray-500 text-[13px] font-medium mb-6">Propose new terms to <span className="font-bold text-[#0F172A]">{isCycle && cyclePartnerId ? <PreviewUser uid={cyclePartnerId} /> : `@${partnerName}`}</span>.</p>
+        <p className="text-gray-500 text-sm font-medium mb-6">Propose new terms to <span className="font-bold text-slate-900">{isCycle && cyclePartnerId ? <PreviewUser uid={cyclePartnerId} /> : `@${partnerName}`}</span>.</p>
         <div className="space-y-4">
           <div>
             <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Message</label>
@@ -2162,7 +2183,7 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
               onChange={e => setMessage(e.target.value)}
               placeholder="e.g. I can accept if you add KES 500"
               rows={2}
-              className="w-full bg-gray-50 border border-transparent rounded-[16px] px-4 py-3 text-[14px] font-semibold text-[#0F172A] outline-none focus:bg-white focus:border-[#22C55E] focus:ring-4 focus:ring-[#22C55E]/10 transition-all resize-none placeholder:font-medium placeholder:text-gray-400"
+              className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all resize-none placeholder:font-medium placeholder:text-gray-400"
             />
           </div>
           {!isCycle && (
@@ -2173,7 +2194,7 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
                 value={offeredItems}
                 onChange={e => setOfferedItems(e.target.value)}
                 placeholder="e.g. My iPhone 12 + 2 Games"
-                className="w-full bg-gray-50 border border-transparent rounded-[16px] px-4 py-3 text-[14px] font-semibold text-[#0F172A] outline-none focus:bg-white focus:border-[#22C55E] focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+                className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
               />
             </div>
           )}
@@ -2184,48 +2205,48 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
               value={cashTopUp}
               onChange={e => setCashTopUp(e.target.value)}
               placeholder="e.g. 500"
-              className="w-full bg-gray-50 border border-transparent rounded-[16px] px-4 py-3 text-[14px] font-semibold text-[#0F172A] outline-none focus:bg-white focus:border-[#22C55E] focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+              className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
             />
           </div>
           
           <div className="pt-4 border-t border-gray-100">
              {isCycle && (
                <>
-                 <h4 className="font-bold text-gray-900 text-sm mb-3">Meeting Arrangements <span className="text-gray-400 font-medium text-[10px] ml-1">(Optional)</span></h4>
+                 <h4 className="font-bold text-gray-900 text-sm mb-3">Meeting Arrangements <span className="text-gray-400 font-medium text-xs ml-1">(Optional)</span></h4>
              <div className="grid grid-cols-2 gap-3 mb-3">
                <div>
-                 <label className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Date</label>
+                 <label className="text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Date</label>
                  <input
                    type="date"
                    value={meetingDate}
                    onChange={e => setMeetingDate(e.target.value)}
-                   className="w-full bg-gray-50 border border-transparent rounded-[12px] px-3 py-2.5 text-[13px] font-semibold text-[#0F172A] outline-none focus:bg-white focus:border-blue-500 transition-all"
+                   className="w-full bg-gray-50 border border-transparent rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:bg-white focus:border-blue-500 transition-all"
                  />
                </div>
                <div>
-                 <label className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Time</label>
+                 <label className="text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Time</label>
                  <input
                    type="time"
                    value={meetingTime}
                    onChange={e => setMeetingTime(e.target.value)}
-                   className="w-full bg-gray-50 border border-transparent rounded-[12px] px-3 py-2.5 text-[13px] font-semibold text-[#0F172A] outline-none focus:bg-white focus:border-blue-500 transition-all"
+                   className="w-full bg-gray-50 border border-transparent rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:bg-white focus:border-blue-500 transition-all"
                  />
                </div>
              </div>
              <div>
-               <label className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Location</label>
+               <label className="text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Location</label>
                <input
                  type="text"
                  value={meetingLocation}
                  onChange={e => setMeetingLocation(e.target.value)}
                  placeholder="Type specific location..."
-                 className="w-full bg-gray-50 border border-transparent rounded-[12px] px-3 py-2.5 text-[13px] font-semibold text-[#0F172A] outline-none focus:bg-white focus:border-blue-500 transition-all placeholder:font-medium placeholder:text-gray-400"
+                 className="w-full bg-gray-50 border border-transparent rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:bg-white focus:border-blue-500 transition-all placeholder:font-medium placeholder:text-gray-400"
                />
              </div>
              <div className="mt-4 bg-blue-50 border border-blue-100 rounded-xl p-3 flex gap-3 items-start">
                <span className="text-blue-500 text-lg mt-0.5">💡</span>
                <div>
-                  <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-0.5">Safety Tip</p>
+                  <p className="text-xs font-black text-blue-900 uppercase tracking-widest mb-0.5">Safety Tip</p>
                   <p className="text-[11px] font-medium text-blue-800 leading-relaxed">{safetyTip}</p>
                </div>
              </div>
@@ -2252,7 +2273,7 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
             });
             onClose();
           }}
-          className="w-full mt-6 font-extrabold py-4 rounded-[24px] text-[15px] transition-colors gradient-green text-white shadow-[0_8px_20px_rgba(34,197,94,0.3)] hover:scale-[1.02]"
+          className="w-full mt-6 font-extrabold py-4 rounded-2xl text-[15px] transition-colors gradient-green text-white shadow-[0_8px_20px_rgba(34,197,94,0.3)] hover:scale-[1.02]"
         >
           Send Counter Offer
         </motion.button>
@@ -2276,15 +2297,15 @@ function ChatList({ onSelectRoom }: { onSelectRoom: (id: number) => void }) {
   if (!isAuthenticated) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 text-center bg-[#F8FAFC]">
-        <div className="w-20 h-20 rounded-[28px] overflow-hidden shadow-[0_12px_30px_rgba(34,197,94,0.2)] border-[3px] border-white bg-white mb-6">
+        <div className="w-20 h-20 rounded-3xl overflow-hidden shadow-[0_12px_30px_rgba(34,197,94,0.2)] border-[3px] border-white bg-white mb-6">
           <img src="/logo.jpg" alt="SwapSoko" className="w-full h-full object-cover" />
         </div>
-        <h2 className="font-extrabold text-[#0F172A] text-2xl mb-2 tracking-tight">Access Messages</h2>
+        <h2 className="font-extrabold text-slate-900 text-2xl mb-2 tracking-tight">Access Messages</h2>
         <p className="text-gray-500 text-[15px] max-w-[260px] leading-relaxed mb-8 font-medium">Sign in to view your chats and connect with other swappers.</p>
         <motion.button
           onClick={() => window.location.href = getLoginUrl()}
           whileTap={{ scale: 0.95 }}
-          className="bg-[#0F172A] text-white font-bold py-3.5 px-10 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-[#1E293B] transition-all"
+          className="bg-slate-900 text-white font-bold py-3.5 px-10 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-[#1E293B] transition-all"
         >
           Sign In to Continue
         </motion.button>
@@ -2298,14 +2319,14 @@ function ChatList({ onSelectRoom }: { onSelectRoom: (id: number) => void }) {
     <div className="flex flex-col h-screen pb-20">
       <div className="page-header px-4 py-3">
         <div className="flex items-center justify-between">
-          <h1 className="font-bold text-[#0F172A] text-lg">{"Chat"}</h1>
+          <h1 className="font-bold text-slate-900 text-lg">{"Chat"}</h1>
         </div>
       </div>
 
       {roomsQuery.isLoading ? (
         <div className="px-4 py-2 space-y-3">
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={`sk-room-${i}`} className="w-full flex items-center gap-3 px-4 py-3.5 bg-white/70 backdrop-blur-md border border-gray-100 rounded-[24px] animate-pulse">
+            <div key={`sk-room-${i}`} className="w-full flex items-center gap-3 px-4 py-3.5 bg-white/70 backdrop-blur-md border border-gray-100 rounded-2xl animate-pulse">
               <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0"></div>
               <div className="flex-1 space-y-2">
                 <div className="flex justify-between">
@@ -2320,12 +2341,12 @@ function ChatList({ onSelectRoom }: { onSelectRoom: (id: number) => void }) {
       ) : rooms.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
           <MessageCircle className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-          <h3 className="font-bold text-[#0F172A] text-lg">No conversations yet</h3>
+          <h3 className="font-bold text-slate-900 text-lg">No conversations yet</h3>
           <p className="text-gray-400 text-sm mt-1">Make an offer on an item to start a chat!</p>
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/")}
-            className="mt-6 border-2 border-gray-100 text-[#0F172A] font-bold px-6 py-2.5 rounded-[32px] text-sm"
+            className="mt-6 border-2 border-gray-100 text-slate-900 font-bold px-6 py-2.5 rounded-3xl text-sm"
           >
             Explore Listings
           </motion.button>

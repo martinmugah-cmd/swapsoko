@@ -105,41 +105,58 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#F8FAFC] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-green-500/10 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
+    <div className="min-h-[100dvh] bg-black flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* High-End Fluid Mesh Gradient Background */}
+      <motion.div 
+        animate={{ 
+           scale: [1, 1.2, 1],
+           rotate: [0, 90, 0],
+        }} 
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="absolute top-[-20%] left-[-20%] w-[70vw] h-[70vw] rounded-full blur-[120px] pointer-events-none opacity-40 mix-blend-screen"
+        style={{ background: 'radial-gradient(circle, rgba(34,197,94,0.8) 0%, rgba(0,0,0,0) 70%)' }}
+      />
+      <motion.div 
+        animate={{ 
+           scale: [1, 1.5, 1],
+           rotate: [0, -90, 0],
+        }} 
+        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        className="absolute bottom-[-20%] right-[-20%] w-[80vw] h-[80vw] rounded-full blur-[140px] pointer-events-none opacity-30 mix-blend-screen"
+        style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.8) 0%, rgba(0,0,0,0) 70%)' }}
+      />
 
       <AnimatePresence mode="wait">
         {view === "landing" && (
           <motion.div
             key="landing"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 40 }}
             className="w-full max-w-md flex flex-col items-center z-10"
           >
             <motion.div 
-              className="w-24 h-24 rounded-[32px] overflow-hidden mb-8 shadow-[0_20px_40px_-10px_rgba(34,197,94,0.3)] border-[3px] border-white bg-white"
+              className="w-24 h-24 rounded-3xl overflow-hidden mb-10 shadow-2xl border border-white/10 bg-black/50 backdrop-blur-md"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", bounce: 0.5, delay: 0.1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30, delay: 0.1 }}
             >
-              <img src="/logo.jpg" alt="SwapSoko Logo" className="w-full h-full object-cover" />
+              <img src="/logo.jpg" alt="SwapSoko Logo" className="w-full h-full object-cover mix-blend-lighten" />
             </motion.div>
             
             <motion.h1 
-              className="text-[2.5rem] font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-900 to-gray-600 text-center mb-4 leading-[1.1] tracking-tight"
+              className="text-h1 text-white text-center mb-4"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
               Swap what you have.<br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#22C55E] to-[#10B981]">Get what you need.</span>
+              <span className="text-green-400">Get what you need.</span>
             </motion.h1>
             
             <motion.p 
-              className="text-[15px] font-medium text-gray-500 text-center mb-10 px-4 leading-relaxed"
+              className="text-body text-gray-300 text-center mb-12 px-6"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -148,31 +165,31 @@ export default function AuthPage() {
             </motion.p>
 
             <motion.div 
-              className="w-full space-y-4 px-2"
+              className="w-full space-y-4 px-4"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
               <button
                 onClick={() => setView("signup")}
-                className="w-full bg-[#0F172A] text-white font-bold py-4 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-[#1E293B] transition-all flex items-center justify-center gap-2"
+                className="w-full bg-white text-black font-bold py-4 rounded-full shadow-lg hover:scale-[0.98] active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 Create an account
-                <ArrowRight className="w-4 h-4 text-white/70" />
+                <ArrowRight className="w-4 h-4 text-black/70" />
               </button>
               
               <div className="relative py-2 mt-4">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200"></div>
+                  <div className="w-full border-t border-white/10"></div>
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="bg-[#F8FAFC] px-2 text-gray-400 font-medium">OR</span>
+                  <span className="bg-black px-4 text-gray-500 font-medium tracking-widest uppercase">or</span>
                 </div>
               </div>
 
               <button
                 onClick={handleGoogleAuth}
-                className="w-full bg-white/80 backdrop-blur-md text-[#0F172A] font-bold py-4 rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.05)] hover:bg-white border border-gray-200 transition-all flex items-center justify-center gap-2 mt-4"
+                className="w-full apple-glass-dark text-white font-bold py-4 rounded-full shadow-sm hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center gap-2 mt-4"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -189,19 +206,20 @@ export default function AuthPage() {
         {(view === "login" || view === "signup") && (
           <motion.div
             key="form"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="w-full max-w-md bg-white/90 backdrop-blur-2xl rounded-[32px] p-8 shadow-[0_24px_60px_-15px_rgba(0,0,0,0.1)] border border-white/60 z-10"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 40 }}
+            className="w-full max-w-md apple-glass-dark rounded-[40px] p-8 shadow-2xl z-10"
           >
             <div className="flex flex-col items-center mb-8">
-              <div className="w-16 h-16 rounded-[24px] overflow-hidden mb-4 shadow-lg border-2 border-white bg-white">
-                <img src="/logo.jpg" alt="SwapSoko Logo" className="w-full h-full object-cover" />
+              <div className="w-16 h-16 rounded-2xl overflow-hidden mb-6 shadow-lg border border-white/10 bg-black/50 backdrop-blur-md">
+                <img src="/logo.jpg" alt="SwapSoko Logo" className="w-full h-full object-cover mix-blend-lighten" />
               </div>
-              <h1 className="text-2xl font-extrabold text-[#0F172A] tracking-tight">
+              <h1 className="text-h2 text-white text-center">
                 {view === "login" ? "Welcome back" : "Join SwapSoko"}
               </h1>
-              <p className="text-sm text-gray-500 mt-2 text-center font-medium">
+              <p className="text-body text-gray-400 mt-2 text-center">
                 {view === "login"
                   ? "Enter your details to access your account"
                   : "Keep it simple. Sign up below."}
@@ -210,18 +228,18 @@ export default function AuthPage() {
 
             {view === "signup" && (
               <div className="mb-6">
-                <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+                <div className="flex bg-white/5 p-1 rounded-xl mb-6">
                   <button
                     type="button"
                     onClick={() => setIsStudent(true)}
-                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${isStudent ? "bg-white shadow text-[#0F172A]" : "text-gray-400"}`}
+                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${isStudent ? "bg-white/10 shadow text-white" : "text-gray-400"}`}
                   >
                     I am a Student
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsStudent(false)}
-                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${!isStudent ? "bg-white shadow text-[#0F172A]" : "text-gray-400"}`}
+                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${!isStudent ? "bg-white/10 shadow text-white" : "text-gray-400"}`}
                   >
                     Not a Student
                   </button>
@@ -230,17 +248,17 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={handleGoogleAuth}
-                  className="w-full bg-white text-[#0F172A] font-bold py-3.5 rounded-full shadow-sm hover:shadow-md border border-gray-100 transition-all flex items-center justify-center gap-2 mb-4"
+                  className="w-full bg-white/5 text-white font-bold py-3.5 rounded-full shadow-sm hover:bg-white/10 border border-white/10 transition-all flex items-center justify-center gap-2 mb-4"
                 >
-                  {isStudent && <span className="text-xs font-bold text-[#22C55E] bg-[#22C55E]/10 px-2 py-0.5 rounded-full mr-1">Recommended</span>}
+                  {isStudent && <span className="text-xs font-bold text-green-400 bg-green-500/20 px-2 py-0.5 rounded-full mr-1">Recommended</span>}
                   Continue with Google
                 </button>
                 <div className="relative py-2">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200"></div>
+                    <div className="w-full border-t border-white/10"></div>
                   </div>
-                  <div className="relative flex justify-center text-[10px]">
-                    <span className="bg-white px-2 text-gray-400 font-medium">OR EMAIL</span>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-black/50 backdrop-blur-md px-2 text-gray-400 font-medium tracking-widest uppercase">or email</span>
                   </div>
                 </div>
               </div>
@@ -250,7 +268,7 @@ export default function AuthPage() {
               {view === "signup" && (
                 <div className="flex gap-3">
                   <div className="space-y-1 flex-1">
-                    <label className="text-xs font-semibold text-[#0F172A] ml-1">First Name</label>
+                    <label className="text-xs font-semibold text-gray-300 ml-1 uppercase tracking-wider">First Name</label>
                     <div className="relative">
                       <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
@@ -258,12 +276,12 @@ export default function AuthPage() {
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         placeholder="John"
-                        className="w-full pl-10 pr-4 py-3 bg-[#F8FAFC] border border-gray-100 rounded-[20px] text-sm focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E] outline-none transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white focus:border-green-500 focus:ring-1 focus:ring-[#22C55E] outline-none transition-all placeholder:text-gray-500"
                       />
                     </div>
                   </div>
                   <div className="space-y-1 flex-1">
-                    <label className="text-xs font-semibold text-[#0F172A] ml-1">Last Name</label>
+                    <label className="text-xs font-semibold text-gray-300 ml-1 uppercase tracking-wider">Last Name</label>
                     <div className="relative">
                       <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
@@ -271,7 +289,7 @@ export default function AuthPage() {
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         placeholder="Doe"
-                        className="w-full pl-10 pr-4 py-3 bg-[#F8FAFC] border border-gray-100 rounded-[20px] text-sm focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E] outline-none transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white focus:border-green-500 focus:ring-1 focus:ring-[#22C55E] outline-none transition-all placeholder:text-gray-500"
                       />
                     </div>
                   </div>
@@ -279,7 +297,7 @@ export default function AuthPage() {
               )}
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A] ml-1">Email</label>
+                <label className="text-xs font-semibold text-gray-300 ml-1 uppercase tracking-wider">Email</label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -287,16 +305,16 @@ export default function AuthPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder={view === "signup" && isStudent ? "you@students.jkuat.ac.ke" : "you@example.com"}
-                    className={`w-full pl-10 pr-4 py-3 bg-[#F8FAFC] border ${emailWarning ? "border-red-400 focus:ring-red-400" : "border-gray-100 focus:border-[#22C55E] focus:ring-[#22C55E]"} rounded-[20px] text-sm outline-none transition-all focus:ring-1`}
+                    className={`w-full pl-10 pr-4 py-3 bg-white/5 border ${emailWarning ? "border-red-400 focus:ring-red-400" : "border-white/10 focus:border-green-500 focus:ring-[#22C55E]"} rounded-2xl text-sm text-white outline-none transition-all focus:ring-1 placeholder:text-gray-500`}
                   />
                 </div>
                 {emailWarning && (
-                  <p className="text-[11px] text-red-500 font-medium ml-2 mt-1">Please use a supported school email.</p>
+                  <p className="text-[11px] text-red-400 font-medium ml-2 mt-1">Please use a supported school email.</p>
                 )}
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A] ml-1">Password</label>
+                <label className="text-xs font-semibold text-gray-300 ml-1 uppercase tracking-wider">Password</label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -304,14 +322,14 @@ export default function AuthPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-4 py-3 bg-[#F8FAFC] border border-gray-100 rounded-[20px] text-sm focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E] outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white focus:border-green-500 focus:ring-1 focus:ring-[#22C55E] outline-none transition-all placeholder:text-gray-500"
                   />
                 </div>
               </div>
 
               {view === "signup" && (
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[#0F172A] ml-1">Confirm Password</label>
+                  <label className="text-xs font-semibold text-gray-300 ml-1 uppercase tracking-wider">Confirm Password</label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
@@ -319,7 +337,7 @@ export default function AuthPage() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-4 py-3 bg-[#F8FAFC] border border-gray-100 rounded-[20px] text-sm focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E] outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white focus:border-green-500 focus:ring-1 focus:ring-[#22C55E] outline-none transition-all placeholder:text-gray-500"
                     />
                   </div>
                 </div>
@@ -330,10 +348,10 @@ export default function AuthPage() {
                   className="flex items-start gap-2 mt-4 cursor-pointer px-1"
                   onClick={() => setAgreed(!agreed)}
                 >
-                  <div className="mt-0.5 text-[#22C55E]">
+                  <div className="mt-0.5 text-green-400">
                     {agreed ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4 text-gray-400" />}
                   </div>
-                  <span className="text-xs text-gray-500 leading-tight">
+                  <span className="text-xs text-gray-400 leading-tight">
                     I agree to the Terms & Privacy Policy
                   </span>
                 </div>
@@ -357,7 +375,7 @@ export default function AuthPage() {
                          toast.success("Password reset email sent! Check your inbox.");
                        }
                     }}
-                    className="text-xs font-semibold text-[#22C55E] hover:underline"
+                    className="text-xs font-semibold text-green-400 hover:underline"
                   >
                     Forgot Password?
                   </button>
@@ -367,24 +385,24 @@ export default function AuthPage() {
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 disabled={loading}
-                className="w-full mt-6 gradient-green text-white font-bold py-3.5 rounded-[24px] shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                className="w-full mt-6 bg-white text-black font-bold py-3.5 rounded-full shadow-lg hover:bg-gray-100 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
                 {loading ? (
-                  <Loader2 className="w-6 h-6 animate-spin text-white" />
+                  <Loader2 className="w-6 h-6 animate-spin text-black" />
                 ) : (
                   <>
                     {view === "login" ? "Sign In" : "Create Account"}
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="w-5 h-5 text-black" />
                   </>
                 )}
               </motion.button>
             </form>
 
-            <div className="mt-6 text-center space-y-4">
+            <div className="mt-8 text-center space-y-4">
               <button
                 type="button"
                 onClick={() => setView(view === "login" ? "signup" : "login")}
-                className="text-sm font-semibold text-gray-500 hover:text-[#22C55E] transition-colors"
+                className="text-sm font-semibold text-gray-400 hover:text-white transition-colors"
               >
                 {view === "login"
                   ? "Don't have an account? Sign up"

@@ -217,48 +217,51 @@ export default function OnboardingPage() {
     switch (step) {
       case 1:
         return (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 flex flex-col h-full max-w-lg mx-auto w-full">
-            <div className="text-center">
-              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Let's get to know you</h2>
-              <p className="text-gray-500 mt-2 font-medium">Set up your profile to start swapping.</p>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ type: "spring", stiffness: 400, damping: 40 }} className="flex flex-col h-full max-w-md mx-auto w-full">
+            <div className="text-center mt-4">
+              <h2 className="text-h1 mb-2">Who are you?</h2>
+              <p className="text-body">Set up your profile identity.</p>
             </div>
             
-            <div className="space-y-5 bg-white p-6 sm:p-8 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
-              <div className="space-y-1.5">
-                <label className="text-sm font-bold text-gray-700 pl-1">Full Name</label>
-                <input value={fullName} onChange={e => setFullName(e.target.value)} placeholder="e.g. John Doe" className="w-full bg-gray-50/50 rounded-2xl px-5 py-4 border border-gray-100 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none transition-all font-medium placeholder:font-normal placeholder:text-gray-400" />
+            <div className="space-y-6 mt-12 px-2">
+              <div className="relative border-b border-border">
+                <label className="text-caption text-muted-foreground absolute -top-5 left-0">Full Name</label>
+                <input value={fullName} onChange={e => setFullName(e.target.value)} placeholder="e.g. John Doe" className="w-full bg-transparent py-4 text-xl font-semibold focus:outline-none transition-all placeholder:text-gray-300" />
               </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-bold text-gray-700 pl-1">Username</label>
-                <input value={username} onChange={e => setUsername(e.target.value)} placeholder="e.g. johndoe" className="w-full bg-gray-50/50 rounded-2xl px-5 py-4 border border-gray-100 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none transition-all font-medium placeholder:font-normal placeholder:text-gray-400" />
+              
+              <div className="relative border-b border-border mt-8">
+                <label className="text-caption text-muted-foreground absolute -top-5 left-0">Username</label>
+                <input value={username} onChange={e => setUsername(e.target.value)} placeholder="e.g. johndoe" className="w-full bg-transparent py-4 text-xl font-semibold focus:outline-none transition-all placeholder:text-gray-300" />
               </div>
               
               {accountType === "student" && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pt-6 mt-6 border-t border-gray-100/80 space-y-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><GraduationCap className="w-4 h-4" /></div>
-                    <p className="text-sm font-bold text-gray-900">Student Info</p>
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pt-8 space-y-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500"><GraduationCap className="w-4 h-4" /></div>
+                    <p className="text-sm font-bold text-foreground">Student Verification Active</p>
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-bold text-gray-700 pl-1">Course</label>
-                    <input value={course} onChange={e => setCourse(e.target.value)} placeholder="e.g. BSc. Computer Science" className="w-full bg-gray-50/50 rounded-2xl px-5 py-4 border border-gray-100 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium placeholder:font-normal placeholder:text-gray-400" />
+                  <div className="relative border-b border-border">
+                    <label className="text-caption text-muted-foreground absolute -top-5 left-0">Course</label>
+                    <input value={course} onChange={e => setCourse(e.target.value)} placeholder="e.g. BSc. Computer Science" className="w-full bg-transparent py-3 text-lg font-medium focus:outline-none placeholder:text-gray-300" />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-bold text-gray-700 pl-1">Year of Study</label>
-                      <input value={yearOfStudy} onChange={e => setYearOfStudy(e.target.value)} placeholder="e.g. Year 3" className="w-full bg-gray-50/50 rounded-2xl px-5 py-4 border border-gray-100 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium placeholder:font-normal placeholder:text-gray-400" />
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="relative border-b border-border">
+                      <label className="text-caption text-muted-foreground absolute -top-5 left-0">Year of Study</label>
+                      <input value={yearOfStudy} onChange={e => setYearOfStudy(e.target.value)} placeholder="e.g. Year 3" className="w-full bg-transparent py-3 text-lg font-medium focus:outline-none placeholder:text-gray-300" />
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-bold text-gray-700 pl-1">Graduation</label>
-                      <input value={graduationYear} onChange={e => setGraduationYear(e.target.value)} placeholder="e.g. 2026" type="number" className="w-full bg-gray-50/50 rounded-2xl px-5 py-4 border border-gray-100 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium placeholder:font-normal placeholder:text-gray-400" />
+                    <div className="relative border-b border-border">
+                      <label className="text-caption text-muted-foreground absolute -top-5 left-0">Graduation</label>
+                      <input value={graduationYear} onChange={e => setGraduationYear(e.target.value)} placeholder="e.g. 2026" type="number" className="w-full bg-transparent py-3 text-lg font-medium focus:outline-none placeholder:text-gray-300" />
                     </div>
                   </div>
                 </motion.div>
               )}
             </div>
             
-            <div className="mt-auto pt-6 pb-8">
-              <button onClick={handleNext} disabled={!fullName || !username} className="w-full gradient-green text-white font-bold py-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-lg hover:shadow-lg disabled:opacity-50 disabled:shadow-none transition-all active:scale-[0.98]">Continue</button>
+            <div className="mt-auto pt-6 pb-6 px-4 fixed bottom-0 left-0 w-full bg-gradient-to-t from-background to-transparent pointer-events-none flex justify-center">
+              <div className="w-full max-w-[90%] pointer-events-auto">
+                <motion.button whileTap={{ scale: 0.95 }} onClick={handleNext} disabled={!fullName || !username} className="w-full bg-foreground text-background font-bold py-4 rounded-full shadow-lg hover:shadow-xl disabled:opacity-50 disabled:shadow-none transition-all">Continue</motion.button>
+              </div>
             </div>
           </motion.div>
         );
@@ -268,32 +271,32 @@ export default function OnboardingPage() {
         const selectedInterestObjs = INTERESTS.filter(i => selectedInterests.includes(i.id));
 
         return (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 flex flex-col h-full max-w-lg mx-auto w-full">
-            <div className="text-center">
-              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Your Interests</h2>
-              <p className="text-gray-500 mt-2 font-medium">Tap to add to your deck. Pick at least one.</p>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ type: "spring", stiffness: 400, damping: 40 }} className="flex flex-col h-full max-w-md mx-auto w-full">
+            <div className="text-center mt-4 mb-8">
+              <h2 className="text-h1 mb-2">Interests</h2>
+              <p className="text-body">Tap to add to your deck. Pick at least one.</p>
             </div>
             
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col pb-32 overflow-y-auto hide-scrollbar px-2">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {unselectedInterests.map(interest => (
                     <motion.button
                       layoutId={`interest-${interest.id}`}
                       key={interest.id}
                       onClick={() => handleToggleInterest(interest.id)}
-                      className="bg-white px-2 py-4 rounded-[24px] shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-2 hover:shadow-md hover:-translate-y-1 transition-all"
+                      className="bg-muted px-2 py-4 rounded-2xl flex flex-col items-center justify-center gap-2 hover:-translate-y-1 transition-all"
                       whileTap={{ scale: 0.95 }}
                     >
-                      <div className={`w-12 h-12 rounded-[16px] flex items-center justify-center text-2xl ${interest.color} bg-opacity-40`}> 
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${interest.color} bg-opacity-40`}> 
                         {interest.icon}
                       </div>
-                      <span className="font-bold text-sm text-gray-700">{interest.label}</span>
+                      <span className="font-semibold text-sm text-foreground">{interest.label}</span>
                     </motion.button>
                   ))}
               </div>
 
               {/* Stacked Deck at the bottom */}
-              <div className="mt-8 h-28 relative flex justify-center items-end bg-gray-100/50 rounded-[32px] border border-dashed border-gray-200">
+              <div className="mt-12 h-28 relative flex justify-center items-end bg-muted/50 rounded-3xl border border-dashed border-border p-4">
                 {selectedInterestObjs.map((interest, index) => {
                     const isTop = index === selectedInterestObjs.length - 1;
                     return (
@@ -301,50 +304,55 @@ export default function OnboardingPage() {
                         layoutId={`interest-${interest.id}`}
                         key={interest.id}
                         onClick={() => handleToggleInterest(interest.id)}
-                        className={`absolute w-28 bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-4 flex flex-col items-center gap-2 cursor-pointer
-                          ${isTop ? 'border-2 border-green-500 ring-4 ring-green-500/20' : 'opacity-90'}
+                        className={`absolute w-28 bg-background rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 cursor-pointer
+                          ${isTop ? 'ring-2 ring-green-500' : 'opacity-90'}
                         `}
                         style={{
-                          bottom: index * 4,
+                          bottom: index * 6,
                           zIndex: index,
                           rotate: index % 2 === 0 ? (index * 2) : -(index * 2),
                         }}
                         whileHover={{ y: -10 }}
                       >
                         <div className={`text-2xl ${interest.color}`}>{interest.icon}</div>
-                        <span className="font-extrabold text-xs text-gray-800">{interest.label}</span>
+                        <span className="font-extrabold text-xs text-foreground">{interest.label}</span>
                       </motion.div>
                     );
                   })}
                 {selectedInterests.length === 0 && (
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm font-medium">
+                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm font-medium">
                     Empty Deck
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="mt-auto pt-6 pb-8">
-              <button onClick={handleNext} disabled={selectedInterests.length === 0} className="w-full gradient-green text-white font-bold py-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-lg disabled:opacity-50 disabled:shadow-none transition-all active:scale-[0.98]">Continue</button>
+            <div className="mt-auto pt-6 pb-6 px-4 fixed bottom-0 left-0 w-full bg-gradient-to-t from-background to-transparent pointer-events-none flex justify-center z-50">
+              <div className="w-full max-w-[90%] pointer-events-auto">
+                <motion.button whileTap={{ scale: 0.95 }} onClick={handleNext} disabled={selectedInterests.length === 0} className="w-full bg-foreground text-background font-bold py-4 rounded-full shadow-lg disabled:opacity-50 transition-all">Continue</motion.button>
+              </div>
             </div>
           </motion.div>
         );
 
       case 3:
         return (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 flex flex-col h-full max-w-lg mx-auto w-full text-center">
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ type: "spring", stiffness: 400, damping: 40 }} className="flex flex-col h-full max-w-md mx-auto w-full text-center">
             <div className="flex-1 flex flex-col justify-center items-center">
-              <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-blue-50 rounded-[32px] flex items-center justify-center mx-auto text-blue-500 mb-8 shadow-inner rotate-3">
-                <MapPin className="w-14 h-14 -rotate-3" />
+              <div className="w-32 h-32 bg-blue-500/10 rounded-[2.5rem] flex items-center justify-center mx-auto text-blue-500 mb-8 shadow-inner">
+                <MapPin className="w-14 h-14" strokeWidth={1.5} />
               </div>
-              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Enable Location</h2>
-              <p className="text-gray-500 text-[15px] px-6 mt-4 font-medium leading-relaxed max-w-sm mx-auto">
-                SwapSoko uses your location to show you relevant listings and reliable swappers near your campus or current area.
+              <h2 className="text-h1 mb-2">Enable Location</h2>
+              <p className="text-body max-w-[280px] mx-auto mt-2">
+                SwapSoko uses your location to show you relevant listings and reliable swappers near you.
               </p>
             </div>
-            <div className="mt-auto pt-8 pb-8 flex flex-col gap-3">
-              <button onClick={handleLocationAllow} disabled={loading} className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-[0_8px_30px_rgba(37,99,235,0.24)] hover:bg-blue-700 hover:shadow-lg transition-all active:scale-[0.98]">Allow Location</button>
-              <button onClick={() => completeOnboarding("")} className="w-full bg-white text-gray-500 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors">Not right now</button>
+            
+            <div className="mt-auto pt-6 pb-6 px-4 fixed bottom-0 left-0 w-full bg-gradient-to-t from-background to-transparent pointer-events-none flex justify-center">
+              <div className="w-full max-w-[90%] pointer-events-auto flex flex-col gap-3">
+                <motion.button whileTap={{ scale: 0.95 }} onClick={handleLocationAllow} disabled={loading} className="w-full bg-blue-600 text-white font-bold py-4 rounded-full shadow-lg hover:bg-blue-700 transition-all">Allow Location</motion.button>
+                <button onClick={() => completeOnboarding("")} className="w-full text-muted-foreground font-bold py-4 rounded-full hover:bg-muted transition-colors">Not right now</button>
+              </div>
             </div>
           </motion.div>
         );
@@ -355,39 +363,40 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-white flex flex-col relative overflow-hidden">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-green-500/10 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
+    <div className="min-h-[100dvh] bg-background flex flex-col relative overflow-hidden">
+      {/* Soft mesh background */}
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-green-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
       
-      {/* Progress */}
-      <div className="px-6 pt-12 pb-8 max-w-lg mx-auto w-full">
-        <div className="flex gap-2">
+      {/* Navigation Progress (Page View dots style) */}
+      <div className="px-6 pt-12 pb-4 max-w-md mx-auto w-full z-10">
+        <div className="flex justify-center gap-2">
           {[1, 2, 3].map(i => (
             <div 
               key={i} 
-              className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-                i < step ? "bg-green-500" : i === step ? "bg-green-400" : "bg-gray-200"
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === step ? "w-8 bg-foreground" : i < step ? "w-2 bg-foreground/50" : "w-2 bg-border"
               }`}
             />
           ))}
         </div>
       </div>
 
-      <div className="flex-1 px-6 py-6 flex flex-col">
+      <div className="flex-1 px-6 py-6 flex flex-col z-10 relative">
         <AnimatePresence mode="wait">
           {renderStep()}
         </AnimatePresence>
         
-        <div className="mt-4 text-center">
+        <div className="absolute top-8 right-6 z-20">
           <button 
             onClick={async () => {
               await supabase.auth.signOut();
               localStorage.removeItem('sb-placeholder-project-auth-token');
               window.location.href = '/login';
             }}
-            className="text-xs text-gray-400 font-medium hover:text-gray-600 transition-colors"
+            className="text-xs text-muted-foreground font-medium hover:text-foreground transition-colors uppercase tracking-widest"
           >
-            Wrong account? Start over
+            Start over
           </button>
         </div>
       </div>

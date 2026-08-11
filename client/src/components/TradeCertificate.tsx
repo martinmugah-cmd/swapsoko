@@ -46,7 +46,7 @@ export function TradeCertificate({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="bg-[#fafafa] w-full max-w-lg rounded-[24px] shadow-2xl relative my-8"
+          className="bg-[#fafafa] w-full max-w-lg rounded-2xl shadow-2xl relative my-8"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
@@ -65,13 +65,13 @@ export function TradeCertificate({
              {/* Status Grid */}
              <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-                   <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                   <p className="text-xs font-extrabold text-gray-400 uppercase tracking-widest mb-1">Status</p>
                    <p className="font-black text-green-600 text-sm flex items-center gap-1.5">
                      <CheckCircle2 className="w-4 h-4" /> ACCEPTED
                    </p>
                 </div>
                 <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-                   <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1">Revision</p>
+                   <p className="text-xs font-extrabold text-gray-400 uppercase tracking-widest mb-1">Revision</p>
                    <p className="font-black text-gray-800 text-sm">#{latestRevision.id || 1}</p>
                 </div>
              </div>
@@ -88,20 +88,20 @@ export function TradeCertificate({
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-bold text-gray-900 truncate">{leg.title || leg.receiveTitle}</p>
-                            <p className="text-[10px] text-gray-500 font-medium truncate mt-0.5">
+                            <p className="text-xs text-gray-500 font-medium truncate mt-0.5">
                               Given by <PreviewUser uid={leg.userId} />
                             </p>
                           </div>
                        </div>
                        {leg.cashTopUp && (
                           <div className="mt-1 flex items-center justify-between border-t border-gray-50 pt-2">
-                             <span className="text-[10px] font-bold text-gray-500">Pays Top-up</span>
+                             <span className="text-xs font-bold text-gray-500">Pays Top-up</span>
                              <span className="text-xs font-black text-red-500">- KES {leg.cashTopUp}</span>
                           </div>
                        )}
                        {!leg.cashTopUp && cycle.cashTopUp && cycle.topUpSenderId === leg.id && (
                           <div className="mt-1 flex items-center justify-between border-t border-gray-50 pt-2">
-                             <span className="text-[10px] font-bold text-gray-500">Pays Top-up</span>
+                             <span className="text-xs font-bold text-gray-500">Pays Top-up</span>
                              <span className="text-xs font-black text-red-500">- KES {cycle.cashTopUp}</span>
                           </div>
                        )}
@@ -117,19 +117,19 @@ export function TradeCertificate({
                   <div className="grid grid-cols-2 gap-y-4 gap-x-6">
                     {latestRevision.cycle.meetingDate && (
                       <div>
-                        <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-1">Date</p>
+                        <p className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-1">Date</p>
                         <p className="text-xs font-black text-purple-900">{latestRevision.cycle.meetingDate}</p>
                       </div>
                     )}
                     {latestRevision.cycle.meetingTime && (
                       <div>
-                        <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-1">Time</p>
+                        <p className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-1">Time</p>
                         <p className="text-xs font-black text-purple-900">{latestRevision.cycle.meetingTime}</p>
                       </div>
                     )}
                     {latestRevision.cycle.meetingLocation && (
                       <div className="col-span-2">
-                        <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-1">Location</p>
+                        <p className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-1">Location</p>
                         <p className="text-xs font-bold text-purple-800 bg-white p-3 rounded-xl border border-purple-100">{latestRevision.cycle.meetingLocation}</p>
                       </div>
                     )}
@@ -151,7 +151,7 @@ export function TradeCertificate({
                                <PreviewUser uid={pid} />
                              </span>
                            </div>
-                           <span className="text-[10px] text-gray-400 font-mono">
+                           <span className="text-xs text-gray-400 font-mono">
                              {hasAccepted ? 'Signed digitally' : 'Pending'}
                            </span>
                         </div>

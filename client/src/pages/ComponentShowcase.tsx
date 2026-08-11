@@ -327,49 +327,49 @@ export default function ComponentsShowcase() {
             <Card>
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="bg-primary text-primary-foreground rounded-[16px] p-4">
+                  <div className="bg-primary text-primary-foreground rounded-2xl p-4">
                     <p className="font-medium mb-1">Primary</p>
                     <p className="text-sm opacity-90">
                       Primary background with foreground text
                     </p>
                   </div>
-                  <div className="bg-secondary text-secondary-foreground rounded-[16px] p-4">
+                  <div className="bg-secondary text-secondary-foreground rounded-2xl p-4">
                     <p className="font-medium mb-1">Secondary</p>
                     <p className="text-sm opacity-90">
                       Secondary background with foreground text
                     </p>
                   </div>
-                  <div className="bg-muted text-muted-foreground rounded-[16px] p-4">
+                  <div className="bg-muted text-muted-foreground rounded-2xl p-4">
                     <p className="font-medium mb-1">Muted</p>
                     <p className="text-sm opacity-90">
                       Muted background with foreground text
                     </p>
                   </div>
-                  <div className="bg-accent text-accent-foreground rounded-[16px] p-4">
+                  <div className="bg-accent text-accent-foreground rounded-2xl p-4">
                     <p className="font-medium mb-1">Accent</p>
                     <p className="text-sm opacity-90">
                       Accent background with foreground text
                     </p>
                   </div>
-                  <div className="bg-destructive text-destructive-foreground rounded-[16px] p-4">
+                  <div className="bg-destructive text-destructive-foreground rounded-2xl p-4">
                     <p className="font-medium mb-1">Destructive</p>
                     <p className="text-sm opacity-90">
                       Destructive background with foreground text
                     </p>
                   </div>
-                  <div className="bg-card text-card-foreground rounded-[16px] p-4 border">
+                  <div className="bg-card text-card-foreground rounded-2xl p-4 border">
                     <p className="font-medium mb-1">Card</p>
                     <p className="text-sm opacity-90">
                       Card background with foreground text
                     </p>
                   </div>
-                  <div className="bg-popover text-popover-foreground rounded-[16px] p-4 border">
+                  <div className="bg-popover text-popover-foreground rounded-2xl p-4 border">
                     <p className="font-medium mb-1">Popover</p>
                     <p className="text-sm opacity-90">
                       Popover background with foreground text
                     </p>
                   </div>
-                  <div className="bg-background text-foreground rounded-[16px] p-4 border">
+                  <div className="bg-background text-foreground rounded-2xl p-4 border">
                     <p className="font-medium mb-1">Background</p>
                     <p className="text-sm opacity-90">
                       Default background with foreground text
@@ -1291,7 +1291,7 @@ export default function ComponentsShowcase() {
               <CardContent className="pt-6">
                 <ResizablePanelGroup
                   direction="horizontal"
-                  className="min-h-[200px] rounded-[16px] border"
+                  className="min-h-[200px] rounded-2xl border"
                 >
                   <ResizablePanel defaultSize={50}>
                     <div className="flex h-full items-center justify-center p-6">

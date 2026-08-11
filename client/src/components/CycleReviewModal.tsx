@@ -66,7 +66,7 @@ export function CycleReviewModal({
           <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
           
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-[12px] bg-green-50 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
               <ShieldCheck className="w-5 h-5 text-green-500" />
             </div>
             <div>
@@ -79,11 +79,11 @@ export function CycleReviewModal({
 
           <div className="space-y-6">
             {/* Giving */}
-            <div className="bg-gray-50 rounded-[20px] p-4 border border-gray-100 relative">
-              <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 relative z-10">You are Giving</p>
+            <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 relative">
+              <p className="text-xs font-extrabold text-gray-400 uppercase tracking-widest mb-2 relative z-10">You are Giving</p>
               <div className="flex flex-col gap-3 relative z-10">
                 <div className="flex items-center gap-3">
-                  <img src={myLeg?.images?.[0] || myLeg?.receiveImages?.[0] || 'https://via.placeholder.com/150'} alt="item" className="w-12 h-12 rounded-[12px] object-cover" />
+                  <img src={myLeg?.images?.[0] || myLeg?.receiveImages?.[0] || 'https://via.placeholder.com/150'} alt="item" className="w-12 h-12 rounded-xl object-cover" />
                   <div>
                      <p className="font-bold text-gray-900 text-sm">{myLeg?.title || myLeg?.receiveTitle || 'Your Item'}</p>
                   </div>
@@ -104,12 +104,12 @@ export function CycleReviewModal({
             </div>
 
             {/* Receiving */}
-            <div className="bg-green-50 rounded-[20px] p-4 border border-green-100 relative overflow-hidden">
+            <div className="bg-green-50 rounded-2xl p-4 border border-green-100 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-20 h-20 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-50 translate-x-1/2 -translate-y-1/2"></div>
-              <p className="text-[10px] font-extrabold text-green-600 uppercase tracking-widest mb-2 relative z-10">You are Receiving</p>
+              <p className="text-xs font-extrabold text-green-600 uppercase tracking-widest mb-2 relative z-10">You are Receiving</p>
               <div className="flex flex-col gap-3 relative z-10">
                 <div className="flex items-center gap-3">
-                  <img src={receivingItemImage} alt="item" className="w-12 h-12 rounded-[12px] object-cover" />
+                  <img src={receivingItemImage} alt="item" className="w-12 h-12 rounded-xl object-cover" />
                   <div>
                      <p className="font-bold text-gray-900 text-sm">{receivingItemName}</p>
                   </div>
@@ -131,18 +131,18 @@ export function CycleReviewModal({
 
             {/* Participants Status */}
             <div>
-              <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Participants Status</p>
+              <p className="text-xs font-extrabold text-gray-400 uppercase tracking-widest mb-3">Participants Status</p>
               <div className="flex flex-col gap-2">
                 {cycleInfo.participants.map((pid: string) => {
                   const hasAccepted = latestRevision.accepted_users?.includes(pid);
                   const isMe = pid === currentUserId;
                   return (
-                    <div key={pid} className={`flex items-center justify-between border p-3 rounded-[16px] ${isMe ? 'bg-blue-50/50 border-blue-100' : 'bg-white border-gray-100'}`}>
+                    <div key={pid} className={`flex items-center justify-between border p-3 rounded-2xl ${isMe ? 'bg-blue-50/50 border-blue-100' : 'bg-white border-gray-100'}`}>
                       <div className="flex items-center gap-2">
                          <PreviewUser uid={pid} />
                          {isMe && <span className="text-[9px] font-bold text-blue-500 uppercase tracking-widest bg-blue-100 px-1.5 py-0.5 rounded-sm ml-1">You</span>}
                       </div>
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md ${hasAccepted ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-500'}`}>
+                      <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${hasAccepted ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-500'}`}>
                         {hasAccepted ? 'Accepted' : 'Waiting'}
                       </span>
                     </div>
@@ -153,7 +153,7 @@ export function CycleReviewModal({
 
             {/* Agreement Checkbox */}
             <div 
-              className="mt-6 flex items-start gap-3 cursor-pointer p-4 bg-gray-50 rounded-[20px] border border-gray-100 transition-colors hover:bg-gray-100"
+              className="mt-6 flex items-start gap-3 cursor-pointer p-4 bg-gray-50 rounded-2xl border border-gray-100 transition-colors hover:bg-gray-100"
               onClick={() => setAgreed(!agreed)}
             >
               <div className="mt-0.5">
@@ -178,7 +178,7 @@ export function CycleReviewModal({
                   onClose();
                 }
               }}
-              className={`w-full py-4 rounded-[20px] font-extrabold text-sm transition-all shadow-sm ${agreed ? 'bg-black text-white hover:scale-[0.98]' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+              className={`w-full py-4 rounded-2xl font-extrabold text-sm transition-all shadow-sm ${agreed ? 'bg-black text-white hover:scale-[0.98]' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
             >
               Accept Agreement
             </button>

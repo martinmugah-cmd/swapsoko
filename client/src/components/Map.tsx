@@ -41,7 +41,7 @@ function ChangeView({ center, zoom }: { center: [number, number], zoom: number }
   return null;
 }
 
-export function Map({ locations = [], center = [-1.1018, 37.0144], userLocation, zoom = 14, onMarkerClick, className = "h-[400px] w-full rounded-[32px]" }: MapProps) {
+export function Map({ locations = [], center = [-1.1018, 37.0144], userLocation, zoom = 14, onMarkerClick, className = "h-[400px] w-full rounded-3xl" }: MapProps) {
   // Default to JKUAT Juja if no center provided
   
   return (
@@ -69,10 +69,10 @@ export function Map({ locations = [], center = [-1.1018, 37.0144], userLocation,
             <Popup>
               <div className="text-center w-32">
                 {loc.imageUrl && (
-                  <img src={loc.imageUrl} alt={loc.title} className="w-full h-20 object-cover rounded-[16px] mb-2" />
+                  <img src={loc.imageUrl} alt={loc.title} className="w-full h-20 object-cover rounded-2xl mb-2" />
                 )}
                 <h3 className="font-bold text-xs">{loc.title}</h3>
-                <p className="text-[10px] text-gray-500 truncate">{loc.description}</p>
+                <p className="text-xs text-gray-500 truncate">{loc.description}</p>
               </div>
             </Popup>
           </Marker>
@@ -92,7 +92,7 @@ export function Map({ locations = [], center = [-1.1018, 37.0144], userLocation,
             })}
           >
             <Popup>
-              <div className="text-center font-bold text-xs text-[#0F172A]">You are here</div>
+              <div className="text-center font-bold text-xs text-slate-900">You are here</div>
             </Popup>
           </Marker>
         )}

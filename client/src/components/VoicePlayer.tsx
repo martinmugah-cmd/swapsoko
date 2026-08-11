@@ -37,12 +37,12 @@ export function VoicePlayer({ url, isOwn = true }: { url: string, isOwn?: boolea
     <div className="flex items-center gap-2 min-w-[120px] w-full max-w-[200px]">
       <button
         onClick={() => wavesurferRef.current?.playPause()}
-        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isOwn ? "bg-white/20" : "bg-[#22C55E]/10"}`}
+        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isOwn ? "bg-white/20" : "bg-green-500/10"}`}
       >
         {isPlaying ? (
-          <Pause className={`w-4 h-4 ${isOwn ? "text-white fill-white" : "text-[#22C55E] fill-[#22C55E]"}`} />
+          <Pause className={`w-4 h-4 ${isOwn ? "text-white fill-white" : "text-green-500 fill-[#22C55E]"}`} />
         ) : (
-          <Play className={`w-4 h-4 ml-0.5 ${isOwn ? "text-white fill-white" : "text-[#22C55E] fill-[#22C55E]"}`} />
+          <Play className={`w-4 h-4 ml-0.5 ${isOwn ? "text-white fill-white" : "text-green-500 fill-[#22C55E]"}`} />
         )}
       </button>
       <div ref={containerRef} className="flex-1" />

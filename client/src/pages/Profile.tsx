@@ -7,9 +7,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Lock,
   Package, Star, User, Users, Bell, Settings, LogOut, Heart, MapPin, 
-  Shield, Activity, CheckCircle, ChevronLeft, ChevronRight, Image as ImageIcon, 
+  Shield, ShieldAlert, Activity, CheckCircle, ChevronLeft, ChevronRight, Image as ImageIcon, 
   Plus, Search, HelpCircle, Globe, XCircle, Handshake, RefreshCw, UserPlus, CheckCircle2,
-  MessageCircle, Clock, Scale, Repeat2, TrendingUp, Award, X, Camera, Trash2, Edit, Calendar, GraduationCap, AlertCircle
+  MessageCircle, Clock, Scale, Repeat2, TrendingUp, Award, X, Camera, Trash2, Edit, Calendar, GraduationCap, AlertCircle, QrCode
 } from "lucide-react";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
@@ -68,15 +68,15 @@ function MatchSuggestionsModal({ listing, onClose }: { listing: any, onClose: ()
         onClick={e => e.stopPropagation()}
       >
         <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4" />
-        <h3 className="font-bold text-[#0F172A] text-lg flex items-center gap-2"><Search className="w-5 h-5 text-[#22C55E]" /> Best Exchange Paths</h3>
-        <p className="text-gray-400 text-sm mt-1">Suggested matches for your <span className="font-semibold text-[#0F172A]">{listing.title}</span></p>
+        <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2"><Search className="w-5 h-5 text-green-500" /> Best Exchange Paths</h3>
+        <p className="text-gray-400 text-sm mt-1">Suggested matches for your <span className="font-semibold text-slate-900">{listing.title}</span></p>
 
         {feedQuery.isLoading ? (
            <div className="mt-4 space-y-4">
              {[1, 2, 3].map(i => (
-               <div key={`sk-match-${i}`} className="bg-white/70 backdrop-blur-md border border-gray-100 rounded-[24px] p-3 animate-pulse">
+               <div key={`sk-match-${i}`} className="bg-white/70 backdrop-blur-md border border-gray-100 rounded-2xl p-3 animate-pulse">
                  <div className="flex gap-3">
-                   <div className="w-20 h-20 bg-gray-100 rounded-[16px]"></div>
+                   <div className="w-20 h-20 bg-gray-100 rounded-2xl"></div>
                    <div className="flex-1 min-w-0 py-1">
                      <div className="flex justify-between items-start mb-2">
                        <div className="h-4 bg-gray-100 rounded-full w-24"></div>
@@ -98,23 +98,23 @@ function MatchSuggestionsModal({ listing, onClose }: { listing: any, onClose: ()
                  key={i} 
                  whileTap={{ scale: 0.98 }}
                  onClick={() => navigate(`/swipes?item=${m.target.id}`)}
-                 className="bg-white/70 backdrop-blur-md border border-gray-100 card-shadow rounded-[24px] p-3 cursor-pointer hover:border-[#22C55E]/50 transition-colors"
+                 className="bg-white/70 backdrop-blur-md border border-gray-100 card-shadow rounded-2xl p-3 cursor-pointer hover:border-green-500/50 transition-colors"
               >
                 <div className="flex gap-3">
-                  <img src={(m.target.images && m.target.images[0]) || "/logo.jpg"} className="w-16 h-16 rounded-[16px] object-cover" />
+                  <img src={(m.target.images && m.target.images[0]) || "/logo.jpg"} className="w-16 h-16 rounded-2xl object-cover" />
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-[#0F172A] text-sm truncate">{m.target.title}</h4>
+                    <h4 className="font-bold text-slate-900 text-sm truncate">{m.target.title}</h4>
                     <p className="text-xs text-gray-400">{m.target.campus}</p>
                     <div className="flex items-center gap-1 mt-1">
-                       <span className="bg-[#F0FDF4] text-[#22C55E] text-[10px] font-bold px-2 py-0.5 rounded-full">{m.score}% Match</span>
+                       <span className="bg-[#F0FDF4] text-green-500 text-xs font-bold px-2 py-0.5 rounded-full">{m.score}% Match</span>
                     </div>
                   </div>
                 </div>
-                <div className="mt-3 bg-gray-50 rounded-[16px] p-2">
-                  <p className="text-[10px] font-semibold text-gray-500 uppercase mb-1">Match Reasons</p>
+                <div className="mt-3 bg-gray-50 rounded-2xl p-2">
+                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Match Reasons</p>
                   <div className="flex flex-wrap gap-1">
                     {m.reasons.map(r => (
-                       <span key={r} className="bg-white border border-gray-200 text-gray-600 text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1"><CheckCircle2 className="w-3 h-3 text-[#22C55E]"/> {r}</span>
+                       <span key={r} className="bg-white border border-gray-200 text-gray-600 text-xs px-2 py-0.5 rounded-full flex items-center gap-1"><CheckCircle2 className="w-3 h-3 text-green-500"/> {r}</span>
                     ))}
                   </div>
                 </div>
@@ -135,12 +135,12 @@ function MatchSuggestionsModal({ listing, onClose }: { listing: any, onClose: ()
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string | number; color: string }) {
   return (
-    <div className="bg-white rounded-[32px] p-3 card-shadow text-center">
-      <div className={`w-8 h-8 rounded-[24px] mx-auto mb-2 flex items-center justify-center`} style={{ backgroundColor: color + "20" }}>
+    <div className="bg-white rounded-3xl p-3 card-shadow text-center">
+      <div className={`w-8 h-8 rounded-2xl mx-auto mb-2 flex items-center justify-center`} style={{ backgroundColor: color + "20" }}>
         <div style={{ color }}>{icon}</div>
       </div>
-      <p className="font-bold text-[#0F172A] text-lg leading-none">{value}</p>
-      <p className="text-[10px] text-gray-400 mt-0.5">{label}</p>
+      <p className="font-bold text-slate-900 text-lg leading-none">{value}</p>
+      <p className="text-xs text-gray-400 mt-0.5">{label}</p>
     </div>
   );
 }
@@ -219,7 +219,7 @@ function PublicProfileView({
     return (
       <div className="min-h-screen bg-[#F8FAFC] pb-24">
         <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-100">
-           <button onClick={onBack} className="w-10 h-10 flex items-center justify-center rounded-[20px] bg-gray-50 hover:bg-gray-100 transition-colors"><ChevronLeft size={24} className="text-[#0F172A]"/></button>
+           <button onClick={onBack} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors"><ChevronLeft size={24} className="text-slate-900"/></button>
         </div>
         <div className="flex flex-col items-center justify-center pt-32 px-6 text-center">
            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
@@ -259,7 +259,7 @@ function PublicProfileView({
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-white to-[#F8FAFC] px-4 pt-12 pb-10 relative">
         <button onClick={onBack || (() => window.history.back())} className="absolute top-6 left-4 w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm hover:scale-105 transition-transform z-10">
-          <ChevronLeft className="w-6 h-6 text-[#0F172A]" />
+          <ChevronLeft className="w-6 h-6 text-slate-900" />
         </button>
         {user?.id !== targetUserId && (
           <button onClick={() => setIsReporting(true)} className="absolute top-6 right-4 w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm hover:scale-105 transition-transform z-10">
@@ -302,8 +302,13 @@ function PublicProfileView({
               </span>
             )}
             {distanceText && (
-              <p className="text-gray-400 text-xs flex items-center gap-1 font-medium mt-2">
-                 <MapPin className="w-3.5 h-3.5" /> {distanceText}
+              <p className="text-gray-400 text-xs flex items-center justify-center flex-wrap gap-1 font-medium mt-2">
+                 <MapPin className="w-3.5 h-3.5" />
+                 {targetProfileData?.location_name ? (
+                   <span>{targetProfileData.location_name} • {distanceText}</span>
+                 ) : (
+                   <span>{distanceText}</span>
+                 )}
               </p>
             )}
             {showLastActive && (
@@ -318,33 +323,33 @@ function PublicProfileView({
       <div className="px-4 mt-6 space-y-4 relative z-20">
         {/* Bio */}
         {bio && (
-          <div className="bg-white p-5 rounded-[32px] shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
+          <div className="bg-white p-5 rounded-3xl shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
             <h3 className="font-extrabold text-gray-900 text-lg mb-2 tracking-tight">About</h3>
             <p className="text-gray-600 text-sm leading-relaxed">{bio}</p>
           </div>
         )}
 
         {/* Active Listings Carousel */}
-        <div className="bg-white py-5 rounded-[32px] shadow-[0_2px_15px_rgba(0,0,0,0.03)] overflow-hidden">
+        <div className="bg-white py-5 rounded-3xl shadow-[0_2px_15px_rgba(0,0,0,0.03)] overflow-hidden">
           <div className="px-5 flex items-center justify-between mb-4">
              <h3 className="font-extrabold text-gray-900 text-lg tracking-tight">Active Listings</h3>
-             <span onClick={() => setShowGrid(true)} className="text-[#2563EB] text-xs font-bold cursor-pointer hover:underline">See All</span>
+             <span onClick={() => setShowGrid(true)} className="text-blue-600 text-xs font-bold cursor-pointer hover:underline">See All</span>
           </div>
           <div className="flex overflow-x-auto hide-scrollbar px-5 pb-2 gap-3">
             {listingsQuery.isLoading ? (
                <div className="flex gap-3">
                  {[1, 2, 3].map((i) => (
-                   <div key={`sk-${i}`} className="min-w-[140px] w-[140px] h-36 bg-gray-100 rounded-[24px] animate-pulse"></div>
+                   <div key={`sk-${i}`} className="min-w-[140px] w-[140px] h-36 bg-gray-100 rounded-2xl animate-pulse"></div>
                  ))}
                </div>
             ) : listingsQuery.data?.items?.length === 0 ? (
                <div className="text-xs text-gray-400 font-medium">No active listings</div>
             ) : (
                (listingsQuery.data?.items || []).filter((l: any) => l.status !== 'hidden' || targetUserId === user?.id).map((l: any) => (
-                 <div key={l.id} className="min-w-[140px] w-[140px] bg-gray-50 rounded-[24px] overflow-hidden flex-shrink-0 border border-gray-100 cursor-pointer relative" onClick={() => setShowGrid(true)}>
+                 <div key={l.id} className="min-w-[140px] w-[140px] bg-gray-50 rounded-2xl overflow-hidden flex-shrink-0 border border-gray-100 cursor-pointer relative" onClick={() => setShowGrid(true)}>
                    <div className="h-28 bg-gray-200 relative">
-                      {l.status === 'finalized' && <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">Swapped</div>}
-                      {l.status === 'hidden' && targetUserId === user?.id && <div className="absolute top-2 right-2 bg-gray-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">Hidden</div>}
+                      {l.status === 'finalized' && <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full z-10">Swapped</div>}
+                      {l.status === 'hidden' && targetUserId === user?.id && <div className="absolute top-2 right-2 bg-gray-500 text-white text-xs font-bold px-2 py-0.5 rounded-full z-10">Hidden</div>}
                       {l.images && l.images[0] ? (
                         <img src={l.images[0]} className={`w-full h-full object-cover ${l.status !== 'active' ? 'opacity-50 grayscale' : ''}`} />
                       ) : (
@@ -361,12 +366,12 @@ function PublicProfileView({
         </div>
 
         {/* Swap Wishes */}
-        <div className="bg-white p-5 rounded-[32px] shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
+        <div className="bg-white p-5 rounded-3xl shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
           <h3 className="font-extrabold text-gray-900 text-lg mb-3 tracking-tight">Swishes</h3>
           {wishesQuery.isLoading ? (
              <div className="space-y-3">
                {[1, 2].map((i) => (
-                 <div key={`sk-w-${i}`} className="h-[44px] w-full bg-gray-100 rounded-[24px] animate-pulse"></div>
+                 <div key={`sk-w-${i}`} className="h-[44px] w-full bg-gray-100 rounded-2xl animate-pulse"></div>
                ))}
              </div>
           ) : wishesQuery.data?.items?.length === 0 ? (
@@ -374,8 +379,8 @@ function PublicProfileView({
           ) : (
             <ul className="space-y-3">
               {(wishesQuery.data?.items || []).map((w: any) => (
-                <li key={w.id} className="flex items-center gap-3 text-sm text-gray-700 font-medium bg-gray-50 px-4 py-3 rounded-[24px]">
-                  <CheckCircle2 className="w-5 h-5 text-[#22C55E]" /> {w.title}
+                <li key={w.id} className="flex items-center gap-3 text-sm text-gray-700 font-medium bg-gray-50 px-4 py-3 rounded-2xl">
+                  <CheckCircle2 className="w-5 h-5 text-green-500" /> {w.title}
                 </li>
               ))}
             </ul>
@@ -383,12 +388,12 @@ function PublicProfileView({
         </div>
 
         {/* Communities */}
-        <div className="bg-white p-5 rounded-[32px] shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
+        <div className="bg-white p-5 rounded-3xl shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
           <h3 className="font-extrabold text-gray-900 text-lg mb-3 tracking-tight">Communities</h3>
           {membershipsQuery.isLoading ? (
              <div className="space-y-3">
                {[1, 2].map((i) => (
-                 <div key={`sk-m-${i}`} className="h-[44px] w-full bg-gray-100 rounded-[24px] animate-pulse"></div>
+                 <div key={`sk-m-${i}`} className="h-[44px] w-full bg-gray-100 rounded-2xl animate-pulse"></div>
                ))}
              </div>
           ) : (() => {
@@ -399,8 +404,8 @@ function PublicProfileView({
             return (
               <div className="space-y-2 mt-2">
                 {mutualComms.map((m: any) => (
-                  <div key={`mutual-${m.id}`} className="flex items-center gap-3 text-sm font-bold text-gray-800 bg-blue-50 p-3 rounded-[24px]">
-                    <Users className="w-5 h-5 text-[#2563EB]" /> {m.communities?.name || "Community"}
+                  <div key={`mutual-${m.id}`} className="flex items-center gap-3 text-sm font-bold text-gray-800 bg-blue-50 p-3 rounded-2xl">
+                    <Users className="w-5 h-5 text-blue-600" /> {m.communities?.name || "Community"}
                   </div>
                 ))}
               </div>
@@ -409,25 +414,25 @@ function PublicProfileView({
         </div>
 
         {/* Safety Card */}
-        <div className="bg-white p-5 rounded-[32px] shadow-[0_2px_15px_rgba(0,0,0,0.03)] mb-8">
+        <div className="bg-white p-5 rounded-3xl shadow-[0_2px_15px_rgba(0,0,0,0.03)] mb-8">
           <h3 className="font-extrabold text-gray-900 text-lg mb-4 tracking-tight flex items-center gap-2">
-            <Shield className="w-5 h-5 text-[#22C55E]" /> Safety
+            <Shield className="w-5 h-5 text-green-500" /> Safety
           </h3>
           <div className="space-y-3">
              {uniVal === "Other / Not a student" ? null : isStudentVerified ? (
-               <p className="flex items-center gap-3 text-sm font-medium px-4 py-2.5 rounded-[24px] text-gray-700 bg-green-50/50 border border-green-100/50">
-                 <CheckCircle className="w-5 h-5 text-[#22C55E]" /> Verified Student
+               <p className="flex items-center gap-3 text-sm font-medium px-4 py-2.5 rounded-2xl text-gray-700 bg-green-50/50 border border-green-100/50">
+                 <CheckCircle className="w-5 h-5 text-green-500" /> Verified Student
                </p>
              ) : (
-               <p className="flex items-center gap-3 text-sm font-medium px-4 py-2.5 rounded-[24px] text-orange-700 bg-orange-50/50 border border-orange-100/50">
+               <p className="flex items-center gap-3 text-sm font-medium px-4 py-2.5 rounded-2xl text-orange-700 bg-orange-50/50 border border-orange-100/50">
                  <AlertCircle className="w-5 h-5 text-orange-500" /> Student Not Verified
                </p>
              )}
-             <p className="flex items-center gap-3 text-sm font-medium text-gray-700 bg-green-50/50 border border-green-100/50 px-4 py-2.5 rounded-[24px]">
-               <CheckCircle className="w-5 h-5 text-[#22C55E]" /> Email Verified
+             <p className="flex items-center gap-3 text-sm font-medium text-gray-700 bg-green-50/50 border border-green-100/50 px-4 py-2.5 rounded-2xl">
+               <CheckCircle className="w-5 h-5 text-green-500" /> Email Verified
              </p>
-             <p className="flex items-center gap-3 text-sm font-medium text-gray-700 bg-green-50/50 border border-green-100/50 px-4 py-2.5 rounded-[24px]">
-               <CheckCircle className="w-5 h-5 text-[#22C55E]" /> Clean Record
+             <p className="flex items-center gap-3 text-sm font-medium text-gray-700 bg-green-50/50 border border-green-100/50 px-4 py-2.5 rounded-2xl">
+               <CheckCircle className="w-5 h-5 text-green-500" /> Clean Record
              </p>
           </div>
         </div>
@@ -443,10 +448,10 @@ function PublicProfileView({
             </div>
             <div className="p-4 grid grid-cols-2 gap-4 pb-32">
               {(listingsQuery.data?.items || []).filter((l: any) => l.status !== 'hidden' || targetUserId === user?.id).map((l: any) => (
-                <div key={l.id} className="bg-white/70 backdrop-blur-md rounded-[24px] overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] border border-gray-50 cursor-pointer flex flex-col relative" onClick={() => { setShowGrid(false); navigate("/swipes?item=" + l.id); }}>
+                <div key={l.id} className="bg-white/70 backdrop-blur-md rounded-2xl overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] border border-gray-50 cursor-pointer flex flex-col relative" onClick={() => { setShowGrid(false); navigate("/swipes?item=" + l.id); }}>
                    <div className="aspect-square bg-gray-100 relative">
-                     {l.status === 'finalized' && <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">Swapped</div>}
-                     {l.status === 'hidden' && targetUserId === user?.id && <div className="absolute top-2 right-2 bg-gray-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">Hidden</div>}
+                     {l.status === 'finalized' && <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full z-10">Swapped</div>}
+                     {l.status === 'hidden' && targetUserId === user?.id && <div className="absolute top-2 right-2 bg-gray-500 text-white text-xs font-bold px-2 py-0.5 rounded-full z-10">Hidden</div>}
                      {l.images && l.images[0] ? <img src={l.images[0]} className={`absolute inset-0 w-full h-full object-cover ${l.status !== 'active' ? 'opacity-50 grayscale' : ''}`} /> : <div className="absolute inset-0 flex items-center justify-center text-gray-300"><Package className="w-8 h-8" /></div>}
                    </div>
                    <div className="p-4">
@@ -460,32 +465,32 @@ function PublicProfileView({
       </AnimatePresence>
 
       {/* Bottom Floating Actions */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] bg-white/90 backdrop-blur-md rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-2 flex justify-between z-50 border border-gray-100">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] bg-white/90 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-2 flex justify-between z-50 border border-gray-100">
          <motion.button 
            onClick={handleMessage}
            whileTap={{ scale: 0.95 }} 
-           className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-white bg-[#22C55E] rounded-[24px] shadow-sm hover:opacity-90"
+           className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-white bg-green-500 rounded-2xl shadow-sm hover:opacity-90"
          >
            <MessageCircle className="w-5 h-5" />
-           <span className="text-[10px] font-bold tracking-wide">Message</span>
+           <span className="text-xs font-bold tracking-wide">Message</span>
          </motion.button>
          
          <motion.button 
            onClick={() => setShowGrid(true)}
            whileTap={{ scale: 0.95 }} 
-           className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-gray-700 rounded-[24px] hover:bg-gray-50"
+           className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-gray-700 rounded-2xl hover:bg-gray-50"
          >
            <Package className="w-5 h-5" />
-           <span className="text-[10px] font-bold tracking-wide">View Items</span>
+           <span className="text-xs font-bold tracking-wide">View Items</span>
          </motion.button>
          
          <motion.button 
            onClick={() => targetUserId && toggleWatchedUser(targetUserId.toString())}
            whileTap={{ scale: 0.95 }} 
-           className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 rounded-[24px] hover:bg-gray-50 ${targetUserId && watchedUserIds.includes(targetUserId.toString()) ? 'text-red-500' : 'text-gray-700'}`}
+           className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 rounded-2xl hover:bg-gray-50 ${targetUserId && watchedUserIds.includes(targetUserId.toString()) ? 'text-red-500' : 'text-gray-700'}`}
          >
            <Heart className={`w-5 h-5 ${targetUserId && watchedUserIds.includes(targetUserId.toString()) ? 'fill-current' : ''}`} />
-           <span className="text-[10px] font-bold tracking-wide">Save Trader</span>
+           <span className="text-xs font-bold tracking-wide">Save Trader</span>
          </motion.button>
       </div>
       <ReportModal isOpen={isReporting} onClose={() => setIsReporting(false)} targetType="user" targetId={targetUserId} />
@@ -575,15 +580,15 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-[#F8FAFC]">
-        <div className="w-20 h-20 rounded-[28px] overflow-hidden shadow-[0_12px_30px_rgba(34,197,94,0.2)] border-[3px] border-white bg-white mb-6">
+        <div className="w-20 h-20 rounded-3xl overflow-hidden shadow-[0_12px_30px_rgba(34,197,94,0.2)] border-[3px] border-white bg-white mb-6">
           <img src="/logo.jpg" alt="SwapSoko" className="w-full h-full object-cover" />
         </div>
-        <h2 className="font-extrabold text-[#0F172A] text-2xl mb-2 tracking-tight">Access Profile</h2>
+        <h2 className="font-extrabold text-slate-900 text-2xl mb-2 tracking-tight">Access Profile</h2>
         <p className="text-gray-500 text-[15px] max-w-[260px] leading-relaxed mb-8 font-medium">Sign in to view your profile, listings, and track your swaps.</p>
         <motion.button
           onClick={() => navigate("/login")}
           whileTap={{ scale: 0.95 }}
-          className="bg-[#0F172A] text-white font-bold py-3.5 px-10 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-[#1E293B] transition-all"
+          className="bg-slate-900 text-white font-bold py-3.5 px-10 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-[#1E293B] transition-all"
         >
           Sign In to Continue
         </motion.button>
@@ -598,7 +603,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
         <div className="h-48 bg-gray-200 animate-pulse w-full"></div>
         {/* Profile Info Skeleton */}
         <div className="px-5 -mt-12 relative z-10 animate-pulse">
-          <div className="w-[100px] h-[100px] rounded-[32px] bg-gray-100 border-[4px] border-[#F8FAFC] shadow-sm mb-4"></div>
+          <div className="w-[100px] h-[100px] rounded-3xl bg-gray-100 border-[4px] border-[#F8FAFC] shadow-sm mb-4"></div>
           <div className="flex items-center justify-between">
             <div>
               <div className="w-32 h-6 bg-gray-200 rounded-full mb-2"></div>
@@ -608,7 +613,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
           </div>
           <div className="mt-6 space-y-3">
              <div className="w-full h-[40px] bg-gray-200 rounded-full"></div>
-             <div className="w-full h-16 bg-gray-200 rounded-[24px]"></div>
+             <div className="w-full h-16 bg-gray-200 rounded-2xl"></div>
           </div>
         </div>
       </div>
@@ -648,10 +653,10 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
       className="min-h-screen bg-[#F8FAFC] bottom-nav-safe"
     >
       {/* Header */}
-      <div className="bg-[#0F172A] px-5 pt-4 pb-6 relative overflow-hidden rounded-b-[40px] shadow-[0_10px_40px_rgba(15,23,42,0.15)]">
+      <div className="bg-slate-900 px-5 pt-4 pb-6 relative overflow-hidden rounded-b-[40px] shadow-[0_10px_40px_rgba(15,23,42,0.15)]">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-[#22C55E] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#2563EB] rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-0 right-0 w-40 h-40 bg-green-500 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-600 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
         </div>
 
         <div className="relative flex items-center justify-between mb-3">
@@ -682,7 +687,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               <motion.button 
                 whileTap={{ scale: 0.9 }} 
                 onClick={() => targetUserId && toggleWatchedUser(targetUserId.toString())}
-                className="flex items-center gap-1.5 bg-white/10 text-white text-xs font-semibold px-3 py-1.5 rounded-[24px] hover:bg-white/20 transition-colors"
+                className="flex items-center gap-1.5 bg-white/10 text-white text-xs font-semibold px-3 py-1.5 rounded-2xl hover:bg-white/20 transition-colors"
               >
                 <Heart className={`w-3.5 h-3.5 ${targetUserId && watchedUserIds.includes(targetUserId.toString()) ? 'text-red-400 fill-red-400' : 'text-white'}`} />
                 {targetUserId && watchedUserIds.includes(targetUserId.toString()) ? "Watched" : "Watch"}
@@ -694,14 +699,14 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
         {/* Avatar + name */}
         <div className="relative flex items-end gap-3">
           <div className="relative">
-            <div className="w-14 h-14 rounded-[20px] gradient-green flex items-center justify-center overflow-hidden">
+            <div className="w-14 h-14 rounded-2xl gradient-green flex items-center justify-center overflow-hidden">
               {(displayAvatar && displayAvatar !== "null" && displayAvatar !== "undefined") ? (
                 <img src={displayAvatar} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<span class="text-white text-xl font-bold">${(displayName || "U")[0]}</span>`; }} />
               ) : (
                 <span className="text-white text-xl font-bold">{(displayName || "U")[0]}</span>
               )}
             </div>
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#22C55E] rounded-full border-2 border-[#0F172A] flex items-center justify-center">
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-[#0F172A] flex items-center justify-center">
               <CheckCircle className="w-3 h-3 text-white fill-white" />
             </div>
           </div>
@@ -712,15 +717,15 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
             </h2>
             <div className="flex items-center gap-1.5 mt-1">
               {uniVal === "Other / Not a student" ? (
-                <span className="trust-badge py-0.5 px-2 text-[10px] bg-gray-100 text-gray-500 border border-gray-200 flex items-center gap-1 rounded-full font-bold">
+                <span className="trust-badge py-0.5 px-2 text-xs bg-gray-100 text-gray-500 border border-gray-200 flex items-center gap-1 rounded-full font-bold">
                   <CheckCircle className="w-2.5 h-2.5" /> Not a student
                 </span>
               ) : isStudentVerified ? (
-                <span className="trust-badge-green trust-badge py-0.5 px-2 text-[10px] flex items-center gap-1">
+                <span className="trust-badge-green trust-badge py-0.5 px-2 text-xs flex items-center gap-1">
                   <CheckCircle className="w-2.5 h-2.5" /> Verified Student {uniVal !== "University" ? `• ${uniVal}` : ""}
                 </span>
               ) : (
-                <span className="trust-badge py-0.5 px-2 text-[10px] bg-orange-50 text-orange-600 border border-orange-200 flex items-center gap-1 rounded-full font-bold">
+                <span className="trust-badge py-0.5 px-2 text-xs bg-orange-50 text-orange-600 border border-orange-200 flex items-center gap-1 rounded-full font-bold">
                   <AlertCircle className="w-2.5 h-2.5" /> Student Not Verified
                 </span>
               )}
@@ -729,9 +734,9 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
         </div>
 
         {/* Trust Score */}
-        <div className="mt-3 bg-white/10 rounded-[24px] p-4">
+        <div className="mt-3 bg-white/10 rounded-2xl p-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-gray-400 text-[10px] uppercase tracking-wide flex items-center gap-1"><Shield className="w-3 h-3 text-blue-400"/> {"Trust Score"}</p>
+            <p className="text-gray-400 text-xs uppercase tracking-wide flex items-center gap-1"><Shield className="w-3 h-3 text-blue-400"/> {"Trust Score"}</p>
             <p className="text-white font-black text-lg leading-none">{trustScore}%</p>
           </div>
           <div className="w-full bg-white/20 rounded-full h-1.5 overflow-hidden">
@@ -781,9 +786,9 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
             if (completionPercentage === 100) return null;
 
             return (
-              <div className="bg-white/70 backdrop-blur-md rounded-[24px] p-4 card-shadow border border-gray-100 mb-4">
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-4 card-shadow border border-gray-100 mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-[#0F172A] text-sm flex items-center gap-1.5"><Award className="w-4 h-4 text-blue-500" /> Profile Completion</h3>
+                  <h3 className="font-bold text-slate-900 text-sm flex items-center gap-1.5"><Award className="w-4 h-4 text-blue-500" /> Profile Completion</h3>
                   <span className="font-black text-blue-600 text-sm">{completionPercentage}%</span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
@@ -802,7 +807,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                         <div className="w-4 h-4 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center"></div>
                         {item.label}
                       </div>
-                      <button onClick={item.action} className="text-[#2563EB] font-bold">Add</button>
+                      <button onClick={item.action} className="text-blue-600 font-bold">Add</button>
                     </li>
                   ))}
                 </ul>
@@ -820,23 +825,25 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
       </div>
 
       {/* Tabs */}
+      {/* Tabs (Segmented Control) */}
       <div className="px-4 mt-6">
-        <div className="flex gap-2 bg-white/60 p-1.5 rounded-[36px] shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-white overflow-x-auto hide-scrollbar">
+        <div className="flex bg-muted/80 p-1 rounded-xl items-center relative">
           {[
             { id: "listings", label: "Listings", icon: <Package className="w-4 h-4" /> },
             { id: "swaps", label: "Swaps", icon: <Repeat2 className="w-4 h-4" /> },
             { id: "saved", label: "Saved", icon: <Heart className="w-4 h-4" /> },
           ].map(tab => (
-            <motion.button
+            <button
               key={tab.id}
-              whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 px-3 flex items-center justify-center gap-2 py-2.5 rounded-[28px] text-[13px] font-bold transition-all ${
-                activeTab === tab.id ? "bg-[#0F172A] text-white shadow-[0_2px_10px_rgb(0,0,0,0.1)]" : "text-gray-500 hover:text-[#0F172A]"
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 z-10 ${
+                activeTab === tab.id 
+                  ? "bg-background text-foreground shadow-sm" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-black/5"
               }`}
             >
-              {tab.icon} {tab.label}
-            </motion.button>
+              <span className="hidden sm:inline">{tab.icon}</span> {tab.label}
+            </button>
           ))}
         </div>
       </div>
@@ -847,9 +854,9 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
           {activeTab === "listings" && (
             <motion.div key="listings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
               {(listingsQuery.data?.items || []).map((listing: any) => (
-                <div key={listing.id} className="bg-white rounded-[32px] overflow-hidden card-shadow border border-gray-100 flex flex-col">
+                <div key={listing.id} className="bg-white rounded-3xl overflow-hidden card-shadow border border-gray-100 flex flex-col">
                   <div className="flex p-3 gap-3">
-                    <div className="w-20 h-20 rounded-[20px] bg-gray-100 overflow-hidden flex-shrink-0 relative">
+                    <div className="w-20 h-20 rounded-2xl bg-gray-100 overflow-hidden flex-shrink-0 relative">
                       {(() => {
                         let img = null;
                         if (Array.isArray(listing.images) && listing.images.length > 0) {
@@ -866,9 +873,9 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                     </div>
                     <div className="flex-1 min-w-0 pt-1">
                       <div className="flex justify-between items-start mb-1">
-                        <p className="font-extrabold text-[#0F172A] text-base truncate pr-2">{listing.title}</p>
-                        <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider ${
-                          listing.status === "active" ? "bg-[#F0FDF4] text-[#22C55E]" : 
+                        <p className="font-extrabold text-slate-900 text-base truncate pr-2">{listing.title}</p>
+                        <span className={`text-xs font-bold px-2 py-1 rounded-md uppercase tracking-wider ${
+                          listing.status === "active" ? "bg-[#F0FDF4] text-green-500" : 
                           listing.status === "reserved" ? "bg-orange-50 text-orange-500" :
                           listing.status === "swapped" ? "bg-blue-50 text-blue-600" :
                           "bg-gray-100 text-gray-500"
@@ -879,7 +886,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                       <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-2">
                         {listing.category && <span className="bg-gray-50 px-2 py-0.5 rounded-md text-gray-600">{listing.category}</span>}
                         {listing.condition && <span className="bg-gray-50 px-2 py-0.5 rounded-md text-gray-600">{listing.condition}</span>}
-                        {listing.estimatedValue && <span className="text-[#22C55E] bg-green-50 px-2 py-0.5 rounded-md">KES {listing.estimatedValue.toLocaleString()}</span>}
+                        {listing.estimatedValue && <span className="text-green-500 bg-green-50 px-2 py-0.5 rounded-md">KES {listing.estimatedValue.toLocaleString()}</span>}
                       </div>
 
                     </div>
@@ -887,8 +894,8 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                   {isMe && (
                     <div className="bg-gray-50/50 p-2.5 border-t border-gray-50 flex items-center justify-between gap-2 px-4">
                        <div className="flex items-center gap-2">
-                         <div className={`text-[10px] border rounded-full px-2.5 py-1 font-extrabold flex items-center gap-1 uppercase tracking-wider ${listing.status === 'active' || !listing.status ? 'bg-[#F0FDF4] border-[#22C55E]/20 text-[#22C55E]' : listing.status === 'finalized' ? 'bg-green-50 border-green-500/20 text-green-600' : 'bg-gray-100 border-gray-500/20 text-gray-500'}`}>
-                           {listing.status === 'active' || !listing.status ? <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" /> : null}
+                         <div className={`text-xs border rounded-full px-2.5 py-1 font-extrabold flex items-center gap-1 uppercase tracking-wider ${listing.status === 'active' || !listing.status ? 'bg-[#F0FDF4] border-green-500/20 text-green-500' : listing.status === 'finalized' ? 'bg-green-50 border-green-500/20 text-green-600' : 'bg-gray-100 border-gray-500/20 text-gray-500'}`}>
+                           {listing.status === 'active' || !listing.status ? <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> : null}
                            {listing.status === 'finalized' ? 'Swapped' : listing.status || 'Active'}
                          </div>
                        </div>
@@ -914,16 +921,16 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               ))}
               
               {(wishesQuery.data?.items || []).map((wish: any) => (
-                <div key={`wish-${wish.id}`} className="bg-white rounded-[32px] p-3 card-shadow flex items-center gap-3 border border-yellow-200">
-                  <div className="w-14 h-14 rounded-[24px] bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                <div key={`wish-${wish.id}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3 border border-yellow-200">
+                  <div className="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center flex-shrink-0">
                     <Star className="w-6 h-6 text-yellow-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[#0F172A] text-sm truncate">Wish: {wish.title}</p>
+                    <p className="font-bold text-slate-900 text-sm truncate">Wish: {wish.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <p className="text-xs text-gray-400">Offering: {Array.isArray(wish.offerItems) ? wish.offerItems.join(", ") : wish.offerItems}</p>
                       {wish.communityId && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">
+                        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">
                           Soko Post
                         </span>
                       )}
@@ -970,9 +977,9 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               {proposalsQuery.isLoading && (
                 <div className="space-y-3">
                   {[1, 2, 3].map(i => (
-                    <div key={`sk-swap-${i}`} className="bg-white rounded-[24px] p-4 border border-gray-100 shadow-sm animate-pulse flex items-center justify-between">
+                    <div key={`sk-swap-${i}`} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm animate-pulse flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gray-100 rounded-[16px]"></div>
+                        <div className="w-12 h-12 bg-gray-100 rounded-2xl"></div>
                         <div className="space-y-2">
                           <div className="w-24 h-4 bg-gray-100 rounded-full"></div>
                           <div className="w-16 h-3 bg-gray-100 rounded-full"></div>
@@ -995,7 +1002,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                     
                     if (filtered.length === 0) {
                       return (
-                        <div className="text-center py-8 bg-white rounded-[32px] card-shadow border border-gray-100">
+                        <div className="text-center py-8 bg-white rounded-3xl card-shadow border border-gray-100">
                            <Repeat2 className="w-8 h-8 text-gray-300 mx-auto mb-2" />
                            <p className="text-gray-400 text-sm font-medium">No swaps found</p>
                         </div>
@@ -1021,28 +1028,28 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                                         'bg-white border-gray-100';
 
                       return (
-                        <div key={p.id} className={`rounded-[32px] p-4 card-shadow border ${tintClass}`}>
+                        <div key={p.id} className={`rounded-3xl p-4 card-shadow border ${tintClass}`}>
                           <div className="flex justify-between items-start mb-3 border-b border-gray-50/50 pb-3">
                             <div>
-                              <p className="font-bold text-[#0F172A] text-sm truncate max-w-[200px]">{listingTitle}</p>
+                              <p className="font-bold text-slate-900 text-sm truncate max-w-[200px]">{listingTitle}</p>
                               <div className="flex items-center gap-1.5 mt-1">
-                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${
-                                  p.status === "completed" ? "bg-[#F0FDF4] text-[#22C55E]" :
-                                  p.status === "accepted" ? "bg-[#EFF6FF] text-[#2563EB]" :
+                                <span className={`text-xs font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${
+                                  p.status === "completed" ? "bg-[#F0FDF4] text-green-500" :
+                                  p.status === "accepted" ? "bg-[#EFF6FF] text-blue-600" :
                                   (p.status === "rejected" || p.status === "cancelled") ? "bg-red-50 text-red-500" :
                                   "bg-gray-100 text-gray-500"
                                 }`}>
                                   {p.status}
                                 </span>
-                                <span className="text-[10px] text-gray-400 font-medium">
+                                <span className="text-xs text-gray-400 font-medium">
                                   {new Date(p.createdAt).toLocaleDateString()}
                                 </span>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
                               <div className="text-right">
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">{isSender ? "To" : "From"}</p>
-                                <p className="font-semibold text-xs text-[#0F172A]">@{otherUsername}</p>
+                                <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">{isSender ? "To" : "From"}</p>
+                                <p className="font-semibold text-xs text-slate-900">@{otherUsername}</p>
                               </div>
                               <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
                                 {otherUser?.avatarUrl ? <img src={otherUser.avatarUrl} className="w-full h-full object-cover" /> : <User className="w-4 h-4 text-gray-400" />}
@@ -1052,7 +1059,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                           
                           {(p.cashTopUp > 0 || p.message) && (
                             <div className="bg-gray-50 rounded-2xl p-3 mb-3">
-                              {p.cashTopUp > 0 && <p className="text-xs font-bold text-[#22C55E] mb-1 flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> + KES {p.cashTopUp.toLocaleString()}</p>}
+                              {p.cashTopUp > 0 && <p className="text-xs font-bold text-green-500 mb-1 flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> + KES {p.cashTopUp.toLocaleString()}</p>}
                               {p.message && <p className="text-xs text-gray-600 line-clamp-2">"{p.message}"</p>}
                             </div>
                           )}
@@ -1060,7 +1067,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                           {swapsTab === "pending" && !isSender && (
                             <div className="flex gap-2 justify-end">
                               <button onClick={() => updateProposalStatus(p.id, 'rejected')} className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition-colors">Decline</button>
-                              <button onClick={() => updateProposalStatus(p.id, 'accepted')} className="flex-1 py-2 bg-[#22C55E] hover:bg-[#16A34A] text-white font-bold text-xs rounded-xl transition-colors">Accept Offer</button>
+                              <button onClick={() => updateProposalStatus(p.id, 'accepted')} className="flex-1 py-2 bg-green-500 hover:bg-[#16A34A] text-white font-bold text-xs rounded-xl transition-colors">Accept Offer</button>
                             </div>
                           )}
                           
@@ -1069,20 +1076,20 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                               <div className="bg-blue-50/50 p-3 rounded-2xl border border-blue-100 flex items-start gap-3">
                                 <Calendar className="w-4 h-4 text-blue-500 mt-0.5" />
                                 <div>
-                                  <p className="text-xs font-bold text-[#0F172A]">Meeting Scheduled</p>
-                                  <p className="text-[10px] text-gray-500 mt-0.5">Please finalize the meetup details in chat.</p>
+                                  <p className="text-xs font-bold text-slate-900">Meeting Scheduled</p>
+                                  <p className="text-xs text-gray-500 mt-0.5">Please finalize the meetup details in chat.</p>
                                 </div>
                               </div>
                               <div className="flex gap-2">
-                                <button onClick={() => navigate(`/chat/${p.proposerId === user?.id ? p.receiverId : p.proposerId}`)} className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-[#0F172A] font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1"><MessageCircle className="w-3.5 h-3.5" /> Chat</button>
-                                <button onClick={() => updateProposalStatus(p.id, 'completed')} className="flex-1 py-2 bg-[#0F172A] hover:bg-gray-800 text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Mark Completed</button>
+                                <button onClick={() => navigate(`/chat/${p.proposerId === user?.id ? p.receiverId : p.proposerId}`)} className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-slate-900 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1"><MessageCircle className="w-3.5 h-3.5" /> Chat</button>
+                                <button onClick={() => navigate(`/verify?id=${p.id}`)} className="flex-1 py-2 bg-slate-900 hover:bg-gray-800 text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1"><QrCode className="w-3.5 h-3.5" /> Verify In-Person</button>
                               </div>
                             </div>
                           )}
                           
                           {swapsTab === "completed" && (
                              <div className="bg-[#F0FDF4] p-3 rounded-2xl border border-[#BBF7D0] flex items-center gap-2">
-                               <CheckCircle2 className="w-4 h-4 text-[#22C55E]" />
+                               <CheckCircle2 className="w-4 h-4 text-green-500" />
                                <p className="text-xs font-bold text-[#16A34A]">Swap Completed Successfully</p>
                              </div>
                           )}
@@ -1098,8 +1105,8 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
           {activeTab === "saved" && (
             <motion.div key="saved" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
               {savedItems.map((item: any) => (
-                <div key={item.id} className="bg-white rounded-[32px] p-3 card-shadow flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-[24px] bg-gray-100 overflow-hidden flex-shrink-0">
+                <div key={item.id} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden flex-shrink-0">
                     {(() => {
                       const imgs = item.images as unknown as string[];
                       const img = imgs?.[0] && !imgs[0].startsWith('blob:') ? imgs[0] : null;
@@ -1113,19 +1120,19 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                     })()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[#0F172A] text-sm truncate">{item.title}</p>
+                    <p className="font-bold text-slate-900 text-sm truncate">{item.title}</p>
                     <p className="text-xs text-gray-400 mt-0.5">{item.campus?.split(",")[0]}</p>
                   </div>
                   <Heart className="w-5 h-5 text-red-400 fill-red-400 flex-shrink-0" />
                 </div>
               ))}
               {savedWishes.map((wish: any) => (
-                <div key={`wish-${wish.id}`} className="bg-white rounded-[32px] p-3 card-shadow flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-[24px] bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                <div key={`wish-${wish.id}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center flex-shrink-0">
                     <Star className="w-6 h-6 text-yellow-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[#0F172A] text-sm truncate">Wish: {wish.title}</p>
+                    <p className="font-bold text-slate-900 text-sm truncate">Wish: {wish.title}</p>
                     <p className="text-xs text-gray-400 mt-0.5">{wish.campus?.split(",")[0]}</p>
                   </div>
                   <Heart className="w-5 h-5 text-red-400 fill-red-400 flex-shrink-0" />
@@ -1133,25 +1140,40 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               ))}
               
               {watchedCommunities.map((comm: any) => (
-                <div key={`comm-${comm.id}`} className="bg-white rounded-[32px] p-3 card-shadow flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-[24px] bg-purple-50 flex items-center justify-center flex-shrink-0">
+                <div key={`comm-${comm.id}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center flex-shrink-0">
                     <Users className="w-6 h-6 text-purple-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[#0F172A] text-sm truncate">Soko: {comm.name}</p>
+                    <p className="font-bold text-slate-900 text-sm truncate">Soko: {comm.name}</p>
                     <p className="text-xs text-gray-400 mt-0.5">{comm.memberCount || 1} Members</p>
                   </div>
                   <Heart className="w-5 h-5 text-red-400 fill-red-400 flex-shrink-0" />
                 </div>
               ))}
 
+              {useAppStore.getState().savedSearches.map((search) => (
+                <div key={`search-${search.id}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <Search className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-slate-900 text-sm truncate">Search: "{search.query}"</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Saved {new Date(search.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <button onClick={() => useAppStore.getState().removeSavedSearch(search.id)}>
+                    <Heart className="w-5 h-5 text-red-400 fill-red-400 flex-shrink-0" />
+                  </button>
+                </div>
+              ))}
+
               {watchedUserIds.map((userId: string) => (
-                <div key={`user-${userId}`} className="bg-white rounded-[32px] p-3 card-shadow flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-[24px] bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <div key={`user-${userId}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                     <User className="w-6 h-6 text-blue-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[#0F172A] text-sm truncate">Watched User</p>
+                    <p className="font-bold text-slate-900 text-sm truncate">Watched User</p>
                     <p className="text-xs text-gray-400 mt-0.5">Watched Profile</p>
                   </div>
                   <button onClick={() => toggleWatchedUser(userId)}>
@@ -1161,12 +1183,12 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               ))}
 
               {watchedCategoryIds.map((cat: string) => (
-                <div key={`cat-${cat}`} className="bg-white rounded-[32px] p-3 card-shadow flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-[24px] bg-green-50 flex items-center justify-center flex-shrink-0">
+                <div key={`cat-${cat}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center flex-shrink-0">
                     <Package className="w-6 h-6 text-green-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[#0F172A] text-sm truncate capitalize">Category: {cat}</p>
+                    <p className="font-bold text-slate-900 text-sm truncate capitalize">Category: {cat}</p>
                     <p className="text-xs text-gray-400 mt-0.5">Watching for new items</p>
                   </div>
                   <button onClick={() => toggleWatchedCategory(cat)}>
@@ -1197,28 +1219,30 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
       {/* Settings list */}
       <div className="px-4 pb-28 space-y-2">
         {isMe && (
-          <div className="bg-white rounded-[32px] overflow-hidden card-shadow p-2">
+          <div className="inset-grouped-list">
             {[
-              { icon: <UserPlus className="w-4 h-4" />, label: "Invite Friends", color: "#22C55E", action: () => {
+              { icon: <UserPlus className="w-4 h-4 text-white" />, label: "Invite Friends", color: "#34C759", action: () => {
                 const inviteLink = `${window.location.origin}`;
                 navigator.clipboard.writeText(inviteLink);
                 toast.success("Invite link copied!");
               }},
-              { icon: <Bell className="w-4 h-4" />, label: "Notifications", color: "#2563EB", action: () => navigate("/notifications") },
-              { icon: <HelpCircle className="w-4 h-4" />, label: "Help & Safety", color: "#F59E0B", action: () => navigate("/safety") },
+              { icon: <Bell className="w-4 h-4 text-white" />, label: "Notifications", color: "#007AFF", action: () => navigate("/notifications") },
+              { icon: <ShieldAlert className="w-4 h-4 text-white" />, label: "Appeals & Support", color: "#AF52DE", action: () => navigate("/appeals") },
+              { icon: <HelpCircle className="w-4 h-4 text-white" />, label: "Help & Safety", color: "#FF9500", action: () => navigate("/safety") },
             ].map((item, i) => (
-              <motion.button
+              <button
                 key={i}
-                whileTap={{ scale: 0.98 }}
                 onClick={item.action}
-                className="w-full flex items-center gap-3 px-4 py-3.5 rounded-[32px] hover:bg-gray-50 transition-colors"
+                className="inset-grouped-list-item w-full"
               >
-                <div className="w-8 h-8 rounded-[24px] flex items-center justify-center" style={{ backgroundColor: item.color + "20", color: item.color }}>
-                  {item.icon}
+                <div className="flex items-center gap-3">
+                  <div className="inset-grouped-list-item-icon" style={{ backgroundColor: item.color }}>
+                    {item.icon}
+                  </div>
+                  <span className="text-sm font-medium text-slate-900">{item.label}</span>
                 </div>
-                <span className="flex-1 text-sm font-medium text-[#0F172A] text-left">{item.label}</span>
                 <ChevronRight className="w-4 h-4 text-gray-300" />
-              </motion.button>
+              </button>
             ))}
           </div>
         )}
@@ -1228,7 +1252,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={() => logout()}
-              className="w-full bg-red-50 text-red-500 font-bold py-3.5 rounded-[32px] text-sm flex items-center justify-center gap-2"
+              className="w-full bg-red-50 text-red-500 font-bold py-3.5 rounded-3xl text-sm flex items-center justify-center gap-2"
             >
               <LogOut className="w-4 h-4" /> {"Log Out"}
             </motion.button>
@@ -1256,7 +1280,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                   }
                 });
               }}
-              className="w-full bg-gray-100 text-gray-500 font-bold py-3.5 rounded-[32px] text-sm flex items-center justify-center gap-2"
+              className="w-full bg-gray-100 text-gray-500 font-bold py-3.5 rounded-3xl text-sm flex items-center justify-center gap-2"
             >
               <Trash2 className="w-4 h-4" /> {"Delete Account"}
             </motion.button>
@@ -1346,13 +1370,13 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="bg-white/95 backdrop-blur-xl w-full sm:max-w-md mx-auto sm:rounded-[32px] rounded-t-[32px] p-6 card-shadow h-[85vh] sm:h-auto max-h-[90vh] flex flex-col"
+        className="bg-white/95 backdrop-blur-xl w-full sm:max-w-md mx-auto sm:rounded-3xl rounded-t-[32px] p-6 card-shadow h-[85vh] sm:h-auto max-h-[90vh] flex flex-col"
         onClick={e => { e.stopPropagation(); setActiveDropdown(null); }}
       >
         <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6 sm:hidden" />
         <div className="flex justify-between items-center mb-6 shrink-0">
           <div>
-             <h3 className="font-extrabold text-[#0F172A] text-xl">Edit Listing</h3>
+             <h3 className="font-extrabold text-slate-900 text-xl">Edit Listing</h3>
              <p className="text-xs text-gray-500 font-medium mt-1">Refine your swap offer</p>
           </div>
           <button onClick={onClose} className="w-10 h-10 rounded-full bg-gray-100/80 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors">
@@ -1366,7 +1390,7 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
             <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 block">Photos</label>
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
               {images.map((img: string, i: number) => (
-                <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} key={i} className="relative w-20 h-20 rounded-[20px] overflow-hidden flex-shrink-0 group shadow-sm">
+                <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} key={i} className="relative w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 group shadow-sm">
                   <img src={img} className="w-full h-full object-cover" />
                   <button 
                     onClick={() => setImages(images.filter((_: any, idx: number) => idx !== i))}
@@ -1377,7 +1401,7 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
                 </motion.div>
               ))}
               {images.length < 4 && (
-                <label className="w-20 h-20 rounded-[20px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 flex-shrink-0 hover:border-[#22C55E] hover:text-[#22C55E] hover:bg-[#22C55E]/5 transition-all cursor-pointer">
+                <label className="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 flex-shrink-0 hover:border-green-500 hover:text-green-500 hover:bg-green-500/5 transition-all cursor-pointer">
                   <input 
                     type="file" accept="image/*" className="hidden" 
                     onChange={(e) => {
@@ -1386,7 +1410,7 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
                     }} 
                   />
                   <Plus className="w-6 h-6 mb-1" />
-                  <span className="text-[10px] font-bold">Add</span>
+                  <span className="text-xs font-bold">Add</span>
                 </label>
               )}
             </div>
@@ -1398,7 +1422,7 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
               <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest block mb-2">Listing Title</label>
               <input
                 value={title} onChange={e => setTitle(e.target.value)}
-                className="w-full bg-gray-50/50 border border-gray-200/60 rounded-[20px] px-4 py-3.5 text-[15px] font-medium outline-none focus:border-[#22C55E] focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all"
+                className="w-full bg-gray-50/50 border border-gray-200/60 rounded-2xl px-4 py-3.5 text-[15px] font-medium outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all"
                 placeholder="What are you offering?"
               />
             </div>
@@ -1407,7 +1431,7 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
               <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest block mb-2">Description</label>
               <textarea
                 value={description} onChange={e => setDescription(e.target.value)} rows={3}
-                className="w-full bg-gray-50/50 border border-gray-200/60 rounded-[20px] px-4 py-3.5 text-[15px] font-medium outline-none focus:border-[#22C55E] focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all resize-none"
+                className="w-full bg-gray-50/50 border border-gray-200/60 rounded-2xl px-4 py-3.5 text-[15px] font-medium outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all resize-none"
                 placeholder="Add more details about your item..."
               />
             </div>
@@ -1418,22 +1442,22 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
                   <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest block mb-2">Category</label>
                   <div 
                      onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === "category" ? null : "category"); }}
-                     className="w-full bg-gray-50/50 border border-gray-200/60 rounded-[20px] px-4 py-3.5 text-[15px] font-medium cursor-pointer flex justify-between items-center hover:bg-gray-100/50 transition-colors"
+                     className="w-full bg-gray-50/50 border border-gray-200/60 rounded-2xl px-4 py-3.5 text-[15px] font-medium cursor-pointer flex justify-between items-center hover:bg-gray-100/50 transition-colors"
                   >
-                     <span className={category ? "text-[#0F172A]" : "text-gray-400"}>{category || "Select..."}</span>
+                     <span className={category ? "text-slate-900" : "text-gray-400"}>{category || "Select..."}</span>
                      <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${activeDropdown === "category" ? "rotate-90" : ""}`} />
                   </div>
                   <AnimatePresence>
                      {activeDropdown === "category" && (
                         <motion.div 
                           initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                          className="absolute top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-100 rounded-[20px] card-shadow z-50 overflow-hidden"
+                          className="absolute top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-100 rounded-2xl card-shadow z-50 overflow-hidden"
                         >
                            {categories.map(c => (
                               <div 
                                 key={c} 
                                 onClick={(e) => { e.stopPropagation(); setCategory(c); setActiveDropdown(null); }}
-                                className={`px-4 py-3 text-[14px] font-semibold cursor-pointer transition-colors ${category === c ? "bg-[#22C55E]/10 text-[#22C55E]" : "text-gray-600 hover:bg-gray-50"}`}
+                                className={`px-4 py-3 text-[14px] font-semibold cursor-pointer transition-colors ${category === c ? "bg-green-500/10 text-green-500" : "text-gray-600 hover:bg-gray-50"}`}
                               >
                                 {c}
                               </div>
@@ -1448,22 +1472,22 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
                   <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest block mb-2">Condition</label>
                   <div 
                      onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === "condition" ? null : "condition"); }}
-                     className="w-full bg-gray-50/50 border border-gray-200/60 rounded-[20px] px-4 py-3.5 text-[15px] font-medium cursor-pointer flex justify-between items-center hover:bg-gray-100/50 transition-colors"
+                     className="w-full bg-gray-50/50 border border-gray-200/60 rounded-2xl px-4 py-3.5 text-[15px] font-medium cursor-pointer flex justify-between items-center hover:bg-gray-100/50 transition-colors"
                   >
-                     <span className={condition ? "text-[#0F172A]" : "text-gray-400"}>{condition || "Select..."}</span>
+                     <span className={condition ? "text-slate-900" : "text-gray-400"}>{condition || "Select..."}</span>
                      <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${activeDropdown === "condition" ? "rotate-90" : ""}`} />
                   </div>
                   <AnimatePresence>
                      {activeDropdown === "condition" && (
                         <motion.div 
                           initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                          className="absolute top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-100 rounded-[20px] card-shadow z-50 overflow-hidden"
+                          className="absolute top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-100 rounded-2xl card-shadow z-50 overflow-hidden"
                         >
                            {conditions.map(c => (
                               <div 
                                 key={c} 
                                 onClick={(e) => { e.stopPropagation(); setCondition(c); setActiveDropdown(null); }}
-                                className={`px-4 py-3 text-[14px] font-semibold cursor-pointer transition-colors ${condition === c ? "bg-[#22C55E]/10 text-[#22C55E]" : "text-gray-600 hover:bg-gray-50"}`}
+                                className={`px-4 py-3 text-[14px] font-semibold cursor-pointer transition-colors ${condition === c ? "bg-green-500/10 text-green-500" : "text-gray-600 hover:bg-gray-50"}`}
                               >
                                 {c}
                               </div>
@@ -1478,7 +1502,7 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
               <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest block mb-2">Looking For (Comma Separated)</label>
               <input
                 value={preferredItems} onChange={e => setPreferredItems(e.target.value)}
-                className="w-full bg-gray-50/50 border border-gray-200/60 rounded-[20px] px-4 py-3.5 text-[15px] font-medium outline-none focus:border-[#22C55E] focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all"
+                className="w-full bg-gray-50/50 border border-gray-200/60 rounded-2xl px-4 py-3.5 text-[15px] font-medium outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all"
                 placeholder="e.g. iPhone, Guitar, Cash"
               />
             </div>
@@ -1490,7 +1514,7 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
               whileTap={{ scale: 0.98 }}
               onClick={handleUpdate}
               disabled={updateMutation.isPending}
-              className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white font-bold py-4 rounded-[24px] text-[15px] shadow-lg shadow-[#0F172A]/20 transition-all flex justify-center items-center gap-2"
+              className="w-full bg-slate-900 hover:bg-[#1E293B] text-white font-bold py-4 rounded-2xl text-[15px] shadow-lg shadow-[#0F172A]/20 transition-all flex justify-center items-center gap-2"
             >
               {updateMutation.isPending ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/> : "Save Changes"}
             </motion.button>
