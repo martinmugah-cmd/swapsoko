@@ -236,9 +236,11 @@ export default function Home() {
                   </div>
                   <h2 className="text-slate-900 font-black text-[32px] leading-[1.1] tracking-tight drop-shadow-sm">Trade<br/>Smarter.</h2>
                 </div>
-                <div className="w-16 h-16 rounded-[22px] bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg relative overflow-hidden">
+                <div className="w-16 h-16 rounded-[22px] bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg relative overflow-hidden border border-white/20">
                   <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
-                  <Bot className="w-8 h-8 text-white drop-shadow-md relative z-10" />
+                  <div className="relative z-10 flex items-center justify-center -mb-2">
+                    <ThinkingOrb state="solving" size={64} theme="light" />
+                  </div>
                 </div>
               </div>
               
