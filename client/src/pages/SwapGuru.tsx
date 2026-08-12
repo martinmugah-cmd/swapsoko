@@ -12,21 +12,21 @@ import { ProposeSwapModal } from "./Swipes";
 function GuruLoader({ state }: { state: "working" | "solving" | "searching" | "composing" | "weaving" }) {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 15, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      className="flex gap-3 mb-8 items-end relative z-10"
+      initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
+      className="flex gap-4 mb-10 items-end relative z-10"
     >
-      <div className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-2xl flex items-center justify-center flex-shrink-0 shadow-[0_0_20px_rgba(52,211,153,0.15)] border border-white/10 mb-1 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-transparent opacity-50" />
-        <ThinkingOrb state={state === "working" ? "weaving" : state} size={24} theme="dark" />
+      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-gray-100 mb-1 relative overflow-hidden">
+        <ThinkingOrb state={state === "working" ? "weaving" : state} size={24} theme="light" />
       </div>
-      <div className="bg-white/5 backdrop-blur-2xl border border-white/10 text-white px-5 py-4 rounded-[24px] rounded-bl-sm max-w-[75%] relative flex items-center gap-3 shadow-[0_8px_30px_rgba(0,0,0,0.5)] overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.08] mix-blend-overlay pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent pointer-events-none" />
-        <ThinkingOrb state={state} size={20} theme="dark" />
-        <span className="text-[15px] font-medium tracking-wide text-white/90">
-          {state === "working" ? "Calculating valuation..." : "Swap Guru is thinking..."}
-        </span>
+      <div className="p-1.5 rounded-[2rem] rounded-bl-xl bg-black/5 backdrop-blur-3xl shadow-[0_20px_40px_rgba(0,0,0,0.04)] max-w-[75%] border border-white/60">
+        <div className="bg-white/90 px-6 py-4 rounded-[1.6rem] rounded-bl-[8px] relative flex items-center gap-3 shadow-[inset_0_1px_1px_rgba(255,255,255,1)]">
+          <ThinkingOrb state={state} size={20} theme="light" />
+          <span className="text-[15px] font-semibold tracking-tight text-slate-600">
+            {state === "working" ? "Calculating valuation..." : "Thinking deeply..."}
+          </span>
+        </div>
       </div>
     </motion.div>
   );
@@ -37,58 +37,60 @@ function MessageBubble({ msg, onPropose }: { msg: { role: "user" | "guru"; conte
   const isUser = msg.role === "user";
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className={`flex ${isUser ? "justify-end" : "justify-start"} mb-6 relative z-10`}
+      initial={{ opacity: 0, y: 24, scale: 0.96, filter: "blur(10px)" }}
+      whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      viewport={{ once: true, margin: "-20px" }}
+      transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
+      className={`flex ${isUser ? "justify-end" : "justify-start"} mb-8 relative z-10`}
     >
-      <div
-        className={`max-w-[80%] px-5 py-4 rounded-[28px] text-[15px] leading-[24px] shadow-lg relative overflow-hidden ${
-          isUser
-            ? "bg-gradient-to-br from-emerald-400 to-green-500 text-[#022c22] rounded-br-[8px] shadow-[0_10px_30px_rgba(52,211,153,0.3)] border border-emerald-300"
-            : "bg-[#18181B]/60 backdrop-blur-2xl text-white rounded-bl-[8px] shadow-[0_10px_40px_rgba(0,0,0,0.4)] border border-white/10"
-        }`}
-      >
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.1] mix-blend-overlay pointer-events-none" />
-        
-        {isUser ? (
-          <p className="font-semibold relative z-10">{msg.content}</p>
-        ) : (
-          <div className="prose prose-sm max-w-none text-gray-200 prose-p:leading-[26px] relative z-10 prose-strong:text-white prose-strong:font-bold prose-a:text-emerald-400">
-            <Streamdown>{msg.content}</Streamdown>
-            
-            {msg.listings && msg.listings.length > 0 && (
-              <div className="mt-5 space-y-3">
-                {msg.listings.map((l, i) => {
-                   let imgs: string[] = [];
-                   if (Array.isArray(l.images)) imgs = l.images;
-                   else if (typeof l.images === 'string') { try { imgs = JSON.parse(l.images); } catch(e) { imgs = [l.images]; } }
-                   const img = imgs[0] || null;
-                   
-                   return (
-                     <div key={i} className="flex items-center bg-black/40 p-2.5 rounded-[22px] border border-white/10 shadow-inner gap-3 backdrop-blur-md">
-                        <div className="w-14 h-14 rounded-[16px] overflow-hidden bg-gray-900 shrink-0 border border-white/5">
-                           {img ? <img src={img} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Package className="w-5 h-5 text-gray-600"/></div>}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                           <p className="text-[14px] font-bold text-white truncate">{l.title}</p>
-                           <p className="text-[12px] font-medium text-gray-400 truncate">By {l.profiles?.name || 'User'}</p>
-                        </div>
-                        <motion.button 
-                           whileTap={{ scale: 0.9 }}
-                           onClick={() => onPropose(l)} 
-                           className="text-[12px] bg-gradient-to-r from-emerald-500 to-green-500 shadow-[0_0_15px_rgba(52,211,153,0.3)] text-[#022c22] font-black px-4 py-2 rounded-full shrink-0 transition-transform"
-                        >
-                           Propose
-                        </motion.button>
-                     </div>
-                   );
-                })}
-              </div>
-            )}
+      {isUser ? (
+        <div className="p-1.5 rounded-[2rem] rounded-br-xl bg-emerald-500/10 backdrop-blur-2xl shadow-[0_16px_40px_rgba(52,211,153,0.15)] max-w-[80%] border border-emerald-500/20">
+          <div className="bg-gradient-to-br from-emerald-400 to-green-500 text-white px-6 py-4 rounded-[1.6rem] rounded-br-[8px] shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]">
+            <p className="font-semibold text-[15px] leading-[24px] tracking-tight">{msg.content}</p>
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="p-1.5 rounded-[2.5rem] rounded-bl-xl bg-black/[0.03] backdrop-blur-3xl shadow-[0_24px_50px_rgba(0,0,0,0.06)] max-w-[85%] border border-white/60">
+          <div className="bg-white/95 px-7 py-6 rounded-[2.1rem] rounded-bl-[8px] shadow-[inset_0_1px_1px_rgba(255,255,255,1)]">
+            <div className="prose prose-sm max-w-none text-slate-700 prose-p:leading-[28px] prose-p:text-[15px] prose-p:tracking-tight prose-strong:text-slate-900 prose-strong:font-extrabold prose-a:text-emerald-500 prose-a:font-bold prose-a:no-underline">
+              <Streamdown>{msg.content}</Streamdown>
+              
+              {msg.listings && msg.listings.length > 0 && (
+                <div className="mt-6 space-y-3">
+                  {msg.listings.map((l, i) => {
+                     let imgs: string[] = [];
+                     if (Array.isArray(l.images)) imgs = l.images;
+                     else if (typeof l.images === 'string') { try { imgs = JSON.parse(l.images); } catch(e) { imgs = [l.images]; } }
+                     const img = imgs[0] || null;
+                     
+                     return (
+                       <div key={i} className="p-1 rounded-[1.5rem] bg-black/[0.02] border border-black/[0.04]">
+                         <div className="flex items-center bg-white p-2 rounded-[1.2rem] shadow-sm gap-4">
+                            <div className="w-16 h-16 rounded-[1rem] overflow-hidden bg-slate-50 shrink-0 border border-black/[0.04]">
+                               {img ? <img src={img} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Package className="w-5 h-5 text-slate-300"/></div>}
+                            </div>
+                            <div className="flex-1 min-w-0 pr-2">
+                               <p className="text-[14px] font-bold text-slate-900 truncate tracking-tight">{l.title}</p>
+                               <p className="text-[12px] font-medium text-slate-400 truncate mt-0.5">By {l.profiles?.name || 'User'}</p>
+                            </div>
+                            <button 
+                               onClick={() => onPropose(l)} 
+                               className="group p-1 rounded-full bg-black/5 hover:bg-black/10 transition-colors mr-1"
+                            >
+                               <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-[0_4px_12px_rgba(52,211,153,0.3)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-active:scale-90 group-hover:scale-105">
+                                 <ChevronLeft className="w-5 h-5 rotate-180" strokeWidth={2.5} />
+                               </div>
+                            </button>
+                         </div>
+                       </div>
+                     );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
@@ -163,90 +165,104 @@ export default function SwapGuruPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#09090B] flex flex-col font-sans selection:bg-emerald-500/30 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-[#F9FAFB] flex flex-col font-sans selection:bg-emerald-500/20 relative overflow-hidden">
       
-      {/* Hyper-vibrant Ambient Background Orbs */}
+      {/* Soft Structuralism Ambient Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <motion.div 
-          className="absolute top-[-20%] right-[-10%] w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] bg-emerald-500/30 rounded-full blur-[120px]"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-10%] right-[-10%] w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] bg-white rounded-full blur-[100px]"
+          animate={{ scale: [1, 1.1, 1], opacity: [0.6, 0.9, 0.6] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-[-10%] left-[-20%] w-[70vw] h-[70vw] max-w-[700px] max-h-[700px] bg-indigo-600/20 rounded-full blur-[120px]"
-          animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-[20%] left-[-10%] w-[70vw] h-[70vw] max-w-[700px] max-h-[700px] bg-emerald-50/50 rounded-full blur-[120px]"
+          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
       </div>
 
-      {/* VisionOS-style Frosted Header (Dark) */}
-      <div className="sticky top-0 z-40 bg-black/40 backdrop-blur-[32px] border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)] pt-2 pb-2 px-4 relative">
-        <div className="flex items-center justify-between pt-2 max-w-[800px] mx-auto w-full relative z-10">
-          <button onClick={() => window.history.back()} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/10 shadow-sm transition-all text-white">
-            <ChevronLeft className="w-5 h-5 -ml-0.5" />
-          </button>
-          
-          <div className="flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2">
-            <div className="flex items-center gap-1.5 bg-white/5 px-4 py-1.5 rounded-full border border-white/10 shadow-inner mb-0.5 backdrop-blur-md">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,1)]" />
-              <span className="text-[11px] font-black tracking-widest uppercase text-emerald-400 drop-shadow-md">Swap Guru AI</span>
+      {/* Floating Glass Island Header */}
+      <div className="sticky top-4 z-40 px-4 max-w-[800px] mx-auto w-full">
+        <motion.div 
+          initial={{ y: -40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1, ease: [0.32, 0.72, 0, 1] }}
+          className="p-1.5 rounded-[2.5rem] bg-black/[0.03] backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
+          <div className="bg-white/80 px-4 py-3 rounded-[2.1rem] flex items-center justify-between shadow-[inset_0_1px_1px_rgba(255,255,255,1)] relative z-10">
+            
+            <button 
+              onClick={() => window.history.back()} 
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-black/5 hover:bg-black/10 transition-colors text-slate-600 active:scale-95"
+            >
+              <ChevronLeft className="w-6 h-6 -ml-0.5" strokeWidth={2.5} />
+            </button>
+            
+            <div className="flex flex-col items-center justify-center">
+              <div className="rounded-full px-4 py-1.5 bg-emerald-50 text-[10px] font-black tracking-[0.2em] uppercase text-emerald-600 mb-1 flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3" /> AI Assistant
+              </div>
+              <h1 className="text-[18px] font-extrabold text-slate-900 tracking-tight leading-none">Swap Guru</h1>
             </div>
-          </div>
 
-          <button onClick={() => setMessages([{ role: "guru", content: getGreeting() }])} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/10 shadow-sm transition-all text-white">
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
+            <button 
+              onClick={() => setMessages([{ role: "guru", content: getGreeting() }])} 
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-black/5 hover:bg-black/10 transition-colors text-slate-600 active:scale-95"
+            >
+              <RotateCcw className="w-5 h-5" strokeWidth={2.5} />
+            </button>
+
+          </div>
+        </motion.div>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-8 w-full max-w-[800px] mx-auto relative z-10" style={{ paddingBottom: "130px" }}>
+      <div className="flex-1 overflow-y-auto px-4 py-12 w-full max-w-[800px] mx-auto relative z-10" style={{ paddingBottom: "160px" }}>
         <AnimatePresence>
           {messages.map((msg, i) => (
             <MessageBubble key={i} msg={msg} onPropose={(l) => setProposeListing(l)} />
           ))}
         </AnimatePresence>
         {isLoading && <GuruLoader state={orbState} />}
-        <div ref={bottomRef} />
+        <div ref={bottomRef} className="h-10" />
       </div>
 
-      {/* Floating Glowing Input Bar */}
+      {/* Double-Bezel Floating Input Island */}
       <div className="fixed bottom-6 left-4 right-4 z-40 max-w-[800px] md:mx-auto">
         <motion.div 
-          animate={isLoading ? {
-            boxShadow: ["0px 12px 40px rgba(0,0,0,0.5)", "0px 12px 60px rgba(52,211,153,0.3)", "0px 12px 40px rgba(0,0,0,0.5)"],
-            borderColor: ["rgba(255,255,255,0.1)", "rgba(52,211,153,0.5)", "rgba(255,255,255,0.1)"]
-          } : {
-            boxShadow: "0px 12px 50px rgba(0,0,0,0.6)",
-            borderColor: "rgba(255,255,255,0.1)"
-          }}
-          transition={{ duration: 2, repeat: isLoading ? Infinity : 0, ease: "easeInOut" }}
-          className="bg-[#18181B]/80 backdrop-blur-[32px] rounded-[32px] p-2 flex items-center gap-2 border shadow-2xl relative overflow-hidden"
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1, ease: [0.32, 0.72, 0, 1], delay: 0.2 }}
+          className="p-2 bg-white/40 backdrop-blur-[32px] rounded-[3rem] shadow-[0_24px_50px_rgba(0,0,0,0.06)] border border-white/60 relative overflow-hidden group"
         >
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay pointer-events-none" />
-          <div className="flex-1 bg-black/40 rounded-[28px] flex items-center px-5 py-3 border border-white/5 shadow-inner relative z-10">
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
+          
+          <div className="bg-white rounded-[2.5rem] flex items-center px-4 py-2 border border-black/5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] relative z-10 transition-colors duration-500 group-focus-within:border-black/10">
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === "Enter" && handleSend()}
-              placeholder={isLoading ? "Swap Guru is thinking..." : "Message Swap Guru..."}
+              placeholder={isLoading ? "Swap Guru is calculating..." : "Ask Swap Guru to find or evaluate..."}
               disabled={isLoading}
-              className="flex-1 bg-transparent text-[16px] font-medium text-white placeholder-gray-500 outline-none w-full disabled:opacity-50 py-1"
+              className="flex-1 bg-transparent text-[16px] font-semibold tracking-tight text-slate-900 placeholder-slate-400 outline-none w-full disabled:opacity-50 py-3 px-3"
             />
+            
+            <button
+              onClick={() => handleSend()}
+              disabled={!input.trim() || isLoading}
+              className="group/btn p-1.5 rounded-full bg-black/5 hover:bg-black/10 transition-colors shrink-0 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-active/btn:scale-[0.85] group-hover/btn:scale-[1.05] ${
+                input.trim() && !isLoading 
+                  ? "bg-slate-900 text-white shadow-slate-900/30" 
+                  : "bg-slate-200 text-slate-400 shadow-none"
+              }`}>
+                <Send className="w-5 h-5 ml-1 transition-transform group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1" strokeWidth={2.5} />
+              </div>
+            </button>
+
           </div>
-          <motion.button
-            whileTap={{ scale: 0.85 }}
-            onClick={() => handleSend()}
-            disabled={!input.trim() || isLoading}
-            className={`w-14 h-14 shrink-0 rounded-[24px] flex items-center justify-center transition-all relative z-10 ${
-              input.trim() && !isLoading 
-                ? "bg-gradient-to-br from-emerald-400 to-green-500 shadow-[0_0_25px_rgba(52,211,153,0.5)] text-[#022c22]" 
-                : "bg-white/5 border border-white/5 text-gray-500"
-            }`}
-          >
-            <Send className={`w-[20px] h-[20px] ml-0.5`} strokeWidth={2.5} />
-          </motion.button>
         </motion.div>
       </div>
 
