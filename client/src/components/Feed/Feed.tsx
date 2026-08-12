@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Plus, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Plus, Bookmark, CheckCircle, MapPin, Banknote, Flag } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 
@@ -26,49 +26,88 @@ export function FeedOverlay({ listing, onPropose }: { listing: any, onPropose: (
     };
 
     return (
-        <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-end p-6 pb-8">
+        <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-end p-5 pb-8">
             <div className="flex items-end justify-between w-full pointer-events-auto">
                 
-                {/* Info Container */}
-                <div className="flex flex-col gap-3 w-full">
+                {/* Left Side: Info */}
+                <div className="flex flex-col gap-2 w-full pr-16 mb-20">
                     
-                    {/* Top Row: User & Title */}
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-[18px] bg-white/10 backdrop-blur-md overflow-hidden border border-white/20 shadow-lg shrink-0">
-                            <img src={listing.profiles?.avatarUrl || "/cham.png"} alt="avatar" className="w-full h-full object-cover" />
-                        </div>
-                        <h2 className="text-white text-2xl font-black drop-shadow-md leading-tight line-clamp-2">{listing.title}</h2>
-                    </div>
-
-                    {/* Meta tags (Squircles) */}
-                    <div className="flex flex-wrap gap-2 mt-1">
-                        {listing.estimatedValue ? (
-                            <span className="text-emerald-50 text-xs font-bold bg-emerald-500/80 px-3 py-1.5 rounded-xl backdrop-blur-md border border-emerald-400/50 shadow-sm">
-                                Worth: KES {listing.estimatedValue.toLocaleString()}
+                    {/* User Profile Badge & Report */}
+                    <div className="flex items-center gap-2 mb-0.5">
+                        <div className="flex items-center gap-2 bg-black/20 backdrop-blur-md border border-white/10 rounded-full pr-4 pl-1 py-1 w-max shadow-sm">
+                            <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 border border-white/20">
+                                <img src={listing.profiles?.avatarUrl || "/cham.png"} alt="avatar" className="w-full h-full object-cover" />
+                            </div>
+                            <span className="text-white/95 text-[13px] font-semibold tracking-wide">
+                                {listing.profiles?.name || 'Anonymous'}
                             </span>
-                        ) : null}
-                        <span className="text-white/90 text-xs font-bold bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/20 shadow-sm">
-                            Wants: {listing.wantItems || "Offers"}
-                        </span>
-                        <span className="text-white/90 text-xs font-bold bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/20 shadow-sm flex items-center gap-1">
-                            <span className="text-xs">📍</span> {listing.location || 'Nearby'}
-                        </span>
+                        </div>
+                        
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); /* trigger report */ }}
+                            className="w-9 h-9 rounded-full bg-black/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-red-400 hover:bg-red-500/10 transition-colors shadow-sm"
+                        >
+                            <Flag className="w-4 h-4" />
+                        </button>
                     </div>
 
-                    {/* Bottom: Action Buttons */}
-                    <div className="flex items-center gap-3 mt-4">
-                        <button 
-                            onClick={onPropose}
-                            className="flex-1 py-4 bg-white text-black font-extrabold text-[15px] rounded-2xl shadow-[0_8px_30px_rgba(255,255,255,0.2)] transform transition hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
-                        >
-                            Offer Swap
-                        </button>
+                    {/* Title */}
+                    <h2 className="text-white text-xl font-bold leading-snug drop-shadow-md">{listing.title}</h2>
+
+                    {/* Meta tags */}
+                    <div className="flex flex-col gap-2 mt-1">
                         
-                        <button onClick={handleSave} className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 flex items-center justify-center transition-colors hover:bg-white/20 active:scale-95 shrink-0">
-                            <Bookmark className={`w-6 h-6 ${isSaved ? 'fill-yellow-400 text-yellow-400' : 'text-white'}`} />
-                        </button>
+                        {/* What he wants */}
+                        <div className="flex items-start gap-2">
+                            <span className="shrink-0 mt-1 w-1.5 h-1.5 rounded-full bg-swap-green shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
+                            <span className="text-white/90 text-[13px] font-medium leading-tight drop-shadow-sm">
+                                <span className="text-white/50 text-[12px] mr-1 uppercase font-bold tracking-wider">Wants</span>
+                                {listing.wantItems || "Open to offers"}
+                            </span>
+                        </div>
+
+                        {/* Exact Location */}
+                        <div className="flex items-center gap-2">
+                            <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-white/40"></span>
+                            <span className="text-white/70 text-[13px] font-medium drop-shadow-sm flex items-center">
+                                <MapPin className="w-3.5 h-3.5 mr-1.5 opacity-70" />
+                                {listing.location || listing.town || 'Nearby'}
+                            </span>
+                        </div>
+
+                        {/* Cash Top-up & Value */}
+                        <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                            {listing.cashTopUpAllowed && (
+                                <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold tracking-wide flex items-center gap-1 backdrop-blur-md">
+                                    <Banknote className="w-3.5 h-3.5" /> Cash Top-up OK
+                                </span>
+                            )}
+                            
+                            {listing.estimatedValue ? (
+                                <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-white/80 text-[11px] font-bold tracking-wide backdrop-blur-md">
+                                    KES {listing.estimatedValue.toLocaleString()}
+                                </span>
+                            ) : null}
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Floating Action Dock */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 z-20 w-full px-5 pointer-events-auto">
+                <button 
+                    onClick={(e) => { e.stopPropagation(); onPropose(); }}
+                    className="flex-1 h-14 rounded-full apple-glass-thick text-slate-900 font-bold text-[14px] tracking-wide uppercase flex items-center justify-center gap-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-transform active:scale-[0.98]"
+                >
+                    Offer Swap
+                </button>
+                
+                <button 
+                    onClick={(e) => { e.stopPropagation(); handleSave(); }} 
+                    className="w-14 h-14 rounded-full apple-glass flex items-center justify-center shadow-lg transition-transform active:scale-95 shrink-0"
+                >
+                    <Bookmark className={`w-6 h-6 ${isSaved ? 'fill-swap-green text-swap-green' : 'text-slate-700'}`} />
+                </button>
             </div>
         </div>
     );
@@ -132,8 +171,8 @@ export function FeedVideo({ listing, isActive, onPropose }: { listing: any, isAc
                 <img src={coverUrl} alt="cover" className="w-full h-full object-cover" />
             )}
             
-            {/* Gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/80 pointer-events-none" />
+            {/* Gradient overlay for text readability - cleaner, subtle dark fade */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
             
             <FeedOverlay listing={listing} onPropose={onPropose} />
         </div>
@@ -155,18 +194,27 @@ export function Feed({ onPropose }: { onPropose: (listing: any) => void }) {
 
     if (isLoading) {
         return (
-            <div className="w-full h-full bg-black flex flex-col items-center justify-center pb-24">
-                <div className="w-12 h-12 border-4 border-white/20 border-t-[#22C55E] rounded-full animate-spin" />
-                <p className="text-white mt-4 font-bold tracking-widest uppercase text-sm">Curating Feed</p>
+            <div className="w-full h-[100dvh] bg-slate-950 flex flex-col items-center justify-center">
+                <div className="relative w-16 h-16 flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full border-2 border-white/5" />
+                    <div className="absolute inset-0 rounded-full border-2 border-swap-green border-t-transparent animate-spin" />
+                    <div className="w-6 h-6 rounded-full bg-white/10 animate-pulse" />
+                </div>
+                <p className="text-white/40 mt-6 font-bold tracking-[0.2em] uppercase text-[11px]">Curating Feed</p>
             </div>
         );
     }
 
     if (!data?.items || data.items.length === 0) {
         return (
-            <div className="w-full h-full bg-black flex flex-col items-center justify-center p-8 pb-24">
-                <p className="text-white text-center font-semibold text-lg">You've seen it all!</p>
-                <p className="text-white/60 text-center text-sm mt-2">Check back later for more amazing swaps.</p>
+            <div className="w-full h-[100dvh] bg-slate-950 flex flex-col items-center justify-center px-6 text-center">
+                <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 shadow-2xl backdrop-blur-md">
+                    <CheckCircle className="w-8 h-8 text-white/40" />
+                </div>
+                <h3 className="text-white text-xl font-bold mb-2 tracking-tight">You're all caught up</h3>
+                <p className="text-white/40 text-[14px] max-w-[240px] leading-relaxed">
+                    We'll notify you when new video swaps are available.
+                </p>
             </div>
         );
     }
