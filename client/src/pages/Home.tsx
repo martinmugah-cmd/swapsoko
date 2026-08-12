@@ -311,45 +311,36 @@ export default function Home() {
         {/* ── Premium Scrollable Dock (Communities / Shortcuts) ─────────────────────────────────────────────────── */}
         <div className="mt-8">
           <h2 className="px-6 text-[18px] font-black text-slate-900 mb-4 tracking-tight drop-shadow-sm">Explore</h2>
-          <div className="flex gap-4 overflow-x-auto px-6 pb-6 scrollbar-hide snap-x">
+          <div className="flex justify-between px-6 pb-6 w-full">
             
-            <motion.button onClick={() => navigate("/communities")} className="snap-start shrink-0 flex flex-col items-center gap-2 group outline-none" whileTap={{ scale: 0.9 }}>
+            <motion.button onClick={() => navigate("/communities")} className="flex flex-col items-center gap-2 group outline-none w-[72px]" whileTap={{ scale: 0.9 }}>
                <div className="w-16 h-16 rounded-[24px] bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_20px_rgba(0,0,0,0.04)] flex items-center justify-center group-hover:bg-white transition-colors relative overflow-hidden">
                  <Users size={26} className="text-blue-500" strokeWidth={2.5} />
                </div>
                <span className="text-[12px] font-extrabold text-slate-700">Soko</span>
             </motion.button>
             
-            <motion.button onClick={() => { setFilters({ query: "", category: "", condition: "", swipesViewMode: "map" }); navigate("/swipes"); }} className="snap-start shrink-0 flex flex-col items-center gap-2 group outline-none" whileTap={{ scale: 0.9 }}>
-               <div className="w-16 h-16 rounded-[24px] bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_20px_rgba(0,0,0,0.04)] flex items-center justify-center group-hover:bg-white transition-colors relative overflow-hidden">
-                 <MapPin size={26} className="text-emerald-500" strokeWidth={2.5} />
+            <motion.button onClick={() => navigate('/swap-wishes?tab=cycles')} className="flex flex-col items-center gap-2 group outline-none w-[72px]" whileTap={{ scale: 0.9 }}>
+               <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-orange-400 to-red-500 border border-white/40 shadow-[0_8px_20px_rgba(249,115,22,0.3)] flex items-center justify-center relative overflow-hidden">
+                 <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                 <Flame size={26} className="text-white" strokeWidth={2.5} />
                </div>
-               <span className="text-[12px] font-extrabold text-slate-700">Map View</span>
+               <span className="text-[12px] font-extrabold text-slate-700 whitespace-nowrap">Multi Cycle</span>
             </motion.button>
 
-            <motion.button onClick={() => { setFilters({ query: "", category: 'urgent' }); navigate("/swap-wishes"); }} className="snap-start shrink-0 flex flex-col items-center gap-2 group outline-none" whileTap={{ scale: 0.9 }}>
+            <motion.button onClick={() => { setFilters({ query: "", category: 'urgent' }); navigate("/swap-wishes"); }} className="flex flex-col items-center gap-2 group outline-none w-[72px]" whileTap={{ scale: 0.9 }}>
                <div className="w-16 h-16 rounded-[24px] bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_20px_rgba(0,0,0,0.04)] flex items-center justify-center group-hover:bg-white transition-colors relative overflow-hidden">
                  <Zap size={26} className="text-red-500" strokeWidth={2.5} />
                </div>
                <span className="text-[12px] font-extrabold text-slate-700">Urgent</span>
             </motion.button>
 
-            <motion.button onClick={() => { setFilters({ query: "", condition: 'free', category: 'donations' }); navigate("/swipes"); }} className="snap-start shrink-0 flex flex-col items-center gap-2 group outline-none" whileTap={{ scale: 0.9 }}>
+            <motion.button onClick={() => { setFilters({ query: "", condition: 'free', category: 'donations' }); navigate("/swipes"); }} className="flex flex-col items-center gap-2 group outline-none w-[72px]" whileTap={{ scale: 0.9 }}>
                <div className="w-16 h-16 rounded-[24px] bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_20px_rgba(0,0,0,0.04)] flex items-center justify-center group-hover:bg-white transition-colors relative overflow-hidden">
                  <Heart size={26} className="text-pink-500" strokeWidth={2.5} />
                </div>
                <span className="text-[12px] font-extrabold text-slate-700">Donations</span>
             </motion.button>
-
-            {cyclesQuery.data?.cycles && cyclesQuery.data.cycles.length > 0 && (
-              <motion.button onClick={() => navigate('/swap-wishes?tab=cycles')} className="snap-start shrink-0 flex flex-col items-center gap-2 group outline-none" whileTap={{ scale: 0.9 }}>
-                 <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-orange-400 to-red-500 border border-white/40 shadow-[0_8px_20px_rgba(249,115,22,0.3)] flex items-center justify-center relative overflow-hidden">
-                   <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                   <Flame size={26} className="text-white" strokeWidth={2.5} />
-                 </div>
-                 <span className="text-[12px] font-extrabold text-slate-700">Multi</span>
-              </motion.button>
-            )}
 
           </div>
         </div>
