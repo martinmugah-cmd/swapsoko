@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { ChevronLeft, ArrowUp, Package, RotateCcw } from "lucide-react";
+import { ChevronLeft, ArrowUp, Package, RefreshCw } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { ThinkingOrb } from "thinking-orbs";
@@ -11,16 +11,20 @@ import { ProposeSwapModal } from "./Swipes";
 
 function GuruLoader({ state }: { state: "working" | "solving" | "searching" | "composing" | "weaving" }) {
   return (
-    <div className="flex gap-2 mb-4 items-end px-2">
-      <div className="w-8 h-8 rounded-full bg-[#E9E9EB] flex items-center justify-center flex-shrink-0">
-        <ThinkingOrb state={state === "working" ? "weaving" : state} size={20} theme="light" />
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex gap-3 mb-6 items-end px-4"
+    >
+      <div className="w-8 h-8 rounded-full border border-gray-200 bg-[#FAFAFA] flex items-center justify-center flex-shrink-0 shadow-sm">
+        <ThinkingOrb state={state === "working" ? "weaving" : state} size={16} theme="light" />
       </div>
-      <div className="bg-[#E9E9EB] text-black px-4 py-2.5 rounded-[20px] rounded-bl-none max-w-[75%]">
-        <span className="text-[15px] font-normal tracking-tight">
-          {state === "working" ? "Calculating..." : "Thinking..."}
+      <div className="bg-[#FAFAFA] border border-gray-200 text-gray-900 px-4 py-3 rounded-2xl rounded-bl-sm max-w-[75%] shadow-sm">
+        <span className="text-[14px] font-medium text-gray-600">
+          {state === "working" ? "Analyzing data..." : "Generating response..."}
         </span>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -31,23 +35,23 @@ function MessageBubble({ msg, onPropose }: { msg: { role: "user" | "guru"; conte
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex ${isUser ? "justify-end" : "justify-start"} mb-4 px-2`}
+      className={`flex ${isUser ? "justify-end" : "justify-start"} mb-6 px-4`}
     >
       <div
-        className={`max-w-[80%] px-4 py-2.5 text-[17px] leading-[22px] tracking-[-0.41px] shadow-sm ${
+        className={`max-w-[75%] px-5 py-3.5 text-[14px] leading-relaxed shadow-sm transition-all ${
           isUser
-            ? "bg-[#34C759] text-white rounded-[20px] rounded-br-[4px]"
-            : "bg-[#E9E9EB] text-black rounded-[20px] rounded-bl-[4px]"
+            ? "bg-[#0A0A0A] text-white rounded-2xl rounded-br-sm border border-black/10"
+            : "bg-[#FFFFFF] text-gray-900 rounded-2xl rounded-bl-sm border border-gray-200/80"
         }`}
       >
         {isUser ? (
-          <p>{msg.content}</p>
+          <p className="font-medium tracking-tight text-[15px]">{msg.content}</p>
         ) : (
-          <div className="prose prose-p:my-0 prose-p:leading-[22px] prose-p:tracking-[-0.41px] text-black max-w-none prose-a:text-[#007AFF] prose-strong:font-semibold">
+          <div className="prose prose-sm max-w-none text-gray-700 prose-p:leading-relaxed prose-p:tracking-tight prose-strong:text-black prose-strong:font-semibold prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline">
             <Streamdown>{msg.content}</Streamdown>
             
             {msg.listings && msg.listings.length > 0 && (
-              <div className="mt-3 space-y-2">
+              <div className="mt-4 space-y-2">
                 {msg.listings.map((l, i) => {
                    let imgs: string[] = [];
                    if (Array.isArray(l.images)) imgs = l.images;
@@ -55,17 +59,17 @@ function MessageBubble({ msg, onPropose }: { msg: { role: "user" | "guru"; conte
                    const img = imgs[0] || null;
                    
                    return (
-                     <div key={i} className="flex items-center bg-white p-2 rounded-xl border border-[#D1D1D6] gap-3">
-                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#F2F2F7] shrink-0">
-                           {img ? <img src={img} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Package className="w-5 h-5 text-[#AEAEB2]"/></div>}
+                     <div key={i} className="flex items-center bg-[#FAFAFA] p-2 rounded-xl border border-gray-200/80 gap-3 group transition-colors hover:bg-gray-50">
+                        <div className="w-12 h-12 rounded-[10px] overflow-hidden bg-white shrink-0 border border-gray-100">
+                           {img ? <img src={img} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Package className="w-4 h-4 text-gray-300"/></div>}
                         </div>
                         <div className="flex-1 min-w-0">
-                           <p className="text-[15px] font-semibold text-black truncate tracking-tight">{l.title}</p>
-                           <p className="text-[13px] text-[#8E8E93] truncate">By {l.profiles?.name || 'User'}</p>
+                           <p className="text-[13px] font-semibold text-gray-900 truncate">{l.title}</p>
+                           <p className="text-[12px] text-gray-500 truncate">By {l.profiles?.name || 'User'}</p>
                         </div>
                         <button 
                            onClick={() => onPropose(l)} 
-                           className="text-[13px] bg-[#E9E9EB] text-[#007AFF] font-semibold px-3 py-1.5 rounded-full shrink-0"
+                           className="text-[12px] bg-white border border-gray-200 text-gray-900 font-medium px-3 py-1.5 rounded-lg shrink-0 shadow-sm transition-all hover:bg-gray-50 hover:border-gray-300 active:scale-95"
                         >
                            Propose
                         </button>
@@ -90,7 +94,7 @@ export default function SwapGuruPage() {
     const greetings = ["Rada", "Mambo", "Uko fiti", "Niambie", "Vipi", "Sasa"];
     const name = user?.name ? user.name.split(" ")[0] : "there";
     const randomG = greetings[Math.floor(Math.random() * greetings.length)];
-    return `${randomG} ${name}! I'm **Swap Guru**.\n\nWhat would you like to swap today?`;
+    return `${randomG} ${name}. I'm Swap Guru.\n\nWhat are you looking to swap today?`;
   }, [user]);
 
   useEffect(() => {
@@ -144,41 +148,43 @@ export default function SwapGuruPage() {
       const result = await askMutation.mutateAsync({ prompt });
       setMessages(prev => [...prev, { role: "guru" as const, content: String(result.response), listings: result.listings as any[] }]);
     } catch {
-      setMessages(prev => [...prev, { role: "guru", content: "Sorry, I couldn't process that. Please try again!" }]);
+      setMessages(prev => [...prev, { role: "guru", content: "An error occurred while processing your request. Please try again." }]);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#FFFFFF] flex flex-col font-sans">
+    <div className="min-h-[100dvh] bg-[#FFFFFF] flex flex-col font-sans selection:bg-gray-200">
       
-      {/* iOS Nav Bar */}
-      <div className="sticky top-0 z-40 bg-white/85 backdrop-blur-[20px] border-b border-[#3C3C43]/20 pb-2 px-2 pt-2">
-        <div className="max-w-[800px] mx-auto w-full flex items-center justify-between h-[44px]">
+      {/* Vercel/Linear Style Minimalist Header */}
+      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 pb-3 pt-3 px-4">
+        <div className="max-w-[800px] mx-auto w-full flex items-center justify-between">
           <button 
             onClick={() => window.history.back()} 
-            className="text-[#34C759] flex items-center h-full active:opacity-50 transition-opacity"
+            className="w-8 h-8 flex items-center justify-center rounded-md border border-transparent hover:bg-gray-100 text-gray-500 transition-colors"
           >
-            <ChevronLeft className="w-7 h-7 -ml-2 font-medium" />
-            <span className="text-[17px] -ml-1 tracking-tight">Back</span>
+            <ChevronLeft className="w-5 h-5" strokeWidth={2} />
           </button>
           
-          <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
-            <span className="text-[17px] font-semibold text-black tracking-[-0.41px]">Swap Guru</span>
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+            <div className="w-5 h-5 rounded-[4px] bg-[#0A0A0A] flex items-center justify-center shadow-sm">
+              <Sparkles className="w-3 h-3 text-white" />
+            </div>
+            <span className="text-[14px] font-semibold text-gray-900 tracking-tight">Swap Guru</span>
           </div>
 
           <button 
             onClick={() => setMessages([{ role: "guru", content: getGreeting() }])} 
-            className="text-[#34C759] active:opacity-50 transition-opacity h-full px-2"
+            className="w-8 h-8 flex items-center justify-center rounded-md border border-transparent hover:bg-gray-100 text-gray-500 transition-colors"
           >
-            <RotateCcw className="w-[22px] h-[22px]" />
+            <RefreshCw className="w-4 h-4" strokeWidth={2} />
           </button>
         </div>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto w-full max-w-[800px] mx-auto pt-4 pb-[90px]">
+      <div className="flex-1 overflow-y-auto w-full max-w-[800px] mx-auto pt-8 pb-[100px]">
         <AnimatePresence>
           {messages.map((msg, i) => (
             <MessageBubble key={i} msg={msg} onPropose={(l) => setProposeListing(l)} />
@@ -188,28 +194,28 @@ export default function SwapGuruPage() {
         <div ref={bottomRef} className="h-4" />
       </div>
 
-      {/* iOS Messages Input Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#F6F6F6]/90 backdrop-blur-[20px] border-t border-[#3C3C43]/20 pb-safe">
-        <div className="max-w-[800px] mx-auto px-4 py-2.5 flex items-end gap-3">
-          <div className="flex-1 bg-white rounded-[20px] flex items-center pl-4 pr-1 py-1 min-h-[38px] border border-[#C6C6C8]">
-            <input
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && handleSend()}
-              placeholder="Message"
-              disabled={isLoading}
-              className="flex-1 bg-transparent text-[17px] text-black placeholder-[#3C3C43]/50 outline-none w-full disabled:opacity-50 py-1 tracking-[-0.41px]"
-            />
-            <button
-              onClick={() => handleSend()}
-              disabled={!input.trim() || isLoading}
-              className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-all ml-2 ${
-                input.trim() && !isLoading ? "bg-[#34C759]" : "bg-[#E5E5EA]"
-              }`}
-            >
-              <ArrowUp className={`w-5 h-5 ${input.trim() && !isLoading ? "text-white" : "text-[#AEAEC0]"}`} strokeWidth={2.5} />
-            </button>
-          </div>
+      {/* Minimalist Floating Input Pill */}
+      <div className="fixed bottom-6 left-4 right-4 z-40 max-w-[800px] md:mx-auto">
+        <div className="bg-white rounded-full p-1.5 flex items-center shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-200/80 transition-shadow focus-within:shadow-[0_8px_40px_rgb(0,0,0,0.12)] focus-within:border-gray-300">
+          <input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleSend()}
+            placeholder="Ask Swap Guru..."
+            disabled={isLoading}
+            className="flex-1 bg-transparent text-[15px] font-medium text-gray-900 placeholder-gray-400 outline-none w-full disabled:opacity-50 px-4 py-2.5"
+          />
+          <button
+            onClick={() => handleSend()}
+            disabled={!input.trim() || isLoading}
+            className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-all ${
+              input.trim() && !isLoading 
+                ? "bg-[#0A0A0A] text-white shadow-sm hover:scale-105 active:scale-95" 
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            }`}
+          >
+            <ArrowUp className="w-5 h-5" strokeWidth={2.5} />
+          </button>
         </div>
       </div>
 
@@ -229,7 +235,7 @@ export default function SwapGuruPage() {
                    toast.success("Proposal sent successfully!", { id: toastId });
                    let offerStr = opts?.offerItems ? ` offering **${opts.offerItems}**` : "";
                    let bridgeStr = cash > 0 ? ` with a KES ${cash} cash bridge` : "";
-                   setMessages(prev => [...prev, { role: "guru", content: `Awesome! I've sent your proposal for **${proposeListing.title}**${offerStr}${bridgeStr}. They will receive a notification shortly.` }]);
+                   setMessages(prev => [...prev, { role: "guru", content: `Proposal successfully delivered for **${proposeListing.title}**${offerStr}${bridgeStr}.` }]);
                    setProposeListing(null);
                 },
                 onError: (err: any) => {
