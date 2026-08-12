@@ -5,21 +5,22 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, Send, Mic, RotateCcw, Sparkles, ArrowRight, Lock, Package, RefreshCw, Scale } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
+import { ThinkingOrb } from "thinking-orbs";
 import { Streamdown } from "streamdown";
 import { getLoginUrl } from "@/const";
 import { ProposeSwapModal } from "./Swipes";
 
 function GuruLoader() {
   return (
-    <div className="flex gap-3 mb-6 animate-pulse">
-      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#22C55E]/20 to-[#3B82F6]/20 flex items-center justify-center flex-shrink-0 shadow-sm border border-green-500/10">
-        <Sparkles className="w-5 h-5 text-green-500/50" />
+    <div className="flex gap-3 mb-6">
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center flex-shrink-0 self-end mb-1 border border-white/10 shadow-[0_4px_12px_rgba(16,185,129,0.3)]">
+        <ThinkingOrb state="working" size={20} theme="dark" />
       </div>
-      <div className="bg-white rounded-2xl rounded-tl-[8px] p-4 shadow-sm border border-gray-100 max-w-[85%] min-w-[200px]">
-        <div className="flex flex-col gap-2">
-          <div className="h-4 bg-gray-100 rounded-full w-3/4"></div>
-          <div className="h-4 bg-gray-100 rounded-full w-1/2"></div>
-          <div className="h-4 bg-gray-100 rounded-full w-5/6"></div>
+      <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl rounded-bl-[4px] px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] max-w-[80%] flex flex-col gap-3 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
+        <div className="flex items-center gap-2">
+          <ThinkingOrb state="solving" size={20} theme="dark" />
+          <span className="text-[14px] font-medium text-white/90">Swap Guru is thinking...</span>
         </div>
       </div>
     </div>
