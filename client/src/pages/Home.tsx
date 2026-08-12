@@ -8,15 +8,15 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import {
   Plus, Star, MapPin, Users, Zap, Heart, Bell,
-  ChevronRight, Search, ArrowRightLeft, MessageCircle,
-  Sparkles, Trophy, Shield, Clock, TrendingUp, Flame, Gift, Bot, Package, Handshake, ArrowRight
+  ChevronRight, Search, MessageCircle,
+  Sparkles, Shield, Flame, Gift, Bot, Package, ArrowRight
 } from "lucide-react";
 
 import { PullToRefresh } from "@/components/PullToRefresh";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
-    const [, navigate] = useLocation();
+  const [, navigate] = useLocation();
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [showLocationSelector, setShowLocationSelector] = useState(false);
   
@@ -31,6 +31,7 @@ export default function Home() {
       navigate("/onboarding");
     }
   }, [isAuthenticated, user, navigate]);
+
   const notificationsQuery = trpc.notifications.list.useQuery({ userId: user?.id }, { enabled: !!user });
   const unreadCount = (notificationsQuery.data?.notifications || []).filter((n: any) => !n.isRead).length;
   const profileQuery = trpc.profile.me.useQuery(undefined, { enabled: isAuthenticated });
@@ -41,12 +42,12 @@ export default function Home() {
   const cyclesQuery = trpc.multiWay.findCycles.useQuery(undefined, { enabled: !!user });
 
   const quickActions = [
-    { icon: Plus, label: "Post Item", color: "bg-green-500", path: "/post" },
-    { icon: Star, label: "Post Wish", color: "bg-yellow-500", path: "/swap-wishes" },
-    { icon: MapPin, label: "Nearby Swaps", color: "bg-blue-600", path: "/swipes", action: () => setFilters({ query: "", category: "", condition: "", swipesViewMode: "map" }) },
-    { icon: Users, label: "Soko", color: "bg-purple-500", path: "/communities" },
-    { icon: Zap, label: "Emergency Needs", color: "bg-orange-500", path: "/swap-wishes", action: () => setFilters({ query: "", category: 'urgent' }) },
-    { icon: Heart, label: "Free Stuff", color: "bg-pink-500", path: "/swipes", action: () => setFilters({ query: "", condition: 'free', category: 'donations' }) },
+    { icon: Plus, label: "Post Item", bg: "bg-green-50", text: "text-green-600", border: "border-green-100", path: "/post" },
+    { icon: Star, label: "Post Wish", bg: "bg-yellow-50", text: "text-yellow-600", border: "border-yellow-100", path: "/swap-wishes" },
+    { icon: MapPin, label: "Nearby", bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-100", path: "/swipes", action: () => setFilters({ query: "", category: "", condition: "", swipesViewMode: "map" }) },
+    { icon: Users, label: "Soko", bg: "bg-purple-50", text: "text-purple-600", border: "border-purple-100", path: "/communities" },
+    { icon: Zap, label: "Urgent", bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-100", path: "/swap-wishes", action: () => setFilters({ query: "", category: 'urgent' }) },
+    { icon: Heart, label: "Free Stuff", bg: "bg-pink-50", text: "text-pink-600", border: "border-pink-100", path: "/swipes", action: () => setFilters({ query: "", condition: 'free', category: 'donations' }) },
   ];
 
   const currentCampus = typeof selectedLocation?.campus === 'object' ? selectedLocation.campus.name : (selectedLocation?.campus || filters.campus || "JKUAT Main Campus");
@@ -70,28 +71,26 @@ export default function Home() {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-      <div className="pb-24 bg-background">
-      {/* ── Sticky Header ────────────────────────────────────────────────── */}
-      <div className="page-header px-4 py-3 z-40">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
+      <div className="pb-24 bg-[#F8FAFC] min-h-screen">
+      {/* ── Header & Search (HIG Style) ────────────────────────────────────────────────── */}
+      <div className="px-5 pt-4 pb-3 sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200/50">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
             <motion.div
-              className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-sm overflow-hidden"
+              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm overflow-hidden border border-gray-100"
               whileTap={{ scale: 0.9 }}
             >
               <img src="/logo.jpg" className="w-full h-full object-cover" />
             </motion.div>
-            <div>
-              <h1 className="text-base font-black text-slate-900 leading-none">Swapsoko</h1>
-            </div>
+            <h1 className="text-[20px] font-extrabold text-slate-900 tracking-tight">Swapsoko</h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <motion.button
               onClick={() => navigate("/notifications")}
               className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
               whileTap={{ scale: 0.9 }}
             >
-              <Bell size={20} className="text-slate-900" />
+              <Bell size={20} className="text-slate-700" />
               {unreadCount > 0 && (
                 <span className="absolute top-1.5 right-2 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full" />
               )}
@@ -101,7 +100,7 @@ export default function Home() {
               <motion.button 
                 onClick={() => navigate("/profile")}
                 whileTap={{ scale: 0.9 }}
-                className="w-9 h-9 rounded-full bg-gray-200 overflow-hidden shadow-sm"
+                className="w-9 h-9 rounded-full bg-gray-200 overflow-hidden shadow-sm border border-gray-200"
               >
                 {(profileQuery.data?.avatarUrl && profileQuery.data.avatarUrl !== "null" && profileQuery.data.avatarUrl !== "undefined") ? (
                   <img src={profileQuery.data.avatarUrl} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-green-500 text-white font-bold text-sm">${(profileQuery.data?.name || user?.name || "U")[0]}</div>`; }} />
@@ -114,7 +113,7 @@ export default function Home() {
             ) : (
               <button 
                 onClick={() => navigate("/login")}
-                className="px-4 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-full shadow-sm hover:bg-[#1D4ED8] transition-colors"
+                className="px-4 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-full shadow-sm hover:bg-slate-800 transition-colors"
               >
                 Sign In
               </button>
@@ -122,37 +121,21 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Search + Location (Phase 7: Floating Glass Pill) */}
-        <div className="flex gap-2">
-          <div className="flex-1 relative">
-            <Search 
-              size={15} 
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-700/60 cursor-pointer hover:text-green-500 transition-colors z-10" 
-              onClick={() => navigate("/swipes")}
-            />
-            <input
-              type="text"
-              placeholder={"Search items, skills or anything..."}
-              value={filters.query}
-              onChange={(e) => setFilters({ query: e.target.value })}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  navigate("/swipes");
-                }
-              }}
-              className="w-full pl-10 pr-4 py-3 rounded-full apple-glass-thick text-[15px] font-medium text-slate-900 placeholder-slate-700/50 focus:outline-none focus:ring-2 focus:ring-[#22C55E]/30 transition-all shadow-inner border border-white/20"
-            />
-          </div>
-          <motion.button
-            onClick={() => setShowLocationSelector(true)}
-            className="flex items-center gap-1.5 px-3.5 py-3 rounded-full apple-glass-thick text-sm font-bold text-slate-900 whitespace-nowrap shadow-sm hover:bg-white/40 transition-colors border border-white/20"
-            whileTap={{ scale: 0.95 }}
-          >
-            <MapPin size={16} className="text-green-600" />
-            <span className="text-[13px] max-w-[80px] truncate">{String(currentCampus || "").split(",")[0]}</span>
-            <ChevronRight size={14} className="text-slate-700/50" />
-          </motion.button>
+        {/* Search Bar */}
+        <div className="relative group cursor-pointer" onClick={() => navigate("/swipes")}>
+           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-slate-900 transition-colors z-10" />
+           <input 
+             type="text" 
+             placeholder="Search items, skills or anything..." 
+             className="w-full pl-11 pr-4 py-3 bg-gray-100/70 hover:bg-gray-100 border border-transparent rounded-2xl text-[15px] font-medium text-slate-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition-all pointer-events-none"
+             readOnly
+           />
         </div>
+        
+        {/* Location Selector Pill */}
+        <button onClick={() => setShowLocationSelector(true)} className="mt-3 flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-[11px] font-bold w-fit uppercase tracking-wider border border-green-100/50">
+          <MapPin size={12} /> <span className="max-w-[120px] truncate">{currentCampus}</span> <ChevronRight size={12} className="opacity-60" />
+        </button>
       </div>
 
       {/* Location Selector Modal */}
@@ -162,8 +145,8 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[300] flex items-end justify-center"
-            style={{ background: "rgba(15,23,42,0.6)", backdropFilter: "blur(8px)" }}
+            className="fixed inset-0 z-[500] flex items-end justify-center"
+            style={{ background: "rgba(15,23,42,0.4)", backdropFilter: "blur(4px)" }}
             onClick={() => setShowLocationSelector(false)}
           >
             <motion.div
@@ -194,80 +177,34 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* ── Swap Guru Hero Banner ─────────────────────────────────────────── */}
+      {/* ── Swap Guru Banner (HIG Minimalist Light Mode) ─────────────────────────────────────────── */}
       <motion.div
-        className="mx-4 mt-6 rounded-3xl relative overflow-hidden border border-white/10 shadow-[0_24px_50px_-12px_rgba(0,0,0,0.25)]"
-        style={{ background: "linear-gradient(145deg, #09090B 0%, #18181B 100%)" }}
+        className="mx-5 mt-5 rounded-[28px] relative overflow-hidden bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        {/* Sleek glow orbs */}
-        <div className="absolute -top-16 -right-16 w-56 h-56 bg-green-500/15 rounded-full blur-[40px] pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-[#6366F1]/15 rounded-full blur-[40px] pointer-events-none" />
-
-        <div className="relative z-10 p-5">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 pr-2">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 mb-3 shadow-inner">
-                <Sparkles size={10} className="text-green-500" />
-                <span className="text-[9px] font-bold text-white tracking-widest uppercase">Introducing</span>
-              </div>
-              <h2 className="text-white font-extrabold text-[22px] leading-tight tracking-tight drop-shadow-md">
-                Swap Guru
-              </h2>
-              <p className="text-gray-400 text-sm mt-1.5 leading-relaxed font-medium">
-                Your AI assistant for smarter, faster, and better trades.
-              </p>
-              <motion.button
-                onClick={() => navigate("/swap-guru")}
-                className="mt-5 px-5 py-2.5 bg-white text-[#09090B] text-sm font-bold rounded-full shadow-lg flex items-center gap-2 hover:bg-gray-100 transition-colors"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                Chat with Guru <ArrowRight size={14} />
-              </motion.button>
-            </div>
-            
-            {/* Sleek Robot Icon */}
-            <div className="w-20 h-20 flex items-center justify-center shrink-0 relative mt-2">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#22C55E]/20 to-[#6366F1]/20 border border-white/10 flex items-center justify-center backdrop-blur-md shadow-inner relative z-10">
-                <motion.div
-                  animate={{ y: [-2, 2, -2] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Bot className="w-8 h-8 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" />
-                </motion.div>
-              </div>
-              <motion.div
-                animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.8, 0.4] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-0 bg-gradient-to-tr from-[#22C55E]/30 to-[#6366F1]/30 blur-xl rounded-full z-0"
-              />
-            </div>
-          </div>
-
-          {/* Sleek Prompt Chips */}
-          <div className="mt-6 flex flex-wrap gap-2">
-            {["Analyze value", "Find electronics", "Trade ideas"].map((prompt, i) => (
-              <motion.button
-                key={i}
-                onClick={() => navigate(`/swap-guru?q=${encodeURIComponent(prompt)}`)}
-                className="px-3 py-1.5 rounded-2xl text-gray-300 text-[11px] font-semibold transition-colors flex items-center gap-1.5 bg-white/5 border border-white/10 hover:bg-white/10 hover:text-white"
-                whileTap={{ scale: 0.96 }}
-              >
-                <MessageCircle size={10} className="text-green-500" />
-                {prompt}
-              </motion.button>
-            ))}
-          </div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-green-50 to-blue-50 rounded-full blur-[40px] pointer-events-none -translate-y-1/2 translate-x-1/4" />
+        <div className="relative z-10 p-5 flex items-center gap-4">
+           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/20 shrink-0">
+             <Bot className="w-7 h-7 text-white" />
+           </div>
+           <div className="flex-1">
+             <h2 className="text-slate-900 font-bold text-[17px] tracking-tight flex items-center gap-1.5">Swap Guru AI <Sparkles size={14} className="text-green-500" /></h2>
+             <p className="text-gray-500 text-[13px] mt-0.5 leading-snug font-medium">Your personal assistant for smarter trades.</p>
+           </div>
+        </div>
+        <div className="px-5 pb-5 pt-0">
+          <button onClick={() => navigate("/swap-guru")} className="w-full py-3 bg-slate-900 text-white rounded-xl text-[14px] font-bold shadow-md hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+            Ask Guru <ArrowRight size={16} />
+          </button>
         </div>
       </motion.div>
 
       {/* ── Multi Swap Banner ────────────────────────────────────────────── */}
       {cyclesQuery.data?.cycles && cyclesQuery.data.cycles.length > 0 && (
         <motion.div
-          className="mx-4 mt-4 rounded-2xl bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 p-4 shadow-sm flex items-center justify-between cursor-pointer"
+          className="mx-5 mt-4 rounded-[20px] bg-orange-50 border border-orange-100/60 p-4 flex items-center justify-between cursor-pointer shadow-[0_2px_10px_rgb(0,0,0,0.02)]"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
@@ -275,248 +212,225 @@ export default function Home() {
           onClick={() => navigate('/swap-wishes?tab=cycles')}
         >
           <div>
-            <h3 className="font-bold text-orange-600 text-sm flex items-center gap-1.5">
+            <h3 className="font-bold text-orange-600 text-[14px] flex items-center gap-1.5">
               <Flame className="w-4 h-4 text-orange-500" /> Multi Swap Opportunities
             </h3>
-            <p className="text-orange-500 text-xs mt-0.5">{cyclesQuery.data.cycles.length} found today. View cycles to complete.</p>
+            <p className="text-orange-500/80 text-[12px] font-medium mt-0.5">{cyclesQuery.data.cycles.length} found today. View cycles to complete.</p>
           </div>
-          <div className="w-8 h-8 rounded-full bg-orange-200 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
             <ArrowRight className="w-4 h-4 text-orange-600" />
           </div>
         </motion.div>
       )}
 
-      {/* ── Quick Actions ─────────────────────────────────────────────────── */}
-      <div className="px-4 mt-5">
-        <div className="grid grid-cols-6 gap-1">
+      {/* ── Quick Actions (Horizontal Scrolling Grid) ─────────────────────────────────────────────────── */}
+      <div className="mt-8">
+        <h2 className="px-5 text-[17px] font-extrabold text-slate-900 mb-3 tracking-tight">Quick Actions</h2>
+        <div className="flex gap-3 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x">
           {quickActions.map((action, i) => (
-            <motion.button
-              key={i}
-              onClick={() => {
-                if (action.action) action.action();
-                navigate(action.path);
-              }}
-              className="flex flex-col items-center gap-1.5"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.04 * i }}
-              whileTap={{ scale: 0.88 }}
-            >
-              <div className={`w-11 h-11 rounded-2xl ${action.color} flex items-center justify-center shadow-md border border-white/20`}>
-                <action.icon size={18} className="text-white drop-shadow-sm" strokeWidth={2.5} />
-              </div>
-              <span className="text-[9px] font-semibold text-slate-900 text-center leading-tight px-0.5">{action.label}</span>
-            </motion.button>
+             <button 
+               key={i} 
+               onClick={() => {
+                 if (action.action) action.action();
+                 navigate(action.path);
+               }}
+               className="snap-start shrink-0 w-[100px] h-[100px] bg-white border border-gray-100 rounded-3xl flex flex-col items-center justify-center gap-3 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:border-gray-200 transition-all"
+             >
+                <div className={`w-11 h-11 rounded-[18px] ${action.bg} ${action.border} border flex items-center justify-center`}>
+                  <action.icon size={20} className={action.text} strokeWidth={2.5} />
+                </div>
+                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight">{action.label}</span>
+             </button>
           ))}
         </div>
       </div>
 
-      {/* ── Live Swaps Near You (Masonry Feed) ──────────────────────────── */}
-      <section className="mt-6 px-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-h2 text-foreground flex items-center gap-1.5">
-            <Flame className="w-5 h-5 text-orange-500" /> {"Live Swaps Near You"}
+      {/* ── Live Swaps Near You (Horizontal Scroll) ──────────────────────────── */}
+      <section className="mt-6">
+        <div className="px-5 flex items-center justify-between mb-4">
+          <h2 className="text-[17px] font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5">
+            <Flame className="w-4 h-4 text-orange-500" /> Live Swaps
           </h2>
-          <button onClick={() => navigate("/swipes")} className="text-caption text-green-500 font-semibold flex items-center gap-0.5 hover:opacity-80 transition-opacity">
-            {"See all"} <ChevronRight size={12} />
-          </button>
+          <button onClick={() => navigate("/swipes")} className="text-green-600 text-[13px] font-bold bg-green-50 px-3 py-1 rounded-full">See all</button>
         </div>
         
-        <div className="columns-2 gap-4 space-y-4 pb-4">
+        <div className="flex gap-4 overflow-x-auto px-5 pb-6 scrollbar-hide snap-x">
           {(feedQuery.data?.items || []).filter((l: any) => l.userId?.toString() !== user?.id?.toString()).slice(0, 10).map((listing: any) => (
             <motion.div
               key={listing.id}
-              whileTap={{ scale: 0.96 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => navigate(`/swipes?id=${listing.id}`)}
-              className="break-inside-avoid bg-white rounded-3xl card-shadow-sm overflow-hidden cursor-pointer group relative flex flex-col"
+              className="snap-start shrink-0 w-[240px] bg-white border border-gray-100 rounded-[24px] overflow-hidden shadow-[0_8px_24px_rgb(0,0,0,0.04)] cursor-pointer"
             >
-              <div className="p-1">
-                <div className="bg-gray-100 rounded-[22px] relative overflow-hidden aspect-[4/5]">
+              <div className="aspect-[4/3] bg-gray-100 relative p-1">
+                <div className="w-full h-full rounded-[20px] overflow-hidden relative">
                   {(() => {
                     let img = null;
                     if (Array.isArray(listing.images) && listing.images.length > 0) {
                       img = listing.images[0];
                     }
                     return img ? (
-                      <img src={img} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={img} alt={listing.title} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-300">
+                      <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-300">
                         <Package className="w-8 h-8" />
                       </div>
                     );
                   })()}
-                  
-                  {/* Vibrant Glass Badge */}
-                  <div className="absolute top-2 left-2 px-2.5 py-1 rounded-full apple-glass text-[10px] font-bold text-white shadow-sm flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                    Active
+                  {/* Badge */}
+                  <div className="absolute top-2 left-2 px-2 py-1 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-bold text-slate-900 shadow-sm flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> Active
                   </div>
                 </div>
               </div>
-              <div className="px-3 pt-2 pb-4">
-                <p className="font-semibold text-foreground text-sm leading-snug line-clamp-2">{listing.title}</p>
-                <div className="flex items-center gap-1 mt-1.5 text-muted-foreground">
-                  <MapPin size={12} />
-                  <span className="text-[10px] font-bold tracking-wider uppercase truncate">{listing.campus || "Nearby"}</span>
-                </div>
+              <div className="p-4 pt-3">
+                 <h3 className="font-bold text-slate-900 text-[15px] leading-tight truncate mb-1">{listing.title}</h3>
+                 <p className="text-gray-500 text-[11px] font-medium flex items-center gap-1"><MapPin size={10} className="shrink-0"/> <span className="truncate uppercase tracking-wider">{listing.campus || "Nearby"}</span></p>
               </div>
             </motion.div>
           ))}
           {(feedQuery.data?.items || []).filter((l: any) => l.userId?.toString() !== user?.id?.toString()).length === 0 && (
-            <div className="col-span-2 bg-muted/50 backdrop-blur-md rounded-3xl p-6 text-center border border-dashed border-border shadow-sm w-full">
-               <p className="text-sm text-muted-foreground font-medium">No active swaps near you right now.</p>
+            <div className="w-[80vw] shrink-0 bg-white border border-gray-100 rounded-[24px] p-6 flex items-center justify-center shadow-[0_8px_24px_rgb(0,0,0,0.02)]">
+               <p className="text-[13px] text-gray-500 font-medium">No active swaps near you right now.</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* ── Swap Wishes (Masonry Feed) ────────────────────────────────────── */}
-      <section className="mt-6 px-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-h2 text-foreground flex items-center gap-1.5">
-            <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" /> {"Swishes"}
+      {/* ── Swap Wishes (Horizontal Scroll) ────────────────────────────────────── */}
+      <section className="mt-2">
+        <div className="px-5 flex items-center justify-between mb-4">
+          <h2 className="text-[17px] font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5">
+            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" /> Swishes
           </h2>
-          <button onClick={() => navigate("/swap-wishes")} className="text-caption text-green-500 font-semibold flex items-center gap-0.5 hover:opacity-80 transition-opacity">
-            {"See all"} <ChevronRight size={12} />
-          </button>
+          <button onClick={() => navigate("/swap-wishes")} className="text-green-600 text-[13px] font-bold bg-green-50 px-3 py-1 rounded-full">See all</button>
         </div>
         
-        <div className="columns-2 gap-4 space-y-4 pb-4">
+        <div className="flex gap-4 overflow-x-auto px-5 pb-6 scrollbar-hide snap-x">
           {(wishesQuery.data?.items || []).filter((w: any) => w.userId?.toString() !== user?.id?.toString()).slice(0, 10).map((wish: any) => (
             <motion.div
               key={wish.id}
-              whileTap={{ scale: 0.96 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => navigate(`/swap-wishes?id=${wish.id}`)}
-              className="break-inside-avoid bg-white rounded-3xl card-shadow-sm overflow-hidden cursor-pointer group relative p-4"
+              className="snap-start shrink-0 w-[240px] bg-white border border-gray-100 rounded-[24px] p-4 shadow-[0_8px_24px_rgb(0,0,0,0.04)] cursor-pointer flex flex-col justify-between"
             >
-              <div className="flex justify-between items-start mb-3">
-                {wish.urgency === 'high' ? (
-                  <span className="apple-glass-dark text-white px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 shadow-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                    Urgent
+              <div>
+                <div className="flex justify-between items-start mb-3">
+                  {wish.urgency === 'high' ? (
+                    <span className="bg-red-50 text-red-600 border border-red-100 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1 shadow-sm">
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> Urgent
+                    </span>
+                  ) : wish.urgency === 'medium' ? (
+                    <span className="bg-orange-50 text-orange-600 border border-orange-100 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-sm">
+                      Moderate
+                    </span>
+                  ) : (
+                    <span className="bg-slate-50 text-slate-600 border border-slate-100 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-sm">
+                      Normal
+                    </span>
+                  )}
+                  <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full">
+                    {wish.responseCount || 0} offers
                   </span>
-                ) : wish.urgency === 'medium' ? (
-                  <span className="apple-glass text-white px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
-                    Moderate
-                  </span>
-                ) : (
-                  <span className="apple-glass text-white px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
-                    Normal
-                  </span>
-                )}
-              </div>
-              <p className="font-semibold text-foreground text-sm leading-snug line-clamp-3 mb-3">{wish.title}</p>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <MapPin size={12} />
-                  <span className="text-[10px] font-bold tracking-wider uppercase truncate">{wish.campus || "Nearby"}</span>
                 </div>
-                <span className="text-[10px] font-bold text-foreground bg-muted px-2.5 py-1 rounded-full">
-                  {wish.responseCount || 0} offers
-                </span>
+                <p className="font-bold text-slate-900 text-[14px] leading-snug line-clamp-3 mb-4">{wish.title}</p>
+              </div>
+              <div className="flex items-center gap-1 text-gray-500">
+                <MapPin size={10} className="shrink-0" />
+                <span className="text-[10px] font-bold tracking-wider uppercase truncate">{wish.campus || "Nearby"}</span>
               </div>
             </motion.div>
           ))}
           {(wishesQuery.data?.items || []).filter((w: any) => w.userId?.toString() !== user?.id?.toString()).length === 0 && (
-            <div className="col-span-2 bg-muted/50 backdrop-blur-md rounded-3xl p-6 text-center border border-dashed border-border shadow-sm w-full">
-               <p className="text-sm text-muted-foreground font-medium">No active wishes right now.</p>
+            <div className="w-[80vw] shrink-0 bg-white border border-gray-100 rounded-[24px] p-6 flex items-center justify-center shadow-[0_8px_24px_rgb(0,0,0,0.02)]">
+               <p className="text-[13px] text-gray-500 font-medium">No active wishes right now.</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* ── Popular Communities (Masonry Feed) ────────────────────────────── */}
-      <section className="mt-6 px-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-h2 text-foreground flex items-center gap-1.5">
-            <Users className="w-5 h-5 text-blue-500" /> {"Popular Soko"}
+      {/* ── Popular Communities (Horizontal Scroll) ────────────────────────────── */}
+      <section className="mt-2">
+        <div className="px-5 flex items-center justify-between mb-4">
+          <h2 className="text-[17px] font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5">
+            <Users className="w-4 h-4 text-blue-500" /> Popular Soko
           </h2>
-          <button onClick={() => navigate("/communities")} className="text-caption text-green-500 font-semibold flex items-center gap-0.5 hover:opacity-80 transition-opacity">
-            {"See all"} <ChevronRight size={12} />
-          </button>
+          <button onClick={() => navigate("/communities")} className="text-green-600 text-[13px] font-bold bg-green-50 px-3 py-1 rounded-full">See all</button>
         </div>
         
-        <div className="columns-2 gap-4 space-y-4 pb-4">
+        <div className="flex gap-4 overflow-x-auto px-5 pb-6 scrollbar-hide snap-x">
           {(communitiesQuery.data?.items || []).slice(0, 6).map((community: any) => (
             <motion.div
               key={community.id}
-              whileTap={{ scale: 0.96 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => navigate(`/communities/${community.id}`)}
-              className="break-inside-avoid bg-white rounded-3xl card-shadow-sm overflow-hidden cursor-pointer group relative flex flex-col p-1"
+              className="snap-start shrink-0 w-[180px] bg-white border border-gray-100 rounded-[24px] p-1 overflow-hidden shadow-[0_8px_24px_rgb(0,0,0,0.04)] cursor-pointer"
             >
-              <div className="bg-gray-100 rounded-[22px] relative overflow-hidden h-28">
+              <div className="bg-gray-100 rounded-[20px] relative overflow-hidden h-28">
                 {community.icon?.startsWith("data:image") || community.icon?.startsWith("http") ? (
-                  <img src={community.icon} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={community.icon} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 opacity-90 group-hover:opacity-100 transition-opacity" />
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-                
-                {/* Floating Member Count */}
-                <div className="absolute bottom-2 left-2 px-2 py-1 rounded-full apple-glass-thick text-[10px] font-bold text-white shadow-sm flex items-center gap-1">
-                  <Users size={10} />
-                  {community.memberCount || 0}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-2 left-2 bg-white/20 backdrop-blur-md px-2 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-1">
+                  <Users size={10} /> {community.memberCount || 0}
                 </div>
               </div>
-              
-              <div className="px-3 pt-3 pb-3 flex flex-col">
-                <h3 className="font-semibold text-foreground text-sm leading-snug line-clamp-2">{community.name}</h3>
+              <div className="p-3">
+                <h3 className="font-bold text-slate-900 text-[14px] leading-tight truncate">{community.name}</h3>
               </div>
             </motion.div>
           ))}
           {(!communitiesQuery.data?.items || communitiesQuery.data.items.length === 0) && (
-            <div className="col-span-2 bg-muted/50 backdrop-blur-md rounded-3xl p-6 text-center border border-dashed border-border shadow-sm w-full">
-               <p className="text-sm text-muted-foreground font-medium">No communities loaded yet.</p>
+            <div className="w-[80vw] shrink-0 bg-white border border-gray-100 rounded-[24px] p-6 flex items-center justify-center shadow-[0_8px_24px_rgb(0,0,0,0.02)]">
+               <p className="text-[13px] text-gray-500 font-medium">No communities loaded yet.</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* ── Safety First ─────────────────────────────────────────────────── */}
-      <motion.button 
-        onClick={() => navigate("/safety")}
-        whileTap={{ scale: 0.98 }}
-        className="w-[calc(100%-2rem)] mx-4 mt-8 p-5 rounded-3xl text-left block relative overflow-hidden border border-green-500/10 card-shadow" 
-        style={{ background: "linear-gradient(135deg, rgba(34,197,94,0.05) 0%, rgba(34,197,94,0.01) 100%)" }}
-      >
-        <div className="absolute -right-10 -top-10 w-32 h-32 bg-green-500/10 rounded-full blur-[20px] pointer-events-none" />
-        <div className="flex items-start gap-4 relative z-10">
-          <div className="w-14 h-14 rounded-[1.25rem] bg-background flex items-center justify-center shrink-0 shadow-sm border border-green-500/10">
-            <Shield size={26} className="text-green-500" />
-          </div>
-          <div>
-            <h3 className="text-[17px] font-bold text-foreground">Safety First</h3>
-            <p className="text-sm font-medium text-muted-foreground mt-1 leading-relaxed">Meet in public places. Verify items. Trust the community.</p>
-            <div className="text-caption text-green-500 font-bold mt-3 flex items-center gap-1 uppercase tracking-wide">
-              Read Safety Guide <ChevronRight size={14} strokeWidth={3} />
+      {/* ── Banners ─────────────────────────────────────────────────── */}
+      <div className="px-5 mt-4 flex flex-col gap-4">
+        {/* Safety First */}
+        <motion.button 
+          onClick={() => navigate("/safety")}
+          whileTap={{ scale: 0.98 }}
+          className="w-full p-5 rounded-[24px] text-left block relative overflow-hidden border border-green-100 bg-white shadow-[0_8px_24px_rgb(0,0,0,0.02)]" 
+        >
+          <div className="absolute right-0 top-0 w-32 h-32 bg-green-500/5 rounded-full blur-[20px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 rounded-[16px] bg-green-50 flex items-center justify-center shrink-0 border border-green-100">
+              <Shield size={24} className="text-green-600" />
             </div>
+            <div className="flex-1">
+              <h3 className="text-[15px] font-bold text-slate-900">Safety First</h3>
+              <p className="text-[12px] font-medium text-gray-500 mt-0.5 leading-snug">Meet in public places. Verify items.</p>
+            </div>
+            <ChevronRight size={16} className="text-gray-400" />
           </div>
-        </div>
-      </motion.button>
+        </motion.button>
 
-      {/* ── Invite a Friend ──────────────────────────────────────────────── */}
-      <motion.button 
-        onClick={handleInvite}
-        whileTap={{ scale: 0.98 }}
-        className="w-[calc(100%-2rem)] mx-4 mt-4 mb-8 p-5 rounded-3xl bg-background text-left block relative overflow-hidden card-shadow-sm border border-border" 
-      >
-        <div className="flex items-center gap-4 relative z-10">
-          <div className="w-14 h-14 rounded-[1.25rem] bg-orange-500/10 flex items-center justify-center shrink-0 border border-orange-500/20">
-            <Gift className="w-7 h-7 text-orange-500" />
+        {/* Invite a Friend */}
+        <motion.button 
+          onClick={handleInvite}
+          whileTap={{ scale: 0.98 }}
+          className="w-full p-5 rounded-[24px] bg-white text-left block relative overflow-hidden border border-orange-100 shadow-[0_8px_24px_rgb(0,0,0,0.02)]" 
+        >
+          <div className="absolute right-0 bottom-0 w-32 h-32 bg-orange-500/5 rounded-full blur-[20px] pointer-events-none translate-y-1/2 translate-x-1/2" />
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 rounded-[16px] bg-orange-50 flex items-center justify-center shrink-0 border border-orange-100">
+              <Gift className="w-6 h-6 text-orange-500" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-[15px] font-bold text-slate-900">Invite a friend</h3>
+              <p className="text-[12px] font-medium text-gray-500 mt-0.5">Share the SwapSoko experience!</p>
+            </div>
+            <ChevronRight size={16} className="text-gray-400" />
           </div>
-          <div className="flex-1">
-            <h3 className="text-[17px] font-bold text-foreground">Invite a friend</h3>
-            <p className="text-sm font-medium text-muted-foreground mt-0.5">Share the SwapSoko experience!</p>
-          </div>
-          <div
-            className="px-5 py-2.5 text-white text-sm font-bold rounded-2xl shadow-sm transition-transform hover:scale-105"
-            style={{ background: "linear-gradient(135deg, #22C55E 0%, #16A34A 100%)" }}
-          >
-            Invite Now
-          </div>
-        </div>
-      </motion.button>
+        </motion.button>
+      </div>
+      
     </div>
     </PullToRefresh>
   );
