@@ -100,9 +100,19 @@ export function FeedVideo({ listing, isActive, onPropose }: { listing: any, isAc
         }
     };
 
-    // Use a placeholder video if no media is attached
-    const videoUrl = listing.media?.find((m:any) => m.type === 'video')?.url || "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
-    const coverUrl = listing.images?.[0] || listing.media?.find((m:any) => m.type === 'image')?.url || "/cham.png";
+    let parsedImages: string[] = [];
+    if (Array.isArray(listing.images)) {
+        parsedImages = listing.images;
+    } else if (typeof listing.images === 'string') {
+        try { 
+            const p = JSON.parse(listing.images); 
+            parsedImages = Array.isArray(p) ? p : [p];
+        }
+        catch(e) { parsedImages = [listing.images]; }
+    }
+
+    const videoUrl = listing.media?.find((m:any) => m.type === 'video')?.url;
+    const coverUrl = parsedImages[0] || listing.media?.find((m:any) => m.type === 'image')?.url || "/cham.png";
 
     return (
         <div className="relative w-full h-[100dvh] bg-black snap-start snap-always flex-shrink-0">
