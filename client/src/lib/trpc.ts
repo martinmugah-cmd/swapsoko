@@ -574,6 +574,9 @@ const createProxy = (path: string[] = []): any => {
                       return camelItem;
                   });
                   
+                  // Filter: Only show items in the feed that have a video attached
+                  listings = listings.filter((item: any) => item.media && item.media.some((m: any) => m.type === 'video'));
+                  
                   listings.sort((a: any, b: any) => (b.feedScore || 0) - (a.feedScore || 0));
                   
                   return { items: listings.slice(0, 20) };
