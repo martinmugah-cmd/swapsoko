@@ -77,17 +77,21 @@ export function FeedOverlay({ listing, onPropose, onReport }: { listing: any, on
                         </div>
 
                         {/* Exact Location & Distance */}
-                        <div className="flex items-center gap-2">
-                            <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-white/40"></span>
-                            <span className="text-white/70 text-[13px] font-medium drop-shadow-sm flex items-center">
-                                <MapPin className="w-3.5 h-3.5 mr-1.5 opacity-70" />
-                                {displayLocation}
-                                {(listing.distanceKm !== undefined && !isNaN(listing.distanceKm)) && (
-                                    <span className="ml-1.5 text-white/50">
-                                        • {listing.distanceKm > 1000 ? "+1000 km" : listing.distanceKm < 1 ? `${Math.round(listing.distanceKm * 1000)} m` : `${listing.distanceKm} km`}
+                        <div className="flex items-center gap-2 mt-1 mb-1">
+                            {displayLocation && (
+                                <div className="flex items-center gap-1.5">
+                                    <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-white/40"></span>
+                                    <span className="text-white/70 text-[13px] font-medium drop-shadow-sm flex items-center">
+                                        <MapPin className="w-3.5 h-3.5 mr-1.5 opacity-70" />
+                                        {displayLocation}
                                     </span>
-                                )}
-                            </span>
+                                </div>
+                            )}
+                            {(listing.distanceKm !== undefined && !isNaN(listing.distanceKm)) && (
+                                <span className="px-2 py-0.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white/90 text-[10px] font-bold uppercase tracking-wider ml-1 shadow-sm">
+                                    {listing.distanceKm > 1000 ? "+1000 km" : listing.distanceKm < 1 ? `${Math.round(listing.distanceKm * 1000)} m` : `${listing.distanceKm} km`}
+                                </span>
+                            )}
                         </div>
 
                         {/* Cash Top-up & Value */}

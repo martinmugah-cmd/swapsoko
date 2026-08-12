@@ -50,6 +50,9 @@ interface AppState {
   activeChatRoomId: string | null;
   setActiveChatRoomId: (id: string | null) => void;
 
+  coords: { lat: number; lng: number } | null;
+  setCoords: (coords: { lat: number; lng: number } | null) => void;
+
   // Saved Items
   savedItemIds: string[];
   setSavedItemIds: (ids: string[]) => void;
@@ -87,6 +90,9 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       user: null,
       setUser: (user) => set({ user }),
+
+      coords: null,
+      setCoords: (coords) => set({ coords }),
 
       filters: {
         query: "",

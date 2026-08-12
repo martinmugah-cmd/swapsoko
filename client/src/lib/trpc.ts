@@ -545,17 +545,8 @@ const createProxy = (path: string[] = []): any => {
                       const camelItem = snakeToCamel(item);
                       camelItem.media = mediaMap[String(item.id)] || [];
                       
-                      if (userLat && userLng) {
-                          let itemLat = camelItem.lat;
-                          let itemLng = camelItem.lng;
-                          if (!itemLat || !itemLng) {
-                              let text = camelItem.locationName || camelItem.campus || camelItem.location || camelItem.town || "Unknown";
-                              const found = CAMPUSES.find(c => c.name.toLowerCase() === text.toLowerCase());
-                              if (found) { itemLat = found.lat; itemLng = found.lng; }
-                          }
-                          if (itemLat && itemLng) {
-                              camelItem.distanceKm = Math.round(LocationEngine.calculateDistanceKm(userLat, userLng, itemLat, itemLng) * 10) / 10;
-                          }
+                      if (userLat && userLng && camelItem.lat && camelItem.lng) {
+                          camelItem.distanceKm = Math.round(LocationEngine.calculateDistanceKm(userLat, userLng, camelItem.lat, camelItem.lng) * 10) / 10;
                       }
                       
                       let score = 0;
@@ -1060,24 +1051,13 @@ const createProxy = (path: string[] = []): any => {
                        
                        // Step 3 - Location Filter (14 Points)
                        let distanceScore = 1;
-                       if (userLat && userLng) {
-                          let itemLat = item.lat;
-                          let itemLng = item.lng;
-                          if (!itemLat || !itemLng) {
-                              let text = item.locationName || item.campus || item.location || item.town || "Unknown";
-                              const found = CAMPUSES.find(c => c.name.toLowerCase() === text.toLowerCase());
-                              if (found) { itemLat = found.lat; itemLng = found.lng; }
-                          }
-                          if (itemLat && itemLng) {
-                             const d = getDistance(userLat, userLng, itemLat, itemLng);
-                             item.distanceKm = Math.round(d * 10) / 10;
-                             if (d <= 5) distanceScore = 14;
-                             else if (d <= 15) distanceScore = 10;
-                             else if (d <= 50) distanceScore = 5;
-                             else if (d > 50) distanceScore = -10; // Penalize far away locations heavily!
-                          } else if (item.campus && item.campus === userCampus) {
-                            distanceScore = 14; 
-                          }
+                       if (userLat && userLng && item.lat && item.lng) {
+                          const d = getDistance(userLat, userLng, item.lat, item.lng);
+                          item.distanceKm = Math.round(d * 10) / 10;
+                          if (d <= 5) distanceScore = 14;
+                          else if (d <= 15) distanceScore = 10;
+                          else if (d <= 50) distanceScore = 5;
+                          else if (d > 50) distanceScore = -10; // Penalize far away locations heavily!
                         } else if (item.campus && item.campus === userCampus) {
                           distanceScore = 14; 
                         }

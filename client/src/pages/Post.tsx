@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { ChevronLeft, Camera, Plus, X, Tag, Upload, CheckCircle2, Image as ImageIcon, Loader2, Package, Wrench, Gift, ClipboardList, Lightbulb, ArrowRight, Check } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
@@ -34,10 +34,21 @@ async function uploadFile(file: File): Promise<string> {
 }
 
 export default function PostPage() {
-    const { isAuthenticated, user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
+  const { coords, setCoords } = useAppStore();
   const [, navigate] = useLocation();
   const createMutation = trpc.listings.create.useMutation();
   const utils = trpc.useUtils();
+
+  useEffect(() => {
+    if (navigator.geolocation && !coords) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        (err) => console.log('Location not available:', err),
+        { maximumAge: 60000, timeout: 5000, enableHighAccuracy: true }
+      );
+    }
+  }, []);
 
   const [step, setStep] = useState(1);
   const [images, setImages] = useState<string[]>([]);
@@ -174,6 +185,8 @@ export default function PostPage() {
       cashTopUpAllowed: type === "donation" ? false : cashTopUpAllowed,
       cashTopUpAmount,
       campus,
+      lat: coords?.lat,
+      lng: coords?.lng,
     }, {
       onSuccess: async (data: any) => {
         

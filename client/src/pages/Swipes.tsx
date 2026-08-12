@@ -440,12 +440,15 @@ function SwipeCard({
                       } catch(e) {}
                       return text;
                   })()}
-                  {(item.distanceKm !== undefined && !isNaN(item.distanceKm)) && (
-                    <span className="opacity-70 ml-1">
-                       • {item.distanceKm > 1000 ? "+1000 km away" : item.distanceKm < 1 ? `${Math.round(item.distanceKm * 1000)} m away` : `${item.distanceKm} km away`}
-                    </span>
-                  )}
                 </p>
+                {(item.distanceKm !== undefined && !isNaN(item.distanceKm)) && (
+                  <div className="mt-1.5 flex items-center">
+                    <span className="px-2.5 py-0.5 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/90 text-[11px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {item.distanceKm > 1000 ? "+1000 km" : item.distanceKm < 1 ? `${Math.round(item.distanceKm * 1000)} m` : `${item.distanceKm} km`}
+                    </span>
+                  </div>
+                )}
               </div>
               {item._matchScore !== undefined && (
                 <div className="shrink-0 mb-1">
@@ -651,8 +654,7 @@ const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => 
 export default function SwipesPage() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated } = useAuth();
-  const { filters, toggleSavedItem, savedItemIds, watchedCategoryIds, toggleWatchedCategory } = useAppStore();
-  const [coords, setCoords] = useState<{lat: number, lng: number} | null>(null);
+  const { filters, toggleSavedItem, savedItemIds, watchedCategoryIds, toggleWatchedCategory, coords, setCoords } = useAppStore();
   
   const feedQuery = trpc.listings.feed.useQuery({ limit: 50, filters, coords });
   const cyclesQuery = trpc.multiWay.findCycles.useQuery(undefined, { enabled: !!user });
@@ -670,14 +672,27 @@ const [detailedListing, setDetailedListing] = useState<any>(null);
   const [reportingItem, setReportingItem] = useState<any>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
+  const updateProfileMutation = trpc.profiles.update.useMutation();
+
   useEffect(() => {
-    if (navigator.geolocation) {
+    // Only ask for location once on mount
+    if (navigator.geolocation && !coords) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        (err) => console.log('Location not available:', err)
+        (pos) => {
+           setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+           if (user) {
+              // Update user profile with exact coordinates
+              updateProfileMutation.mutate({
+                 lat: pos.coords.latitude,
+                 lng: pos.coords.longitude
+              });
+           }
+        },
+        (err) => console.log('Location not available:', err),
+        { maximumAge: 60000, timeout: 5000, enableHighAccuracy: true }
       );
     }
-  }, []);
+  }, [user]);
   
   useEffect(() => {
     feedQuery.refetch();
