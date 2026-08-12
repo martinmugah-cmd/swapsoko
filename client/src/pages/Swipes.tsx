@@ -1033,20 +1033,32 @@ const [detailedListing, setDetailedListing] = useState<any>(null);
               </div>
             </div>
           ) : remaining.length === 0 ? (
-            <div className="text-center py-12">
-              <Search className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-              <h3 className="font-bold text-slate-900 text-lg">No swaps found!</h3>
-              <p className="text-gray-400 text-sm mt-1">Check back later for new listings</p>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center h-full min-h-[50vh] px-8 text-center"
+            >
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-swap-green/20 blur-2xl rounded-full scale-[1.8]"></div>
+                <div className="relative w-20 h-20 bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[2rem] flex items-center justify-center rotate-3 transform-gpu">
+                  <Search className="w-8 h-8 text-slate-700 -rotate-3" strokeWidth={2.5} />
+                </div>
+              </div>
+              <h3 className="font-semibold text-slate-900 text-[22px] tracking-tight mb-2.5">You're all caught up</h3>
+              <p className="text-slate-500 text-[15px] max-w-[260px] leading-relaxed">
+                You've seen all the latest listings nearby. Check back later for new items.
+              </p>
               {items.length > 0 && (
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setCurrentIndex(0)}
-                  className="mt-4 gradient-green text-white font-semibold px-6 py-2.5 rounded-2xl text-sm shadow-md hover:shadow-lg transition-all"
+                  className="mt-8 bg-slate-900 text-white font-semibold px-8 py-3.5 rounded-full text-[15px] shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all flex items-center gap-2"
                 >
+                  <RefreshCw className="w-4 h-4" />
                   Start Over
                 </motion.button>
               )}
-            </div>
+            </motion.div>
           ) : (
             <>
               {/* Card stack */}
