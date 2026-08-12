@@ -10,17 +10,19 @@ import { Streamdown } from "streamdown";
 import { getLoginUrl } from "@/const";
 import { ProposeSwapModal } from "./Swipes";
 
-function GuruLoader() {
+function GuruLoader({ state }: { state: "working" | "solving" | "searching" | "composing" | "weaving" }) {
   return (
     <div className="flex gap-3 mb-6">
       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center flex-shrink-0 self-end mb-1 border border-white/10 shadow-[0_4px_12px_rgba(16,185,129,0.3)]">
-        <ThinkingOrb state="working" size={20} theme="dark" />
+        <ThinkingOrb state={state === "working" ? "weaving" : state} size={20} theme="dark" />
       </div>
       <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl rounded-bl-[4px] px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] max-w-[80%] flex flex-col gap-3 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
         <div className="flex items-center gap-2">
-          <ThinkingOrb state="solving" size={20} theme="dark" />
-          <span className="text-[14px] font-medium text-white/90">Swap Guru is thinking...</span>
+          <ThinkingOrb state={state} size={20} theme="dark" />
+          <span className="text-[14px] font-medium text-white/90">
+            {state === "working" ? "Calculating value..." : "Swap Guru is thinking..."}
+          </span>
         </div>
       </div>
     </div>
@@ -119,12 +121,25 @@ function ModeSelector({ mode, setMode }: { mode: string; setMode: (m: any) => vo
 export default function SwapGuruPage() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
-  const [messages, setMessages] = useState<{ role: "user" | "guru", content: string, listings?: any[] }[]>([
-    { role: "guru", content: "Hey! I'm **Swap Guru**\n\nWhat would you like to swap today?" }
-  ]);
+  const [messages, setMessages] = useState<Array<{ role: "user" | "guru"; content: string; listings?: any[] }>>([]);
+
+  const getGreeting = useCallback(() => {
+    const greetings = ["Rada", "Mambo", "Uko fiti", "Niambie", "Vipi", "Sasa"];
+    const name = user?.username || "there";
+    const randomG = greetings[Math.floor(Math.random() * greetings.length)];
+    return `${randomG} ${name}! I'm **Swap Guru**\n\nWhat would you like to swap today?`;
+  }, [user]);
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMessages([{ role: "guru", content: getGreeting() }]);
+    }
+  }, [user, messages.length, getGreeting]);
+
   const [proposeListing, setProposeListing] = useState<any>(null);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [orbState, setOrbState] = useState<"working" | "solving" | "searching" | "composing">("solving");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const askMutation = trpc.swapGuru.ask.useMutation();
@@ -133,10 +148,10 @@ export default function SwapGuruPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get("q");
-    if (q && messages.length === 1 && !isLoading) {
+    if (q && messages.length <= 1 && !isLoading) {
        handleSend(q);
     }
-  }, []);
+  }, [messages.length]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -153,6 +168,10 @@ export default function SwapGuruPage() {
       ]);
       return;
     }
+
+    const lower = prompt.toLowerCase();
+    const isCalculating = lower.includes("value") || lower.includes("worth") || lower.includes("price") || lower.includes("calculate");
+    setOrbState(isCalculating ? "working" : "solving");
 
     setMessages(prev => [...prev, { role: "user", content: prompt }]);
     setInput("");
@@ -204,7 +223,7 @@ export default function SwapGuruPage() {
             </div>
             <motion.button
               whileTap={{ scale: 0.9 }}
-              onClick={() => setMessages([{ role: "guru", content: "Hey! I'm **Swap Guru**\n\nWhat would you like to swap today?" }])}
+              onClick={() => setMessages([{ role: "guru", content: getGreeting() }])}
               className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/5"
             >
               <RotateCcw className="w-4 h-4 text-white" />
@@ -233,7 +252,7 @@ export default function SwapGuruPage() {
           ))}
         </AnimatePresence>
 
-        {isLoading && <GuruLoader />}
+        {isLoading && <GuruLoader state={orbState} />}
 
         <div ref={bottomRef} />
       </div>
