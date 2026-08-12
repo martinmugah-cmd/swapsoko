@@ -14,6 +14,7 @@ import {
 
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { createPortal } from "react-dom";
+import { ThinkingOrb } from "thinking-orbs";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
