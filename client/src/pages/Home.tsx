@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { PullToRefresh } from "@/components/PullToRefresh";
+import { createPortal } from "react-dom";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -157,9 +158,10 @@ export default function Home() {
         </div>
 
         {/* Location Selector Modal */}
-        <AnimatePresence>
-          {showLocationSelector && (
-            <motion.div
+        {createPortal(
+          <AnimatePresence>
+            {showLocationSelector && (
+              <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -193,9 +195,11 @@ export default function Home() {
               </motion.div>
             </motion.div>
           )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
 
-        {/* ── Greeting & Search Command Center ─────────────────────────────────────────────────── */}
+      {/* ── Greeting & Search Command Center ─────────────────────────────────────────────────── */}
         <div className="px-6 mt-6">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <h2 className="text-[32px] font-black text-slate-900 tracking-tight leading-[1.1] drop-shadow-sm">
@@ -232,19 +236,18 @@ export default function Home() {
           
           {/* Main AI Guru Card (Span 2) */}
           <motion.div
-            className="col-span-2 relative overflow-hidden rounded-[36px] p-6 shadow-[0_20px_40px_rgba(0,0,0,0.15)] cursor-pointer bg-[#0A0A0A] border border-white/10"
+            className="col-span-2 relative overflow-hidden rounded-[36px] p-6 shadow-[0_12px_40px_rgba(0,0,0,0.06)] cursor-pointer bg-white/70 backdrop-blur-2xl border border-white"
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate("/swap-guru")}
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
           >
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
             <motion.div 
-              className="absolute top-[-30%] right-[-10%] w-64 h-64 bg-green-500/40 rounded-full blur-[60px] pointer-events-none"
+              className="absolute top-[-20%] right-[-10%] w-56 h-56 bg-gradient-to-br from-green-300/40 to-emerald-400/40 rounded-full blur-[40px] pointer-events-none"
               animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
               transition={{ duration: 4, repeat: Infinity }}
             />
             <motion.div 
-              className="absolute bottom-[-30%] left-[-10%] w-64 h-64 bg-blue-500/40 rounded-full blur-[60px] pointer-events-none"
+              className="absolute bottom-[-30%] left-[-10%] w-56 h-56 bg-gradient-to-tr from-blue-300/40 to-cyan-400/40 rounded-full blur-[40px] pointer-events-none"
               animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.9, 0.5] }}
               transition={{ duration: 5, repeat: Infinity, delay: 1 }}
             />
@@ -252,20 +255,21 @@ export default function Home() {
             <div className="relative z-10 flex flex-col h-full">
               <div className="flex justify-between items-start mb-8">
                 <div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 mb-3 backdrop-blur-xl shadow-inner">
-                    <Sparkles size={12} className="text-green-300" />
-                    <span className="text-[10px] font-black text-white tracking-widest uppercase drop-shadow-sm">Swap Guru AI</span>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 border border-white shadow-sm mb-3 backdrop-blur-xl">
+                    <Sparkles size={12} className="text-green-500" />
+                    <span className="text-[10px] font-black text-slate-700 tracking-widest uppercase">Swap Guru AI</span>
                   </div>
-                  <h2 className="text-white font-black text-[32px] leading-[1.1] tracking-tight drop-shadow-md">Trade<br/>Smarter.</h2>
+                  <h2 className="text-slate-900 font-black text-[32px] leading-[1.1] tracking-tight drop-shadow-sm">Trade<br/>Smarter.</h2>
                 </div>
-                <div className="w-16 h-16 rounded-[22px] bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] relative">
-                  <Bot className="w-8 h-8 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] relative z-10" />
+                <div className="w-16 h-16 rounded-[22px] bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg relative overflow-hidden">
+                  <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+                  <Bot className="w-8 h-8 text-white drop-shadow-md relative z-10" />
                 </div>
               </div>
               
-              <div className="flex items-center justify-between bg-white/10 border border-white/20 rounded-[24px] p-2 backdrop-blur-xl shadow-lg">
-                <span className="text-white/90 text-[14px] font-bold px-3">Evaluate items instantly</span>
-                <div className="w-10 h-10 rounded-[18px] bg-white text-slate-900 flex items-center justify-center shadow-lg shrink-0">
+              <div className="flex items-center justify-between bg-white/60 border border-white/80 rounded-[24px] p-2 backdrop-blur-xl shadow-sm">
+                <span className="text-slate-700 text-[14px] font-bold px-3">Evaluate items instantly</span>
+                <div className="w-10 h-10 rounded-[18px] bg-slate-900 text-white flex items-center justify-center shadow-md shrink-0 hover:bg-slate-800 transition-colors">
                   <ArrowRight size={18} className="font-black" />
                 </div>
               </div>
