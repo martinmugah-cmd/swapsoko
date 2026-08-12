@@ -1,7 +1,8 @@
 import { useAppStore } from "@/store";
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Navigation, Search, X, ChevronDown, Check } from "lucide-react";
+import { MapPin, Navigation, Search, X, ChevronDown, Check, Crosshair } from "lucide-react";
+import { createPortal } from "react-dom";
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
 import { toast } from "sonner";
@@ -161,7 +162,7 @@ export function LocationSelector({ onLocationSelect, currentCampus, compact = fa
           </button>
         )}
         {/* Render portal for modal to avoid z-index issues */}
-        {typeof document !== 'undefined' && document.body && require('react-dom').createPortal(
+        {typeof document !== 'undefined' && document.body && createPortal(
           <LocationModal
             isOpen={isOpen}
             onClose={() => setIsOpen(false)}
@@ -206,7 +207,7 @@ export function LocationSelector({ onLocationSelect, currentCampus, compact = fa
           <ChevronDown size={16} className="text-gray-400 shrink-0" />
         </button>
       )}
-      {typeof document !== 'undefined' && document.body && require('react-dom').createPortal(
+      {typeof document !== 'undefined' && document.body && createPortal(
         <LocationModal
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
