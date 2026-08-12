@@ -3,6 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetClose }
 import { useAppStore } from "@/store";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Check, X, Filter, ChevronRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }) {
   const { filters, setFilters } = useAppStore();
@@ -68,96 +69,84 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
           <div className="space-y-6 pb-32">
             {/* Group 1: General (Category & Looking For) */}
             <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm">
-               <label className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200/60 active:bg-slate-50 transition-colors cursor-pointer">
+               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60">
                  <span className="text-[15px] font-medium text-slate-900">Category</span>
-                 <div className="flex items-center gap-1 text-slate-500">
-                   <select 
-                     value={filters.categories?.[0] || 'All'}
-                     onChange={e => setFilters({ /* @ts-ignore */ categories: [e.target.value] })}
-                     className="bg-transparent text-[15px] text-right focus:outline-none appearance-none cursor-pointer pr-1"
-                     dir="rtl"
-                   >
-                     <option value="All">All Categories</option>
-                     <option value="Electronics">Electronics</option>
-                     <option value="Phones">Phones</option>
-                     <option value="Laptops">Laptops</option>
-                     <option value="Gaming">Gaming</option>
-                     <option value="Books">Books</option>
-                     <option value="Furniture">Furniture</option>
-                     <option value="Fashion">Fashion</option>
-                     <option value="Sports">Sports</option>
-                     <option value="Music">Music</option>
-                     <option value="Photography">Photography</option>
-                     <option value="Vehicles">Vehicles</option>
-                     <option value="Services">Services</option>
-                   </select>
-                   <ChevronRight className="w-4 h-4 opacity-50 flex-shrink-0" />
-                 </div>
-               </label>
+                 <Select value={filters.categories?.[0] || 'All'} onValueChange={val => setFilters({ /* @ts-ignore */ categories: [val] })}>
+                   <SelectTrigger className="w-[160px] h-9 bg-slate-100/50 border-slate-200 text-slate-700 font-medium rounded-lg">
+                     <SelectValue placeholder="All Categories" />
+                   </SelectTrigger>
+                   <SelectContent className="rounded-xl">
+                     <SelectItem value="All">All Categories</SelectItem>
+                     <SelectItem value="Electronics">Electronics</SelectItem>
+                     <SelectItem value="Phones">Phones</SelectItem>
+                     <SelectItem value="Laptops">Laptops</SelectItem>
+                     <SelectItem value="Gaming">Gaming</SelectItem>
+                     <SelectItem value="Books">Books</SelectItem>
+                     <SelectItem value="Furniture">Furniture</SelectItem>
+                     <SelectItem value="Fashion">Fashion</SelectItem>
+                     <SelectItem value="Sports">Sports</SelectItem>
+                     <SelectItem value="Music">Music</SelectItem>
+                     <SelectItem value="Photography">Photography</SelectItem>
+                     <SelectItem value="Vehicles">Vehicles</SelectItem>
+                     <SelectItem value="Services">Services</SelectItem>
+                   </SelectContent>
+                 </Select>
+               </div>
 
-               <label className="flex items-center justify-between px-4 py-3.5 active:bg-slate-50 transition-colors cursor-pointer">
+               <div className="flex items-center justify-between px-4 py-3">
                  <span className="text-[15px] font-medium text-slate-900">Looking For</span>
-                 <div className="flex items-center gap-1 text-slate-500">
-                   <select 
-                     value={filters.wantedCategories?.[0] || 'All'}
-                     onChange={e => setFilters({ /* @ts-ignore */ wantedCategories: [e.target.value] })}
-                     className="bg-transparent text-[15px] text-right focus:outline-none appearance-none cursor-pointer pr-1"
-                     dir="rtl"
-                   >
-                     <option value="All">Any Category</option>
-                     <option value="Electronics">Electronics</option>
-                     <option value="Phones">Phones</option>
-                     <option value="Laptops">Laptops</option>
-                     <option value="Gaming">Gaming</option>
-                     <option value="Books">Books</option>
-                     <option value="Furniture">Furniture</option>
-                   </select>
-                   <ChevronRight className="w-4 h-4 opacity-50 flex-shrink-0" />
-                 </div>
-               </label>
+                 <Select value={filters.wantedCategories?.[0] || 'All'} onValueChange={val => setFilters({ /* @ts-ignore */ wantedCategories: [val] })}>
+                   <SelectTrigger className="w-[160px] h-9 bg-slate-100/50 border-slate-200 text-slate-700 font-medium rounded-lg">
+                     <SelectValue placeholder="Any Category" />
+                   </SelectTrigger>
+                   <SelectContent className="rounded-xl">
+                     <SelectItem value="All">Any Category</SelectItem>
+                     <SelectItem value="Electronics">Electronics</SelectItem>
+                     <SelectItem value="Phones">Phones</SelectItem>
+                     <SelectItem value="Laptops">Laptops</SelectItem>
+                     <SelectItem value="Gaming">Gaming</SelectItem>
+                     <SelectItem value="Books">Books</SelectItem>
+                     <SelectItem value="Furniture">Furniture</SelectItem>
+                   </SelectContent>
+                 </Select>
+               </div>
             </div>
 
             {/* Group 2: Specifics (Distance & Condition) */}
             <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm">
-               <label className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200/60 active:bg-slate-50 transition-colors cursor-pointer">
+               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60">
                  <span className="text-[15px] font-medium text-slate-900">Distance</span>
-                 <div className="flex items-center gap-1 text-slate-500">
-                   <select 
-                     value={filters.maxDistanceKm || 'Anywhere'}
-                     onChange={e => setFilters({ /* @ts-ignore */ maxDistanceKm: e.target.value })}
-                     className="bg-transparent text-[15px] text-right focus:outline-none appearance-none cursor-pointer pr-1"
-                     dir="rtl"
-                   >
-                     <option value="1">&lt; 1 km</option>
-                     <option value="3">&lt; 3 km</option>
-                     <option value="5">&lt; 5 km</option>
-                     <option value="10">&lt; 10 km</option>
-                     <option value="25">&lt; 25 km</option>
-                     <option value="Anywhere">Anywhere</option>
-                   </select>
-                   <ChevronRight className="w-4 h-4 opacity-50 flex-shrink-0" />
-                 </div>
-               </label>
+                 <Select value={filters.maxDistanceKm || 'Anywhere'} onValueChange={val => setFilters({ /* @ts-ignore */ maxDistanceKm: val })}>
+                   <SelectTrigger className="w-[160px] h-9 bg-slate-100/50 border-slate-200 text-slate-700 font-medium rounded-lg">
+                     <SelectValue placeholder="Anywhere" />
+                   </SelectTrigger>
+                   <SelectContent className="rounded-xl">
+                     <SelectItem value="1">&lt; 1 km</SelectItem>
+                     <SelectItem value="3">&lt; 3 km</SelectItem>
+                     <SelectItem value="5">&lt; 5 km</SelectItem>
+                     <SelectItem value="10">&lt; 10 km</SelectItem>
+                     <SelectItem value="25">&lt; 25 km</SelectItem>
+                     <SelectItem value="Anywhere">Anywhere</SelectItem>
+                   </SelectContent>
+                 </Select>
+               </div>
 
-               <label className="flex items-center justify-between px-4 py-3.5 active:bg-slate-50 transition-colors cursor-pointer">
+               <div className="flex items-center justify-between px-4 py-3">
                  <span className="text-[15px] font-medium text-slate-900">Condition</span>
-                 <div className="flex items-center gap-1 text-slate-500">
-                   <select 
-                     value={filters.conditions?.[0] || 'Any'}
-                     onChange={e => setFilters({ /* @ts-ignore */ conditions: [e.target.value] })}
-                     className="bg-transparent text-[15px] text-right focus:outline-none appearance-none cursor-pointer pr-1"
-                     dir="rtl"
-                   >
-                     <option value="Any">Any</option>
-                     <option value="new">Brand New</option>
-                     <option value="like_new">Like New</option>
-                     <option value="excellent">Excellent</option>
-                     <option value="good">Good</option>
-                     <option value="fair">Fair</option>
-                   </select>
-                   <ChevronRight className="w-4 h-4 opacity-50 flex-shrink-0" />
-                 </div>
-               </label>
+                 <Select value={filters.conditions?.[0] || 'Any'} onValueChange={val => setFilters({ /* @ts-ignore */ conditions: [val] })}>
+                   <SelectTrigger className="w-[160px] h-9 bg-slate-100/50 border-slate-200 text-slate-700 font-medium rounded-lg">
+                     <SelectValue placeholder="Any Condition" />
+                   </SelectTrigger>
+                   <SelectContent className="rounded-xl">
+                     <SelectItem value="Any">Any Condition</SelectItem>
+                     <SelectItem value="new">Brand New</SelectItem>
+                     <SelectItem value="like_new">Like New</SelectItem>
+                     <SelectItem value="excellent">Excellent</SelectItem>
+                     <SelectItem value="good">Good</SelectItem>
+                     <SelectItem value="fair">Fair</SelectItem>
+                   </SelectContent>
+                 </Select>
+               </div>
             </div>
 
             {/* Group 3: Estimated Swap Value (ESV) */}
