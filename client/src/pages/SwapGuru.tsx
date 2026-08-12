@@ -1,7 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence, useAnimation, useCycle } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ChevronLeft, Send, Mic, RotateCcw, Sparkles, ArrowRight, Lock, Package, RefreshCw, Scale } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
