@@ -652,8 +652,9 @@ export default function SwipesPage() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated } = useAuth();
   const { filters, toggleSavedItem, savedItemIds, watchedCategoryIds, toggleWatchedCategory } = useAppStore();
+  const [coords, setCoords] = useState<{lat: number, lng: number} | null>(null);
   
-  const feedQuery = trpc.listings.feed.useQuery({ limit: 50, filters });
+  const feedQuery = trpc.listings.feed.useQuery({ limit: 50, filters, coords });
   const cyclesQuery = trpc.multiWay.findCycles.useQuery(undefined, { enabled: !!user });
   const myListingsQuery = trpc.listings.myListings.useQuery({}, { enabled: !!user });
   const myWishesQuery = trpc.wishes.myWishes.useQuery({}, { enabled: !!user });
@@ -662,12 +663,21 @@ export default function SwipesPage() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [proposeListing, setProposeListing] = useState<any>(null);
-  const [detailedListing, setDetailedListing] = useState<any>(null);
+const [detailedListing, setDetailedListing] = useState<any>(null);
   const [swipedCount, setSwipedCount] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [quickFilter, setQuickFilter] = useState("All");
   const [reportingItem, setReportingItem] = useState<any>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        (err) => console.log('Location not available:', err)
+      );
+    }
+  }, []);
   
   useEffect(() => {
     feedQuery.refetch();
@@ -968,6 +978,7 @@ export default function SwipesPage() {
               <ChevronLeft className="w-6 h-6" />
            </button>
            <Feed 
+               coords={coords}
                onPropose={(listing) => {
                    if (!isAuthenticated) {
                       toast("Login to propose swaps!", { action: { label: "Login", onClick: () => window.location.href = "/login" } });

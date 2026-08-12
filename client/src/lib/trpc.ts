@@ -527,17 +527,27 @@ const createProxy = (path: string[] = []): any => {
                   
                   // Try fetching user preferences if logged in
                   let prefs: any = {};
+                  let myProfile: any = null;
                   if (activeUserId) {
                       try {
+                          const { data: p } = await supabase.from('profiles').select('*').eq('user_id', activeUserId).single();
+                          if (p) myProfile = p;
                           const { data: userPrefs } = await supabase.from('user_preferences').select('*').eq('user_id', activeUserId).single();
                           if (userPrefs) prefs = userPrefs;
                       } catch(e) {}
                   }
+
+                  const userLat = input?.coords?.lat || myProfile?.lat;
+                  const userLng = input?.coords?.lng || myProfile?.lng;
                   
                   // Basic Ranking Formula Implementation
                   listings = listings.map((item: any) => {
                       const camelItem = snakeToCamel(item);
                       camelItem.media = mediaMap[String(item.id)] || [];
+                      
+                      if (userLat && userLng && camelItem.lat && camelItem.lng) {
+                          camelItem.distanceKm = Math.round(LocationEngine.calculateDistanceKm(userLat, userLng, camelItem.lat, camelItem.lng) * 10) / 10;
+                      }
                       
                       let score = 0;
                       

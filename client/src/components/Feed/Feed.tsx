@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageCircle, Share2, Plus, Bookmark, CheckCircle, MapPin, Banknote, Flag } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
+import { toast } from 'sonner';
 
 export function FeedOverlay({ listing, onPropose, onReport }: { listing: any, onPropose: () => void, onReport: () => void }) {
     const { user } = useAuth();
@@ -46,7 +47,14 @@ export function FeedOverlay({ listing, onPropose, onReport }: { listing: any, on
                         </div>
                         
                         <button 
-                            onClick={(e) => { e.stopPropagation(); onReport(); }}
+                            onClick={(e) => { 
+                                e.stopPropagation(); 
+                                if (!user) {
+                                    toast("Login to report listings!", { action: { label: "Login", onClick: () => window.location.href = "/login" } });
+                                    return;
+                                }
+                                onReport(); 
+                            }}
                             className="w-9 h-9 rounded-full bg-black/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-red-400 hover:bg-red-500/10 transition-colors shadow-sm"
                         >
                             <Flag className="w-4 h-4" />
@@ -68,12 +76,17 @@ export function FeedOverlay({ listing, onPropose, onReport }: { listing: any, on
                             </span>
                         </div>
 
-                        {/* Exact Location */}
+                        {/* Exact Location & Distance */}
                         <div className="flex items-center gap-2">
                             <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-white/40"></span>
                             <span className="text-white/70 text-[13px] font-medium drop-shadow-sm flex items-center">
                                 <MapPin className="w-3.5 h-3.5 mr-1.5 opacity-70" />
                                 {displayLocation}
+                                {(listing.distanceKm !== undefined && !isNaN(listing.distanceKm)) && (
+                                    <span className="ml-1.5 text-white/50">
+                                        • {listing.distanceKm > 1000 ? "+1000 km" : listing.distanceKm < 1 ? `${Math.round(listing.distanceKm * 1000)} m` : `${listing.distanceKm} km`}
+                                    </span>
+                                )}
                             </span>
                         </div>
 
@@ -181,8 +194,8 @@ export function FeedVideo({ listing, isActive, onPropose, onReport }: { listing:
     );
 }
 
-export function Feed({ onPropose, onReport }: { onPropose: (listing: any) => void, onReport: (listing: any) => void }) {
-    const { data, isLoading } = trpc.feed.list.useQuery();
+export function Feed({ onPropose, onReport, coords }: { onPropose: (listing: any) => void, onReport: (listing: any) => void, coords?: {lat: number, lng: number} | null }) {
+    const { data, isLoading } = trpc.feed.list.useQuery({ coords });
     const [activeIndex, setActiveIndex] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
 
