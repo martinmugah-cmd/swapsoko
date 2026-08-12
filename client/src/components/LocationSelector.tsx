@@ -1,7 +1,7 @@
 import { useAppStore } from "@/store";
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Navigation, Search, X, ChevronDown, Check, Crosshair } from "lucide-react";
+import { MapPin, Navigation, Search, X, ChevronDown, Check, Crosshair, ChevronRight } from "lucide-react";
 import { createPortal } from "react-dom";
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -277,73 +277,82 @@ function LocationModal({
           />
           {/* Modal */}
           <motion.div
-            className="relative w-full max-w-[480px] max-h-[90vh] bg-white rounded-t-[32px] overflow-hidden flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.1)]"
+            className="relative w-full max-w-[480px] max-h-[90vh] bg-white rounded-t-[40px] overflow-hidden flex flex-col shadow-[0_-20px_60px_rgba(0,0,0,0.15)]"
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            transition={{ type: "spring", damping: 28, stiffness: 300, mass: 0.8 }}
           >
             {/* Handle */}
-            <div className="flex justify-center pt-4 pb-2">
-              <div className="w-12 h-1.5 rounded-full bg-gray-200" />
+            <div className="flex justify-center pt-5 pb-3">
+              <div className="w-12 h-1.5 rounded-full bg-slate-200" />
             </div>
 
             {/* Header */}
-            <div className="px-6 pb-4 flex items-center justify-between">
-              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">Select Location</h3>
-              <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
-                <X size={16} />
-              </button>
-            </div>
-
-            {/* Detect location button */}
-            <div className="px-6 pb-4 flex-shrink-0">
-              <button
-                onClick={detectLocation}
-                disabled={detectingLocation}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-[#F0FDF4] border border-[#BBF7D0] text-[#166534] font-bold text-[15px] hover:bg-[#DCFCE7] hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-wait"
-              >
-                <Navigation size={18} className={detectingLocation ? "animate-spin" : ""} />
-                {detectingLocation ? "Detecting your location..." : "Use my current location"}
+            <div className="px-6 pb-5 flex items-center justify-between">
+              <h3 className="text-[26px] font-black text-slate-900 tracking-tight">Select Location</h3>
+              <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors">
+                <X size={18} strokeWidth={2.5} />
               </button>
             </div>
 
             {/* Search */}
             <div className="px-6 pb-4 flex-shrink-0">
               <div className="relative group">
-                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" />
+                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <input
                   type="text"
-                  placeholder="Search campus, university, or county..."
+                  placeholder="Search campus, university..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 rounded-2xl border border-transparent text-[15px] font-medium text-slate-900 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all shadow-inner"
+                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50/80 rounded-[20px] border border-slate-100 text-[15px] font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]"
                 />
               </div>
             </div>
 
+            {/* Detect location button */}
+            <div className="px-6 pb-5 flex-shrink-0">
+              <button
+                onClick={detectLocation}
+                disabled={detectingLocation}
+                className="w-full flex items-center justify-between px-4 py-3.5 rounded-[24px] bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 hover:shadow-md hover:scale-[1.01] active:scale-[0.98] transition-all group disabled:opacity-70 disabled:hover:scale-100"
+              >
+                <div className="flex items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-[14px] bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                    <Navigation size={18} className={detectingLocation ? "animate-spin" : ""} strokeWidth={2.5} />
+                  </div>
+                  <span className="text-[15px] font-bold text-blue-900 tracking-tight">
+                    {detectingLocation ? "Detecting location..." : "Use current location"}
+                  </span>
+                </div>
+                <ChevronRight size={18} className="text-blue-400 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+
             {/* Toggle: List / Map */}
             <div className="px-6 pb-5 flex-shrink-0">
-              <div className="flex p-1 bg-gray-100/80 rounded-2xl border border-gray-200/50">
+              <div className="flex p-1 bg-slate-100/80 rounded-full border border-slate-200/50">
                 <button
                   onClick={() => setShowMap(false)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-[14px] font-bold transition-all duration-200 ${!showMap ? "bg-white text-slate-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[13px] font-bold transition-all duration-300 ${!showMap ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                 >
-                  <MapPin size={16} /> List View
+                  <MapPin size={14} /> List View
                 </button>
                 <button
                   onClick={() => setShowMap(true)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-[14px] font-bold transition-all duration-200 ${showMap ? "bg-white text-slate-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[13px] font-bold transition-all duration-300 ${showMap ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                 >
-                  <MapPin size={16} className="rotate-180" /> Map View
+                  <MapPin size={14} className="rotate-180" /> Map View
                 </button>
               </div>
             </div>
 
             {/* Discovery Mode selector */}
-            <div className="px-6 pb-3 flex-shrink-0">
-              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-2.5">Discovery Mode</p>
-              <div className="flex gap-2 flex-wrap">
+            <div className="px-0 flex-shrink-0">
+              <div className="px-6 mb-2">
+                 <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Discovery Scope</p>
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-4 px-6 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {[
                   { value: "campus", label: "My Campus" },
                   { value: "university", label: "My University" },
@@ -355,10 +364,10 @@ function LocationModal({
                   <button
                     key={opt.value}
                     onClick={() => setDiscoveryMode(opt.value)}
-                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 ${
+                    className={`whitespace-nowrap px-4 py-2 rounded-[14px] text-[13px] font-bold transition-all duration-300 border ${
                       discoveryMode === opt.value
-                        ? "bg-green-500 text-white shadow-md shadow-[#22C55E]/20"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        ? "bg-slate-900 text-white border-slate-900 shadow-md"
+                        : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
                     }`}
                   >
                     {opt.label}
@@ -369,17 +378,19 @@ function LocationModal({
 
             {/* Radius selector */}
             {discoveryMode === "nearby" && (
-              <div className="px-4 pb-3 flex-shrink-0">
-                <p className="text-xs font-medium text-gray-500 mb-2">SEARCH RADIUS</p>
-                <div className="flex gap-2 flex-wrap">
+              <div className="px-0 flex-shrink-0 bg-slate-50/50 py-3 border-y border-slate-100">
+                <div className="px-6 mb-2">
+                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Search Radius</p>
+                </div>
+                <div className="flex gap-2 overflow-x-auto px-6 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {RADIUS_OPTIONS.map(opt => (
                     <button
                       key={opt.value}
                       onClick={() => setRadius(opt.value)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                      className={`whitespace-nowrap px-3 py-1.5 rounded-full text-[12px] font-bold transition-all border ${
                         radius === opt.value
-                          ? "bg-swap-green text-white"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                          ? "bg-blue-500 text-white border-blue-500 shadow-sm shadow-blue-500/20"
+                          : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
                       }`}
                     >
                       {opt.label}
@@ -390,9 +401,9 @@ function LocationModal({
             )}
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto px-4 pb-4">
+            <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
               {showMap ? (
-                <div className="h-[400px] rounded-2xl overflow-hidden border border-gray-200 relative z-0">
+                <div className="h-[400px] rounded-[32px] overflow-hidden border border-slate-200 relative z-0 shadow-inner">
                   <MapContainer 
                     center={selectedCampus ? [selectedCampus.lat, selectedCampus.lng] : [-1.0887, 37.0122]} 
                     zoom={12} 
@@ -419,40 +430,53 @@ function LocationModal({
                     {selectedCampus && (
                       <Circle 
                         center={[selectedCampus.lat, selectedCampus.lng]}
-                        pathOptions={{ fillColor: '#22C55E', fillOpacity: 0.1, color: '#22C55E', weight: 1 }}
+                        pathOptions={{ fillColor: '#3B82F6', fillOpacity: 0.15, color: '#3B82F6', weight: 2 }}
                         radius={radius * 1000}
                       />
                     )}
                   </MapContainer>
                 </div>
               ) : (
-                <div className="space-y-1">
-                  {isSearching && <p className="text-center text-xs text-gray-400 py-4">Searching map...</p>}
+                <div className="space-y-2">
+                  {isSearching && <p className="text-center text-sm font-semibold text-slate-400 py-6">Searching...</p>}
                   {[...filteredCampuses, ...nominatimResults].map(campus => (
                     <motion.button
                       key={campus.id}
                       onClick={() => handleSelect(campus)}
-                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-2xl text-left transition-colors ${
+                      className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-[24px] text-left transition-all ${
                         selectedCampus?.id === campus.id
-                          ? "bg-swap-green/10 border border-swap-green/20"
-                          : "hover:bg-gray-50"
+                          ? "bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200/50 shadow-sm"
+                          : "bg-transparent border border-transparent hover:bg-slate-50 hover:border-slate-100"
                       }`}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        selectedCampus?.id === campus.id ? "bg-swap-green" : "bg-gray-100"
+                      <div className={`w-11 h-11 rounded-[16px] flex items-center justify-center shrink-0 transition-colors ${
+                        selectedCampus?.id === campus.id ? "bg-blue-500 shadow-md shadow-blue-500/20 text-white" : "bg-slate-100 text-slate-400"
                       }`}>
-                        <MapPin size={14} className={selectedCampus?.id === campus.id ? "text-white" : "text-gray-500"} />
+                        <MapPin size={18} strokeWidth={2.5} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-dark truncate">{campus.name}</p>
-                        <p className="text-xs text-gray-500">{campus.university} • {campus.county}</p>
+                        <p className={`text-[15px] font-bold truncate ${selectedCampus?.id === campus.id ? "text-blue-950" : "text-slate-900"}`}>{campus.name}</p>
+                        <p className={`text-[12px] font-medium truncate mt-0.5 ${selectedCampus?.id === campus.id ? "text-blue-600/80" : "text-slate-500"}`}>
+                          {campus.university} • {campus.county}
+                        </p>
                       </div>
                       {selectedCampus?.id === campus.id && (
-                        <Check size={16} className="text-swap-green shrink-0" />
+                        <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-sm shrink-0">
+                          <Check size={12} strokeWidth={3} />
+                        </div>
                       )}
                     </motion.button>
                   ))}
+                  {[...filteredCampuses, ...nominatimResults].length === 0 && !isSearching && (
+                    <div className="text-center py-10">
+                      <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <MapPin size={24} className="text-slate-300" />
+                      </div>
+                      <p className="text-[15px] font-bold text-slate-900">No locations found</p>
+                      <p className="text-[13px] text-slate-500 mt-1">Try searching for a different campus or county</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
