@@ -4,7 +4,7 @@ import { Heart, MessageCircle, Share2, Plus, Bookmark, CheckCircle, MapPin, Bank
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 
-export function FeedOverlay({ listing, onPropose }: { listing: any, onPropose: () => void }) {
+export function FeedOverlay({ listing, onPropose, onReport }: { listing: any, onPropose: () => void, onReport: () => void }) {
     const { user } = useAuth();
     const [isLiked, setIsLiked] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
@@ -25,6 +25,8 @@ export function FeedOverlay({ listing, onPropose }: { listing: any, onPropose: (
         }
     };
 
+    let displayLocation = listing.location || listing.town || listing.locationName || listing.campus || 'Nearby';
+
     return (
         <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-end p-5 pb-8">
             <div className="flex items-end justify-between w-full pointer-events-auto">
@@ -44,7 +46,7 @@ export function FeedOverlay({ listing, onPropose }: { listing: any, onPropose: (
                         </div>
                         
                         <button 
-                            onClick={(e) => { e.stopPropagation(); /* trigger report */ }}
+                            onClick={(e) => { e.stopPropagation(); onReport(); }}
                             className="w-9 h-9 rounded-full bg-black/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-red-400 hover:bg-red-500/10 transition-colors shadow-sm"
                         >
                             <Flag className="w-4 h-4" />
@@ -71,7 +73,7 @@ export function FeedOverlay({ listing, onPropose }: { listing: any, onPropose: (
                             <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-white/40"></span>
                             <span className="text-white/70 text-[13px] font-medium drop-shadow-sm flex items-center">
                                 <MapPin className="w-3.5 h-3.5 mr-1.5 opacity-70" />
-                                {listing.location || listing.town || 'Nearby'}
+                                {displayLocation}
                             </span>
                         </div>
 
@@ -113,7 +115,7 @@ export function FeedOverlay({ listing, onPropose }: { listing: any, onPropose: (
     );
 }
 
-export function FeedVideo({ listing, isActive, onPropose }: { listing: any, isActive: boolean, onPropose: () => void }) {
+export function FeedVideo({ listing, isActive, onPropose, onReport }: { listing: any, isActive: boolean, onPropose: () => void, onReport: () => void }) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isMuted, setIsMuted] = useState(true);
     const logEvent = trpc.feed.logEvent.useMutation();
@@ -174,12 +176,12 @@ export function FeedVideo({ listing, isActive, onPropose }: { listing: any, isAc
             {/* Gradient overlay for text readability - cleaner, subtle dark fade */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
             
-            <FeedOverlay listing={listing} onPropose={onPropose} />
+            <FeedOverlay listing={listing} onPropose={onPropose} onReport={onReport} />
         </div>
     );
 }
 
-export function Feed({ onPropose }: { onPropose: (listing: any) => void }) {
+export function Feed({ onPropose, onReport }: { onPropose: (listing: any) => void, onReport: (listing: any) => void }) {
     const { data, isLoading } = trpc.feed.list.useQuery();
     const [activeIndex, setActiveIndex] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -238,6 +240,7 @@ export function Feed({ onPropose }: { onPropose: (listing: any) => void }) {
                     listing={listing} 
                     isActive={index === activeIndex} 
                     onPropose={() => onPropose(listing)} 
+                    onReport={() => onReport(listing)}
                 />
             ))}
         </div>

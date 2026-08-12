@@ -967,13 +967,16 @@ export default function SwipesPage() {
            >
               <ChevronLeft className="w-6 h-6" />
            </button>
-           <Feed onPropose={(listing) => {
-               if (!isAuthenticated) {
-                  toast("Login to propose swaps!", { action: { label: "Login", onClick: () => window.location.href = "/login" } });
-                  return;
-               }
-               setProposeListing(listing);
-           }} />
+           <Feed 
+               onPropose={(listing) => {
+                   if (!isAuthenticated) {
+                      toast("Login to propose swaps!", { action: { label: "Login", onClick: () => window.location.href = "/login" } });
+                      return;
+                   }
+                   setProposeListing(listing);
+               }}
+               onReport={(listing) => setReportingItem(listing)}
+           />
         </div>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden relative">
