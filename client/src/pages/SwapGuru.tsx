@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { ChevronLeft, ArrowUp, Package, RefreshCw } from "lucide-react";
+import { ChevronLeft, ArrowUp, Package, RefreshCw, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { ThinkingOrb } from "thinking-orbs";
