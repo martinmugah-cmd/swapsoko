@@ -81,15 +81,15 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
               <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider flex items-center justify-between">
                 Category
               </h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex overflow-x-auto gap-2.5 pb-2 scrollbar-hide snap-x -mx-6 px-6">
                 {["All", "Electronics", "Phones", "Laptops", "Gaming", "Books", "Furniture", "Fashion", "Sports", "Music", "Photography", "Vehicles", "Services"].map(cat => (
                   <button
                     key={cat}
                     onClick={() => toggleArrayItem('categories', cat)}
-                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-sm border ${
+                    className={`shrink-0 snap-start px-5 py-2 rounded-full text-sm font-semibold transition-all border ${
                       isSelected('categories', cat)
-                        ? "bg-green-500 text-white border-green-500"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                        ? "bg-slate-900 text-white border-slate-900 shadow-md shadow-slate-900/10"
+                        : "bg-white text-slate-600 border-gray-200/60 hover:bg-gray-50/50"
                     }`}
                   >
                     {cat}
@@ -102,15 +102,15 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
             <div>
               <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider">Looking For (Wanted)</h3>
               <p className="text-xs text-gray-500 mb-3 font-medium">Show me people who are looking for:</p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex overflow-x-auto gap-2.5 pb-2 scrollbar-hide snap-x -mx-6 px-6">
                 {["All", "Electronics", "Phones", "Laptops", "Gaming", "Books", "Furniture"].map(cat => (
                   <button
                     key={cat}
                     onClick={() => toggleArrayItem('wantedCategories', cat)}
-                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-sm border ${
+                    className={`shrink-0 snap-start px-5 py-2 rounded-full text-sm font-semibold transition-all border ${
                       isSelected('wantedCategories', cat)
-                        ? "bg-blue-500 text-white border-blue-500"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                        ? "bg-slate-900 text-white border-slate-900 shadow-md shadow-slate-900/10"
+                        : "bg-white text-slate-600 border-gray-200/60 hover:bg-gray-50/50"
                     }`}
                   >
                     {cat}
@@ -150,15 +150,15 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
             {/* Distance */}
             <div>
               <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider">Distance</h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex overflow-x-auto gap-2.5 pb-2 scrollbar-hide snap-x -mx-6 px-6">
                 {["1", "3", "5", "10", "25", "Anywhere"].map(dist => (
                   <button
                     key={dist}
                     onClick={() => setFilters({ /* @ts-ignore */ maxDistanceKm: dist })}
-                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-sm border ${
+                    className={`shrink-0 snap-start px-5 py-2 rounded-full text-sm font-semibold transition-all border ${
                       (filters.maxDistanceKm || "Anywhere") === dist
-                        ? "bg-gray-900 text-white border-gray-900"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                        ? "bg-slate-900 text-white border-slate-900 shadow-md shadow-slate-900/10"
+                        : "bg-white text-slate-600 border-gray-200/60 hover:bg-gray-50/50"
                     }`}
                   >
                     {dist === "Anywhere" ? dist : `< ${dist} km`}
@@ -170,15 +170,15 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
             {/* Condition */}
             <div>
               <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider">Condition</h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex overflow-x-auto gap-2.5 pb-2 scrollbar-hide snap-x -mx-6 px-6">
                 {[{l: "Any", v: "Any"}, {l: "Brand New", v: "new"}, {l: "Like New", v: "like_new"}, {l: "Excellent", v: "excellent"}, {l: "Good", v: "good"}, {l: "Fair", v: "fair"}].map(c => (
                   <button
                     key={c.v}
                     onClick={() => toggleArrayItem('conditions', c.v)}
-                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-sm border ${
+                    className={`shrink-0 snap-start px-5 py-2 rounded-full text-sm font-semibold transition-all border ${
                       isSelected('conditions', c.v)
-                        ? "bg-gray-900 text-white border-gray-900"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                        ? "bg-slate-900 text-white border-slate-900 shadow-md shadow-slate-900/10"
+                        : "bg-white text-slate-600 border-gray-200/60 hover:bg-gray-50/50"
                     }`}
                   >
                     {c.l}
