@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { ChevronLeft, ArrowUp, Package, RefreshCw, Sparkles } from "lucide-react";
+import { ChevronLeft, Send, Sparkles, Package, RotateCcw } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { ThinkingOrb } from "thinking-orbs";
@@ -12,16 +12,19 @@ import { ProposeSwapModal } from "./Swipes";
 function GuruLoader({ state }: { state: "working" | "solving" | "searching" | "composing" | "weaving" }) {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex gap-3 mb-6 items-end px-4"
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      className="flex gap-3 mb-6 items-end"
     >
-      <div className="w-8 h-8 rounded-full border border-gray-200 bg-[#FAFAFA] flex items-center justify-center flex-shrink-0 shadow-sm">
-        <ThinkingOrb state={state === "working" ? "weaving" : state} size={16} theme="light" />
+      <div className="w-8 h-8 rounded-full bg-slate-900/80 backdrop-blur-xl flex items-center justify-center flex-shrink-0 shadow-[0_4px_16px_rgba(0,0,0,0.1)] border border-white/10 mb-1 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
+        <ThinkingOrb state={state === "working" ? "weaving" : state} size={20} theme="dark" />
       </div>
-      <div className="bg-[#FAFAFA] border border-gray-200 text-gray-900 px-4 py-3 rounded-2xl rounded-bl-sm max-w-[75%] shadow-sm">
-        <span className="text-[14px] font-medium text-gray-600">
-          {state === "working" ? "Analyzing data..." : "Generating response..."}
+      <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 text-white px-5 py-3.5 rounded-3xl rounded-bl-sm max-w-[75%] relative flex items-center gap-3 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none rounded-3xl rounded-bl-sm" />
+        <ThinkingOrb state={state} size={20} theme="dark" />
+        <span className="text-[14px] font-medium tracking-wide text-white/90">
+          {state === "working" ? "Calculating valuation..." : "Swap Guru is thinking..."}
         </span>
       </div>
     </motion.div>
@@ -33,23 +36,27 @@ function MessageBubble({ msg, onPropose }: { msg: { role: "user" | "guru"; conte
   const isUser = msg.role === "user";
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`flex ${isUser ? "justify-end" : "justify-start"} mb-6 px-4`}
+      initial={{ opacity: 0, y: 15, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 350, damping: 28 }}
+      className={`flex ${isUser ? "justify-end" : "justify-start"} mb-4`}
     >
       <div
-        className={`max-w-[75%] px-5 py-3.5 text-[14px] leading-relaxed shadow-sm transition-all ${
+        className={`max-w-[75%] px-5 py-3.5 rounded-[24px] text-[15px] leading-[22px] shadow-sm relative overflow-hidden ${
           isUser
-            ? "bg-[#0A0A0A] text-white rounded-2xl rounded-br-sm border border-black/10"
-            : "bg-[#FFFFFF] text-gray-900 rounded-2xl rounded-bl-sm border border-gray-200/80"
+            ? "bg-gradient-to-br from-green-400 to-emerald-600 text-white rounded-br-[4px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] border border-white/10"
+            : "bg-slate-900/80 backdrop-blur-xl text-white rounded-bl-[4px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/10"
         }`}
       >
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none rounded-[24px]" />
+        
         {isUser ? (
-          <p className="font-medium tracking-tight text-[15px]">{msg.content}</p>
+          <p className="font-medium relative z-10">{msg.content}</p>
         ) : (
-          <div className="prose prose-sm max-w-none text-gray-700 prose-p:leading-relaxed prose-p:tracking-tight prose-strong:text-black prose-strong:font-semibold prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline">
+          <div className="prose prose-sm max-w-none text-white/90 prose-p:leading-[24px] relative z-10 prose-strong:text-white prose-strong:font-bold prose-a:text-emerald-400">
             <Streamdown>{msg.content}</Streamdown>
             
+            {/* Render tagged listings if they exist */}
             {msg.listings && msg.listings.length > 0 && (
               <div className="mt-4 space-y-2">
                 {msg.listings.map((l, i) => {
@@ -59,20 +66,21 @@ function MessageBubble({ msg, onPropose }: { msg: { role: "user" | "guru"; conte
                    const img = imgs[0] || null;
                    
                    return (
-                     <div key={i} className="flex items-center bg-[#FAFAFA] p-2 rounded-xl border border-gray-200/80 gap-3 group transition-colors hover:bg-gray-50">
-                        <div className="w-12 h-12 rounded-[10px] overflow-hidden bg-white shrink-0 border border-gray-100">
-                           {img ? <img src={img} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Package className="w-4 h-4 text-gray-300"/></div>}
+                     <div key={i} className="flex items-center bg-white/5 p-2 rounded-[20px] border border-white/10 shadow-sm gap-3 backdrop-blur-md">
+                        <div className="w-12 h-12 rounded-[14px] overflow-hidden bg-slate-800 shrink-0 border border-white/5">
+                           {img ? <img src={img} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Package className="w-4 h-4 text-slate-400"/></div>}
                         </div>
                         <div className="flex-1 min-w-0">
-                           <p className="text-[13px] font-semibold text-gray-900 truncate">{l.title}</p>
-                           <p className="text-[12px] text-gray-500 truncate">By {l.profiles?.name || 'User'}</p>
+                           <p className="text-[13px] font-bold text-white truncate">{l.title}</p>
+                           <p className="text-[11px] font-medium text-slate-400 truncate">By {l.profiles?.name || 'User'}</p>
                         </div>
-                        <button 
+                        <motion.button 
+                           whileTap={{ scale: 0.95 }}
                            onClick={() => onPropose(l)} 
-                           className="text-[12px] bg-white border border-gray-200 text-gray-900 font-medium px-3 py-1.5 rounded-lg shrink-0 shadow-sm transition-all hover:bg-gray-50 hover:border-gray-300 active:scale-95"
+                           className="text-[11px] bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 font-bold px-3 py-1.5 rounded-full shrink-0 transition-colors border border-emerald-500/20"
                         >
                            Propose
-                        </button>
+                        </motion.button>
                      </div>
                    );
                 })}
@@ -94,7 +102,7 @@ export default function SwapGuruPage() {
     const greetings = ["Rada", "Mambo", "Uko fiti", "Niambie", "Vipi", "Sasa"];
     const name = user?.name ? user.name.split(" ")[0] : "there";
     const randomG = greetings[Math.floor(Math.random() * greetings.length)];
-    return `${randomG} ${name}. I'm Swap Guru.\n\nWhat are you looking to swap today?`;
+    return `${randomG} ${name}! I'm **Swap Guru**.\n\nWhat would you like to swap today?`;
   }, [user]);
 
   useEffect(() => {
@@ -148,75 +156,100 @@ export default function SwapGuruPage() {
       const result = await askMutation.mutateAsync({ prompt });
       setMessages(prev => [...prev, { role: "guru" as const, content: String(result.response), listings: result.listings as any[] }]);
     } catch {
-      setMessages(prev => [...prev, { role: "guru", content: "An error occurred while processing your request. Please try again." }]);
+      setMessages(prev => [...prev, { role: "guru", content: "Sorry, I couldn't process that. Please try again!" }]);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#FFFFFF] flex flex-col font-sans selection:bg-gray-200">
+    <div className="min-h-[100dvh] bg-[#F8FAFC] flex flex-col font-sans selection:bg-emerald-500/30 relative overflow-hidden">
       
-      {/* Vercel/Linear Style Minimalist Header */}
-      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 pb-3 pt-3 px-4">
-        <div className="max-w-[800px] mx-auto w-full flex items-center justify-between">
-          <button 
-            onClick={() => window.history.back()} 
-            className="w-8 h-8 flex items-center justify-center rounded-md border border-transparent hover:bg-gray-100 text-gray-500 transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5" strokeWidth={2} />
+      {/* Webapp Theme Dark Squircle Header */}
+      <div 
+        className="sticky top-4 z-40 mx-4 rounded-3xl px-4 py-4 border border-white/10 shadow-[0_24px_50px_-12px_rgba(0,0,0,0.25)] relative overflow-hidden mb-2"
+        style={{ background: "linear-gradient(145deg, #09090B 0%, #18181B 100%)", backdropFilter: "blur(24px)" }}
+      >
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay pointer-events-none" />
+        <motion.div 
+           animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }} 
+           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
+           className="absolute -top-16 -right-16 w-48 h-48 bg-green-500 rounded-full blur-[40px] pointer-events-none" 
+        />
+        <motion.div 
+           animate={{ scale: [1, 1.15, 1], opacity: [0.1, 0.15, 0.1] }} 
+           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }} 
+           className="absolute -bottom-16 -left-16 w-48 h-48 bg-[#6366F1] rounded-full blur-[40px] pointer-events-none" 
+        />
+
+        <div className="flex items-center justify-between relative z-10 max-w-[800px] mx-auto w-full">
+          <button onClick={() => window.history.back()} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/5 shadow-sm transition-all text-white">
+            <ChevronLeft className="w-5 h-5 -ml-0.5" />
           </button>
           
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-            <div className="w-5 h-5 rounded-[4px] bg-[#0A0A0A] flex items-center justify-center shadow-sm">
-              <Sparkles className="w-3 h-3 text-white" />
-            </div>
-            <span className="text-[14px] font-semibold text-gray-900 tracking-tight">Swap Guru</span>
+          <div className="flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2">
+            <h1 className="font-extrabold text-white text-lg flex items-center justify-center gap-1.5 drop-shadow-md tracking-tight">
+              <Sparkles className="w-4 h-4 text-emerald-400" /> Swap Guru
+            </h1>
+            <p className="text-[10px] text-gray-400 font-bold tracking-widest uppercase">AI Assistant</p>
           </div>
 
-          <button 
-            onClick={() => setMessages([{ role: "guru", content: getGreeting() }])} 
-            className="w-8 h-8 flex items-center justify-center rounded-md border border-transparent hover:bg-gray-100 text-gray-500 transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" strokeWidth={2} />
+          <button onClick={() => setMessages([{ role: "guru", content: getGreeting() }])} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/5 shadow-sm transition-all text-white">
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto w-full max-w-[800px] mx-auto pt-8 pb-[100px]">
+      <div className="flex-1 overflow-y-auto px-4 py-4 w-full max-w-[800px] mx-auto relative z-10" style={{ paddingBottom: "120px" }}>
         <AnimatePresence>
           {messages.map((msg, i) => (
             <MessageBubble key={i} msg={msg} onPropose={(l) => setProposeListing(l)} />
           ))}
         </AnimatePresence>
         {isLoading && <GuruLoader state={orbState} />}
-        <div ref={bottomRef} className="h-4" />
+        <div ref={bottomRef} />
       </div>
 
-      {/* Minimalist Floating Input Pill */}
+      {/* Glassmorphic Input Bar */}
       <div className="fixed bottom-6 left-4 right-4 z-40 max-w-[800px] md:mx-auto">
-        <div className="bg-white rounded-full p-1.5 flex items-center shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-200/80 transition-shadow focus-within:shadow-[0_8px_40px_rgb(0,0,0,0.12)] focus-within:border-gray-300">
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleSend()}
-            placeholder="Ask Swap Guru..."
-            disabled={isLoading}
-            className="flex-1 bg-transparent text-[15px] font-medium text-gray-900 placeholder-gray-400 outline-none w-full disabled:opacity-50 px-4 py-2.5"
-          />
-          <button
+        <motion.div 
+          animate={isLoading ? {
+            boxShadow: ["0px 12px 40px rgba(0,0,0,0.06)", "0px 12px 50px rgba(16,185,129,0.2)", "0px 12px 40px rgba(0,0,0,0.06)"],
+            borderColor: ["rgba(255,255,255,0.4)", "rgba(16,185,129,0.5)", "rgba(255,255,255,0.4)"]
+          } : {
+            boxShadow: "0px 12px 40px rgba(0,0,0,0.08)",
+            borderColor: "rgba(255,255,255,0.6)"
+          }}
+          transition={{ duration: 2, repeat: isLoading ? Infinity : 0, ease: "easeInOut" }}
+          className="bg-white/70 backdrop-blur-2xl rounded-[2rem] p-2 flex items-center gap-2 border shadow-sm relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay pointer-events-none" />
+          
+          <div className="flex-1 bg-white/70 rounded-full flex items-center px-5 py-2.5 border border-white/80 shadow-inner relative z-10">
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleSend()}
+              placeholder={isLoading ? "Swap Guru is thinking..." : "Message Swap Guru..."}
+              disabled={isLoading}
+              className="flex-1 bg-transparent text-[15px] font-semibold text-slate-800 placeholder-slate-400 outline-none w-full disabled:opacity-50 py-1"
+            />
+          </div>
+          
+          <motion.button
+            whileTap={{ scale: 0.85 }}
             onClick={() => handleSend()}
             disabled={!input.trim() || isLoading}
-            className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-all ${
+            className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center transition-all relative z-10 ${
               input.trim() && !isLoading 
-                ? "bg-[#0A0A0A] text-white shadow-sm hover:scale-105 active:scale-95" 
-                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                ? "bg-gradient-to-br from-green-400 to-emerald-600 shadow-[0_4px_16px_rgba(16,185,129,0.4)] text-white border border-emerald-400/20" 
+                : "bg-white border border-gray-200 text-gray-400"
             }`}
           >
-            <ArrowUp className="w-5 h-5" strokeWidth={2.5} />
-          </button>
-        </div>
+            <Send className={`w-[18px] h-[18px] ml-0.5`} strokeWidth={2.5} />
+          </motion.button>
+        </motion.div>
       </div>
 
       <AnimatePresence>
@@ -235,7 +268,7 @@ export default function SwapGuruPage() {
                    toast.success("Proposal sent successfully!", { id: toastId });
                    let offerStr = opts?.offerItems ? ` offering **${opts.offerItems}**` : "";
                    let bridgeStr = cash > 0 ? ` with a KES ${cash} cash bridge` : "";
-                   setMessages(prev => [...prev, { role: "guru", content: `Proposal successfully delivered for **${proposeListing.title}**${offerStr}${bridgeStr}.` }]);
+                   setMessages(prev => [...prev, { role: "guru", content: `Awesome! I've sent your proposal for **${proposeListing.title}**${offerStr}${bridgeStr}. They will receive a notification shortly.` }]);
                    setProposeListing(null);
                 },
                 onError: (err: any) => {
