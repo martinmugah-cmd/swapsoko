@@ -46,9 +46,10 @@ interface LocationSelectorProps {
   onLocationSelect: (location: { campus: typeof CAMPUSES[0]; radius: number; coords?: { lat: number; lng: number }; discoveryMode: string }) => void;
   currentCampus?: string;
   compact?: boolean;
+  customTrigger?: React.ReactNode;
 }
 
-export function LocationSelector({ onLocationSelect, currentCampus, compact = false }: LocationSelectorProps) {
+export function LocationSelector({ onLocationSelect, currentCampus, compact = false, customTrigger }: LocationSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const filters = useAppStore(state => state.filters);
@@ -145,14 +146,67 @@ export function LocationSelector({ onLocationSelect, currentCampus, compact = fa
   if (compact) {
     return (
       <>
+        {customTrigger ? (
+          <div onClick={() => setIsOpen(true)} className="cursor-pointer inline-block w-fit">
+            {customTrigger}
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 bg-white text-sm font-medium text-dark hover:border-swap-green transition-colors"
+          >
+            <MapPin size={14} className="text-swap-green" />
+            <span className="max-w-[100px] truncate">{selectedCampus?.name.split(" ")[0] || "Location"}</span>
+            <ChevronDown size={12} className="text-gray-400" />
+          </button>
+        )}
+        {/* Render portal for modal to avoid z-index issues */}
+        {typeof document !== 'undefined' && document.body && require('react-dom').createPortal(
+          <LocationModal
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            search={search}
+            setSearch={setSearch}
+            filteredCampuses={filteredCampuses}
+            selectedCampus={selectedCampus}
+            handleSelect={handleSelect}
+            radius={radius}
+            setRadius={setRadius}
+            showMap={showMap}
+            setShowMap={setShowMap}
+            detectLocation={detectLocation}
+            detectingLocation={detectingLocation}
+            nominatimResults={nominatimResults}
+            isSearching={isSearching}
+            discoveryMode={discoveryMode}
+            setDiscoveryMode={setDiscoveryMode}
+          />,
+          document.body
+        )}
+      </>
+    );
+  }
+
+  return (
+    <>
+      {customTrigger ? (
+        <div onClick={() => setIsOpen(true)} className="cursor-pointer inline-block w-fit">
+          {customTrigger}
+        </div>
+      ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 bg-white text-sm font-medium text-dark hover:border-swap-green transition-colors"
+          className="w-full flex items-center gap-2 px-4 py-3 rounded-2xl border border-gray-200 bg-white/70 backdrop-blur-md text-left hover:border-swap-green transition-colors"
         >
-          <MapPin size={14} className="text-swap-green" />
-          <span className="max-w-[100px] truncate">{selectedCampus?.name.split(" ")[0] || "Location"}</span>
-          <ChevronDown size={12} className="text-gray-400" />
+          <MapPin size={18} className="text-swap-green shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-dark truncate">{selectedCampus?.name || "Select campus"}</p>
+            <p className="text-xs text-gray-500">Within {radius} km</p>
+          </div>
+          <ChevronDown size={16} className="text-gray-400 shrink-0" />
         </button>
+      )}
+      {typeof document !== 'undefined' && document.body && require('react-dom').createPortal(
         <LocationModal
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
@@ -171,43 +225,9 @@ export function LocationSelector({ onLocationSelect, currentCampus, compact = fa
           isSearching={isSearching}
           discoveryMode={discoveryMode}
           setDiscoveryMode={setDiscoveryMode}
-        />
-      </>
-    );
-  }
-
-  return (
-    <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="w-full flex items-center gap-2 px-4 py-3 rounded-2xl border border-gray-200 bg-white/70 backdrop-blur-md text-left hover:border-swap-green transition-colors"
-      >
-        <MapPin size={18} className="text-swap-green shrink-0" />
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-dark truncate">{selectedCampus?.name || "Select campus"}</p>
-          <p className="text-xs text-gray-500">Within {radius} km</p>
-        </div>
-        <ChevronDown size={16} className="text-gray-400 shrink-0" />
-      </button>
-      <LocationModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        search={search}
-        setSearch={setSearch}
-        filteredCampuses={filteredCampuses}
-        selectedCampus={selectedCampus}
-        handleSelect={handleSelect}
-        radius={radius}
-        setRadius={setRadius}
-        showMap={showMap}
-        setShowMap={setShowMap}
-        detectLocation={detectLocation}
-        detectingLocation={detectingLocation}
-        nominatimResults={nominatimResults}
-        isSearching={isSearching}
-        discoveryMode={discoveryMode}
-        setDiscoveryMode={setDiscoveryMode}
-      />
+        />,
+        document.body
+      )}
     </>
   );
 }

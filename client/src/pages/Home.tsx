@@ -113,9 +113,24 @@ export default function Home() {
               </motion.div>
               <div className="flex flex-col">
                 <h1 className="text-[18px] font-black text-slate-900 tracking-tight leading-none drop-shadow-sm">Swapsoko</h1>
-                <button onClick={() => setShowLocationSelector(true)} className="flex items-center gap-1 text-[11px] font-extrabold text-slate-600 mt-1 bg-white/50 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/50 w-fit">
-                  <MapPin size={10} className="text-green-600" /> <span className="max-w-[90px] truncate">{currentCampus}</span>
-                </button>
+                <LocationSelector
+                  compact
+                  customTrigger={
+                    <div className="flex items-center gap-1 text-[11px] font-extrabold text-slate-600 mt-1 bg-white/50 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/50 w-fit">
+                      <MapPin size={10} className="text-green-600" /> <span className="max-w-[90px] truncate">{currentCampus}</span>
+                    </div>
+                  }
+                  currentCampus={currentCampus}
+                  onLocationSelect={(loc) => {
+                    setSelectedLocation(loc);
+                    setFilters({ 
+                      campus: typeof loc.campus === 'object' ? loc.campus.name : loc.campus, 
+                      university: typeof loc.campus === 'object' ? loc.campus.university : null,
+                      coords: loc.coords,
+                      discoveryMode: loc.discoveryMode as any
+                    });
+                  }}
+                />
               </div>
             </div>
             
@@ -157,47 +172,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Location Selector Modal */}
-        {createPortal(
-          <AnimatePresence>
-            {showLocationSelector && (
-              <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[600] flex items-end justify-center"
-              style={{ background: "rgba(15,23,42,0.3)", backdropFilter: "blur(12px)" }}
-              onClick={() => setShowLocationSelector(false)}
-            >
-              <motion.div
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="bg-white/90 backdrop-blur-2xl border-t border-white/50 w-full max-w-[480px] rounded-t-[40px] p-6 pb-12 max-h-[85vh] overflow-y-auto shadow-[0_-20px_60px_rgba(0,0,0,0.15)]"
-                onClick={e => e.stopPropagation()}
-              >
-                <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-6" />
-                <h3 className="font-black text-slate-900 text-2xl mb-4 text-center">Select Campus</h3>
-                <LocationSelector
-                  currentCampus={currentCampus}
-                  onLocationSelect={(loc) => {
-                    setSelectedLocation(loc);
-                    setFilters({ 
-                      campus: typeof loc.campus === 'object' ? loc.campus.name : loc.campus, 
-                      university: typeof loc.campus === 'object' ? loc.campus.university : null,
-                      coords: loc.coords,
-                      discoveryMode: loc.discoveryMode as any
-                    });
-                    setShowLocationSelector(false);
-                  }}
-                />
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
+        {/* Removed redundant modal wrapper, LocationSelector handles its own modal */}
 
       {/* ── Greeting & Search Command Center ─────────────────────────────────────────────────── */}
         <div className="px-6 mt-6">
