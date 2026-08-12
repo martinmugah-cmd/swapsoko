@@ -277,21 +277,21 @@ function LocationModal({
           />
           {/* Modal */}
           <motion.div
-            className="relative w-full max-w-[480px] max-h-[90vh] bg-white rounded-t-[40px] overflow-hidden flex flex-col shadow-[0_-20px_60px_rgba(0,0,0,0.15)]"
+            className="relative w-full max-w-[480px] max-h-[90vh] bg-white/85 backdrop-blur-[40px] rounded-t-[40px] overflow-hidden flex flex-col shadow-[0_-20px_80px_rgba(0,0,0,0.15)] border-t border-white/60"
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 300, mass: 0.8 }}
           >
             {/* Handle */}
-            <div className="flex justify-center pt-5 pb-3">
-              <div className="w-12 h-1.5 rounded-full bg-slate-200" />
+            <div className="flex justify-center pt-5 pb-2">
+              <div className="w-12 h-1.5 rounded-full bg-slate-300/50" />
             </div>
 
             {/* Header */}
-            <div className="px-6 pb-5 flex items-center justify-between">
-              <h3 className="text-[26px] font-black text-slate-900 tracking-tight">Select Location</h3>
-              <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors">
+            <div className="px-6 pb-4 flex items-center justify-between">
+              <h3 className="text-[26px] font-black text-slate-900 tracking-tight">Location</h3>
+              <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200/50 text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors">
                 <X size={18} strokeWidth={2.5} />
               </button>
             </div>
@@ -299,89 +299,85 @@ function LocationModal({
             {/* Search */}
             <div className="px-6 pb-4 flex-shrink-0">
               <div className="relative group">
-                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
                 <input
                   type="text"
                   placeholder="Search campus, university..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50/80 rounded-[20px] border border-slate-100 text-[15px] font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]"
+                  className="w-full pl-11 pr-4 py-3.5 bg-white/60 backdrop-blur-md rounded-[20px] border border-white/80 text-[15px] font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]"
                 />
               </div>
             </div>
 
             {/* Detect location button */}
-            <div className="px-6 pb-5 flex-shrink-0">
+            <div className="px-6 pb-4 flex-shrink-0">
               <button
                 onClick={detectLocation}
                 disabled={detectingLocation}
-                className="w-full flex items-center justify-between px-4 py-3.5 rounded-[24px] bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 hover:shadow-md hover:scale-[1.01] active:scale-[0.98] transition-all group disabled:opacity-70 disabled:hover:scale-100"
+                className="w-full flex items-center justify-between px-4 py-3.5 rounded-[20px] bg-gradient-to-r from-emerald-50/80 to-green-50/80 border border-emerald-100/50 hover:shadow-md hover:scale-[1.01] active:scale-[0.98] transition-all group disabled:opacity-70 disabled:hover:scale-100 backdrop-blur-md"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-[14px] bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                  <div className="w-10 h-10 rounded-[14px] bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
                     <Navigation size={18} className={detectingLocation ? "animate-spin" : ""} strokeWidth={2.5} />
                   </div>
-                  <span className="text-[15px] font-bold text-blue-900 tracking-tight">
+                  <span className="text-[15px] font-bold text-emerald-950 tracking-tight">
                     {detectingLocation ? "Detecting location..." : "Use current location"}
                   </span>
                 </div>
-                <ChevronRight size={18} className="text-blue-400 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight size={18} className="text-emerald-400 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
 
             {/* Toggle: List / Map */}
-            <div className="px-6 pb-5 flex-shrink-0">
-              <div className="flex p-1 bg-slate-100/80 rounded-full border border-slate-200/50">
+            <div className="px-6 pb-4 flex-shrink-0">
+              <div className="flex p-1 bg-slate-200/50 backdrop-blur-md rounded-full border border-white/20 shadow-inner">
                 <button
                   onClick={() => setShowMap(false)}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[13px] font-bold transition-all duration-300 ${!showMap ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                 >
-                  <MapPin size={14} /> List View
+                  <MapPin size={14} /> List
                 </button>
                 <button
                   onClick={() => setShowMap(true)}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[13px] font-bold transition-all duration-300 ${showMap ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                 >
-                  <MapPin size={14} className="rotate-180" /> Map View
+                  <MapPin size={14} className="rotate-180" /> Map
                 </button>
               </div>
             </div>
 
             {/* Discovery Mode selector */}
-            <div className="px-0 flex-shrink-0">
-              <div className="px-6 mb-2">
-                 <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Discovery Scope</p>
-              </div>
-              <div className="flex gap-2 overflow-x-auto pb-4 px-6 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                {[
-                  { value: "campus", label: "My Campus" },
-                  { value: "university", label: "My University" },
-                  { value: "nearby", label: "Nearby" },
-                  { value: "county", label: "County" },
-                  { value: "community", label: "Community" },
-                  { value: "all", label: "All Kenya" }
-                ].map(opt => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setDiscoveryMode(opt.value)}
-                    className={`whitespace-nowrap px-4 py-2 rounded-[14px] text-[13px] font-bold transition-all duration-300 border ${
-                      discoveryMode === opt.value
-                        ? "bg-slate-900 text-white border-slate-900 shadow-md"
-                        : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+            <div className="px-0 flex-shrink-0 mb-2">
+              <div className="flex gap-1 overflow-x-auto pb-2 px-6 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div className="flex bg-slate-200/40 p-1 rounded-full backdrop-blur-md shadow-inner border border-white/20">
+                  {[
+                    { value: "campus", label: "Campus" },
+                    { value: "university", label: "University" },
+                    { value: "nearby", label: "Nearby" },
+                    { value: "county", label: "County" },
+                    { value: "community", label: "Community" },
+                    { value: "all", label: "All Kenya" }
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setDiscoveryMode(opt.value)}
+                      className={`whitespace-nowrap px-3 py-1.5 rounded-full text-[13px] font-bold transition-all duration-300 ${
+                        discoveryMode === opt.value
+                          ? "bg-white text-slate-900 shadow-sm"
+                          : "bg-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-200/50"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* Radius selector */}
             {discoveryMode === "nearby" && (
-              <div className="px-0 flex-shrink-0 bg-slate-50/50 py-3 border-y border-slate-100">
-                <div className="px-6 mb-2">
-                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Search Radius</p>
-                </div>
+              <div className="px-0 flex-shrink-0 bg-white/40 backdrop-blur-md py-3 border-y border-white/30 shadow-sm">
                 <div className="flex gap-2 overflow-x-auto px-6 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {RADIUS_OPTIONS.map(opt => (
                     <button
@@ -389,8 +385,8 @@ function LocationModal({
                       onClick={() => setRadius(opt.value)}
                       className={`whitespace-nowrap px-3 py-1.5 rounded-full text-[12px] font-bold transition-all border ${
                         radius === opt.value
-                          ? "bg-blue-500 text-white border-blue-500 shadow-sm shadow-blue-500/20"
-                          : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                          ? "bg-emerald-500 text-white border-emerald-500 shadow-sm shadow-emerald-500/20"
+                          : "bg-white/60 text-slate-600 border-white hover:bg-white"
                       }`}
                     >
                       {opt.label}
@@ -403,7 +399,7 @@ function LocationModal({
             {/* Content */}
             <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
               {showMap ? (
-                <div className="h-[400px] rounded-[32px] overflow-hidden border border-slate-200 relative z-0 shadow-inner">
+                <div className="h-[400px] rounded-[32px] overflow-hidden border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08)] relative z-0">
                   <MapContainer 
                     center={selectedCampus ? [selectedCampus.lat, selectedCampus.lng] : [-1.0887, 37.0122]} 
                     zoom={12} 
@@ -430,7 +426,7 @@ function LocationModal({
                     {selectedCampus && (
                       <Circle 
                         center={[selectedCampus.lat, selectedCampus.lng]}
-                        pathOptions={{ fillColor: '#3B82F6', fillOpacity: 0.15, color: '#3B82F6', weight: 2 }}
+                        pathOptions={{ fillColor: '#10B981', fillOpacity: 0.15, color: '#10B981', weight: 2 }}
                         radius={radius * 1000}
                       />
                     )}
@@ -445,24 +441,24 @@ function LocationModal({
                       onClick={() => handleSelect(campus)}
                       className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-[24px] text-left transition-all ${
                         selectedCampus?.id === campus.id
-                          ? "bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200/50 shadow-sm"
-                          : "bg-transparent border border-transparent hover:bg-slate-50 hover:border-slate-100"
+                          ? "bg-white/80 border border-emerald-100 shadow-[0_4px_20px_rgba(16,185,129,0.1)]"
+                          : "bg-transparent border border-transparent hover:bg-white/50 hover:border-white"
                       }`}
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className={`w-11 h-11 rounded-[16px] flex items-center justify-center shrink-0 transition-colors ${
-                        selectedCampus?.id === campus.id ? "bg-blue-500 shadow-md shadow-blue-500/20 text-white" : "bg-slate-100 text-slate-400"
+                        selectedCampus?.id === campus.id ? "bg-emerald-500 shadow-md shadow-emerald-500/20 text-white" : "bg-white text-slate-400 shadow-sm border border-slate-100"
                       }`}>
                         <MapPin size={18} strokeWidth={2.5} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-[15px] font-bold truncate ${selectedCampus?.id === campus.id ? "text-blue-950" : "text-slate-900"}`}>{campus.name}</p>
-                        <p className={`text-[12px] font-medium truncate mt-0.5 ${selectedCampus?.id === campus.id ? "text-blue-600/80" : "text-slate-500"}`}>
+                        <p className={`text-[15px] font-bold truncate ${selectedCampus?.id === campus.id ? "text-emerald-950" : "text-slate-900"}`}>{campus.name}</p>
+                        <p className={`text-[12px] font-medium truncate mt-0.5 ${selectedCampus?.id === campus.id ? "text-emerald-700/80" : "text-slate-500"}`}>
                           {campus.university} • {campus.county}
                         </p>
                       </div>
                       {selectedCampus?.id === campus.id && (
-                        <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-sm shrink-0">
+                        <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm shrink-0">
                           <Check size={12} strokeWidth={3} />
                         </div>
                       )}
@@ -470,7 +466,7 @@ function LocationModal({
                   ))}
                   {[...filteredCampuses, ...nominatimResults].length === 0 && !isSearching && (
                     <div className="text-center py-10">
-                      <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100">
                         <MapPin size={24} className="text-slate-300" />
                       </div>
                       <p className="text-[15px] font-bold text-slate-900">No locations found</p>
