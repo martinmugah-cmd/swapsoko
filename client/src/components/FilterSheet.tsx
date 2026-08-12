@@ -55,7 +55,7 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[90vh] max-w-md mx-auto inset-x-0 bottom-0 rounded-t-[32px] px-0 pb-0 gap-0 flex flex-col bg-white/80 backdrop-blur-xl border-t border-white/50 shadow-[0_-12px_40px_rgba(0,0,0,0.12)]">
+      <SheetContent side="bottom" className="h-[90vh] max-w-md mx-auto inset-x-0 bottom-0 rounded-t-[32px] px-0 pb-0 gap-0 flex flex-col bg-white/80 backdrop-blur-xl border-t border-white/50 shadow-[0_-12px_40px_rgba(0,0,0,0.12)] [&>button.absolute]:hidden">
         <SheetHeader className="px-6 py-5 border-b border-gray-200/50 bg-transparent z-10 sticky top-0 flex-shrink-0">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-xl font-extrabold flex items-center gap-2 m-0 text-slate-900">
