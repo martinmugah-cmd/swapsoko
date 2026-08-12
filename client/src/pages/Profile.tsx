@@ -579,19 +579,35 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-[#F8FAFC]">
-        <div className="w-20 h-20 rounded-3xl overflow-hidden shadow-[0_12px_30px_rgba(34,197,94,0.2)] border-[3px] border-white bg-white mb-6">
-          <img src="/logo.jpg" alt="SwapSoko" className="w-full h-full object-cover" />
-        </div>
-        <h2 className="font-extrabold text-slate-900 text-2xl mb-2 tracking-tight">Access Profile</h2>
-        <p className="text-gray-500 text-[15px] max-w-[260px] leading-relaxed mb-8 font-medium">Sign in to view your profile, listings, and track your swaps.</p>
-        <motion.button
-          onClick={() => navigate("/login")}
-          whileTap={{ scale: 0.95 }}
-          className="bg-slate-900 text-white font-bold py-3.5 px-10 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-[#1E293B] transition-all"
+      <div className="min-h-[100dvh] flex flex-col items-center justify-center px-8 text-center bg-[#F8FAFC]">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="flex flex-col items-center"
         >
-          Sign In to Continue
-        </motion.button>
+          <div className="relative mb-8">
+            <div className="absolute inset-0 bg-swap-green/20 blur-[32px] rounded-full scale-[2]"></div>
+            <div className="relative w-24 h-24 bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_32px_rgba(0,0,0,0.06)] rounded-[2rem] flex items-center justify-center rotate-3 transform-gpu">
+              <div className="w-12 h-12 rounded-xl overflow-hidden shadow-inner bg-white flex items-center justify-center -rotate-3">
+                 <img src="/logo.jpg" alt="SwapSoko" className="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+          
+          <h2 className="font-bold text-slate-900 text-[26px] tracking-tight mb-3">Access Profile</h2>
+          <p className="text-slate-500 text-[15px] max-w-[280px] leading-relaxed mb-10 font-medium">
+            Sign in to view your profile, manage your listings, and track your swaps.
+          </p>
+          
+          <motion.button
+            onClick={() => navigate("/login")}
+            whileTap={{ scale: 0.96 }}
+            className="bg-slate-900 text-white font-semibold py-3.5 px-10 rounded-full shadow-[0_8px_20px_rgba(15,23,42,0.15)] hover:shadow-[0_8px_25px_rgba(15,23,42,0.2)] hover:-translate-y-0.5 transition-all w-full max-w-[280px] text-[15px]"
+          >
+            Sign In to Continue
+          </motion.button>
+        </motion.div>
       </div>
     );
   }
