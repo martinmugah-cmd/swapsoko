@@ -336,12 +336,20 @@ export function WishCard({ wish, onRespond, hideOfferButton }: { wish: any; onRe
 
         <div className="mt-5 pt-4 border-t border-gray-50 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full gradient-green flex items-center justify-center shadow-sm">
-              <span className="text-white text-[11px] font-black">{(wish.profiles?.name || wish.user?.name || "U").charAt(0).toUpperCase()}</span>
-            </div>
+            {(() => {
+              const avatar = wish.profiles?.avatarUrl || wish.user?.avatar_url;
+              if (avatar) {
+                return <img src={avatar} alt="Avatar" className="w-8 h-8 rounded-full object-cover shadow-sm" />;
+              }
+              return (
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shadow-sm border border-slate-200">
+                  <span className="text-slate-600 text-[11px] font-black">{(wish.profiles?.name || wish.user?.name || "U").charAt(0).toUpperCase()}</span>
+                </div>
+              );
+            })()}
             <div className="flex items-center gap-2">
               <span className="text-sm font-extrabold text-slate-900">@{(() => {
-                    const n = wish.profiles?.name;
+                    const n = wish.profiles?.name || wish.user?.name;
                     try {
                       const desc = JSON.parse(wish.profiles?.university || "{}");
                       return desc.username || (n && n !== "SwapSoko User" ? n.split(" ").join("").toLowerCase() : "user");
@@ -361,14 +369,14 @@ export function WishCard({ wish, onRespond, hideOfferButton }: { wish: any; onRe
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => wish.id && toggleSavedWish(wish.id.toString())}
-                className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-50 border border-gray-100 shadow-sm"
+                className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-50 border border-gray-100 shadow-sm hover:bg-gray-100 transition-colors"
               >
                 <Heart className={`w-4 h-4 ${wish.id && savedWishIds.includes(wish.id.toString()) ? 'text-red-400 fill-red-400' : 'text-gray-400'}`} />
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={onRespond}
-                className="bg-green-500 text-white text-sm font-extrabold px-5 py-2 rounded-2xl shadow-[0_4px_15px_rgba(34,197,94,0.3)] hover:scale-105 transition-transform"
+                className="bg-slate-900 text-white text-[13px] font-extrabold px-5 py-2 rounded-full shadow-[0_4px_15px_rgba(15,23,42,0.2)] hover:shadow-[0_6px_20px_rgba(15,23,42,0.3)] transition-all"
               >
                 Offer
               </motion.button>
@@ -690,16 +698,20 @@ export default function SwapWishesPage() {
                 ));
               })()}
               {(wishesQuery.data?.items || []).length === 0 && (
-                <div className="text-center py-12">
-                  <Star className="w-10 h-10 mx-auto text-yellow-400 fill-yellow-400 mb-3" />
-                  <p className="font-semibold text-slate-900">No wishes yet</p>
-                  <p className="text-gray-400 text-sm mt-1">Be the first to post a wish!</p>
+                <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+                  <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <Star className="w-12 h-12 text-emerald-500 fill-emerald-500/20" />
+                  </div>
+                  <h3 className="text-xl font-extrabold text-slate-900 tracking-tight mb-2">No Wishes Yet</h3>
+                  <p className="text-slate-500 text-[15px] font-medium max-w-[260px] leading-relaxed mb-8">
+                    Be the first to let the community know what you're looking for.
+                  </p>
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setShowCreate(true)}
-                    className="mt-4 gradient-green text-white font-semibold px-6 py-2.5 rounded-2xl text-sm"
+                    className="flex items-center justify-center gap-2 w-full max-w-[240px] bg-emerald-500 text-white font-extrabold text-[15px] py-4 rounded-[20px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] hover:shadow-[0_12px_25px_rgba(16,185,129,0.35)] hover:-translate-y-0.5 transition-all"
                   >
-                    Post a Wish
+                    <Plus className="w-5 h-5" /> Post Your First Wish
                   </motion.button>
                 </div>
               )}
@@ -732,10 +744,21 @@ export default function SwapWishesPage() {
                   <SwapChain key={i} cycle={cycle} />
                 ))
               ) : (
-                <div className="text-center py-12">
-                  <Repeat className="w-10 h-10 mx-auto text-gray-400 mb-3" />
-                  <p className="font-semibold text-slate-900">No cycles found yet</p>
-                  <p className="text-gray-400 text-sm mt-1">Add more listings to enable multi-way swaps</p>
+                <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+                  <div className="w-24 h-24 bg-slate-100/80 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <Repeat className="w-12 h-12 text-slate-400" />
+                  </div>
+                  <h3 className="text-xl font-extrabold text-slate-900 tracking-tight mb-2">No Cycles Found Yet</h3>
+                  <p className="text-slate-500 text-[15px] font-medium max-w-[260px] leading-relaxed mb-8">
+                    Add more items to your profile to enable AI-powered multi-way swaps.
+                  </p>
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate("/post")}
+                    className="flex items-center justify-center gap-2 w-full max-w-[240px] bg-slate-900 text-white font-extrabold text-[15px] py-4 rounded-[20px] shadow-[0_8px_20px_rgba(15,23,42,0.25)] hover:shadow-[0_12px_25px_rgba(15,23,42,0.35)] hover:-translate-y-0.5 transition-all"
+                  >
+                    <Plus className="w-5 h-5" /> Add a Listing
+                  </motion.button>
                 </div>
               )}
             </motion.div>
