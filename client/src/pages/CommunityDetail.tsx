@@ -178,6 +178,7 @@ export default function CommunityDetailPage() {
   const [proposeWish, setProposeWish] = useState<any>(null);
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [showJoinCodeModal, setShowJoinCodeModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const myMembershipsQuery = trpc.communities.myMemberships.useQuery({ userId: user?.id }, { enabled: isAuthenticated && !!user?.id });
   const communityQuery = trpc.communities.get.useQuery({ id: communityId }, { enabled: !!communityId });
@@ -458,21 +459,51 @@ export default function CommunityDetailPage() {
               return <p className="text-slate-500 text-[14px] mt-4 font-medium leading-relaxed max-w-sm">{textToShow}</p>;
             })()}
 
-            <div className="w-full flex gap-3 mt-6">
+            <div className="w-full flex flex-col gap-3 mt-6">
               {community.creatorId === user?.id && (
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    toast("Are you sure you want to delete this community?", {
-                      id: "delete-community",
-                      action: { label: "Yes, Delete", onClick: () => deleteMutation.mutate({ id: communityId }, { onSuccess: () => { utils.communities.list.invalidate(); utils.communities.myMemberships.invalidate(); toast.success("Community deleted"); navigate("/communities"); } }) }
-                    });
-                  }}
-                  disabled={deleteMutation.isPending}
-                  className="flex-[0.4] py-3.5 rounded-[20px] text-[13px] font-extrabold bg-red-50 text-red-500 border border-red-100 shadow-sm"
-                >
-                  {deleteMutation.isPending ? "..." : "Delete Soko"}
-                </motion.button>
+                <div className="flex justify-center w-full relative h-[48px]">
+                  <AnimatePresence mode="wait">
+                    {!showDeleteConfirm ? (
+                      <motion.button
+                        key="init"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="absolute inset-0 mx-auto w-full max-w-[200px] h-full rounded-[20px] text-[13px] font-extrabold bg-red-50 text-red-500 border border-red-100 shadow-[0_4px_12px_rgba(239,68,68,0.1)] flex items-center justify-center transition-colors hover:bg-red-100"
+                      >
+                        Delete Soko
+                      </motion.button>
+                    ) : (
+                      <motion.div
+                        key="confirm"
+                        initial={{ opacity: 0, scale: 0.8, y: 5 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.8, y: 5 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        className="absolute inset-0 mx-auto w-full max-w-[260px] h-full flex items-center justify-center gap-2"
+                      >
+                        <motion.button
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => setShowDeleteConfirm(false)}
+                          className="flex-1 h-full rounded-[20px] text-[13px] font-extrabold bg-slate-100 text-slate-500 border border-slate-200 flex items-center justify-center"
+                        >
+                          Cancel
+                        </motion.button>
+                        <motion.button
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => deleteMutation.mutate({ id: communityId }, { onSuccess: () => { utils.communities.list.invalidate(); utils.communities.myMemberships.invalidate(); toast.success("Community deleted"); navigate("/communities"); } })}
+                          disabled={deleteMutation.isPending}
+                          className="flex-1 h-full rounded-[20px] text-[13px] font-extrabold bg-red-500 text-white shadow-[0_8px_20px_rgba(239,68,68,0.25)] flex items-center justify-center"
+                        >
+                          {deleteMutation.isPending ? "..." : "Are you sure?"}
+                        </motion.button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               )}
               {(!isJoined || community.creatorId !== user?.id) && (
                 <motion.button
@@ -485,7 +516,7 @@ export default function CommunityDetailPage() {
                      }
                   }}
                   disabled={joinMutation.isPending || leaveMutation.isPending || (hasRequested && community.type === "private")}
-                  className={`flex-1 py-3.5 rounded-[20px] text-[14px] font-extrabold shadow-[0_8px_20px_rgba(0,0,0,0.1)] transition-all ${
+                  className={`w-full py-3.5 rounded-[20px] text-[14px] font-extrabold shadow-[0_8px_20px_rgba(0,0,0,0.1)] transition-all flex items-center justify-center ${
                     isJoined || (hasRequested && community.type === "private")
                       ? "bg-slate-100 text-slate-700 hover:bg-slate-200 shadow-none border border-slate-200"
                       : "bg-slate-900 text-white hover:bg-black"
