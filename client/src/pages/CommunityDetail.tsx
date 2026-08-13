@@ -179,6 +179,7 @@ export default function CommunityDetailPage() {
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [showJoinCodeModal, setShowJoinCodeModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [postType, setPostType] = useState('question');
 
   const myMembershipsQuery = trpc.communities.myMemberships.useQuery({ userId: user?.id }, { enabled: isAuthenticated && !!user?.id });
   const communityQuery = trpc.communities.get.useQuery({ id: communityId }, { enabled: !!communityId });
@@ -762,7 +763,6 @@ export default function CommunityDetailPage() {
                 <>
                   {isJoined && (
                     <div className="bg-white rounded-[32px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 mb-6 relative overflow-hidden">
-                      <div className="absolute top-0 left-0 right-0 h-1.5 bg-[linear-gradient(90deg,#3B82F6_0%,#10B981_100%)] opacity-80" />
                       <div className="flex items-center gap-3 mb-5 mt-1">
                         <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500">
                           <BookOpen className="w-5 h-5" />
@@ -774,10 +774,9 @@ export default function CommunityDetailPage() {
                         const target = e.target as HTMLFormElement;
                         const title = (target.elements.namedItem('title') as HTMLInputElement).value;
                         const content = (target.elements.namedItem('content') as HTMLInputElement).value;
-                        const type = (target.elements.namedItem('type') as HTMLSelectElement)?.value || 'question';
                         
                         if (!title || !content) return toast.error("Fill in all fields");
-                        createPostMutation.mutate({ communityId, userId: user?.id, title, content, type }, {
+                        createPostMutation.mutate({ communityId, userId: user?.id, title, content, type: postType }, {
                           onSuccess: () => {
                             toast.success("Posted!");
                             target.reset();
@@ -790,15 +789,34 @@ export default function CommunityDetailPage() {
                         
                         <div className="flex justify-between items-center pt-3 gap-3">
                           {isAdmin ? (
-                            <div className="relative flex-1 max-w-[200px]">
-                              <select name="type" className="w-full text-[13px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 rounded-full pl-4 pr-10 py-3 outline-none cursor-pointer hover:bg-slate-200 transition-colors appearance-none">
-                                <option value="announcement">📢 Announcement</option>
-                                <option value="question">💬 Discussion</option>
-                              </select>
-                              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
+                            <div className="flex bg-slate-100 p-1 rounded-full relative">
+                              <motion.div
+                                layoutId="postTypeBg"
+                                className="absolute bg-white rounded-full shadow-sm"
+                                style={{
+                                  inset: "4px",
+                                  width: "calc(50% - 4px)",
+                                  left: postType === 'question' ? '4px' : '50%'
+                                }}
+                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setPostType('question')}
+                                className={`relative z-10 px-4 py-2 text-[12px] font-extrabold rounded-full transition-colors flex items-center gap-1.5 w-full justify-center ${postType === 'question' ? 'text-slate-900' : 'text-slate-500'}`}
+                              >
+                                💬 Discussion
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setPostType('announcement')}
+                                className={`relative z-10 px-4 py-2 text-[12px] font-extrabold rounded-full transition-colors flex items-center gap-1.5 w-full justify-center ${postType === 'announcement' ? 'text-orange-600' : 'text-slate-500'}`}
+                              >
+                                📢 Announcement
+                              </button>
                             </div>
                           ) : (
-                            <input type="hidden" name="type" value="question" />
+                            <div />
                           )}
                           <motion.button whileTap={{ scale: 0.95 }} type="submit" disabled={createPostMutation.isPending} className={`ml-auto bg-slate-900 text-white px-8 py-3.5 rounded-[20px] text-[14px] font-extrabold shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:bg-black transition-all flex items-center justify-center gap-2 ${isAdmin ? "" : "w-full sm:w-auto"}`}>
                              {createPostMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Post Now"}
@@ -835,9 +853,13 @@ export default function CommunityDetailPage() {
                           
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-[14px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[15px] font-extrabold text-slate-900 shadow-sm">
-                                {(post.profiles?.name || post.user?.name || "U")[0].toUpperCase()}
-                              </div>
+                              {post.profiles?.avatar ? (
+                                <img src={post.profiles.avatar} className="w-10 h-10 rounded-[14px] object-cover border border-slate-100 shadow-sm" alt="Avatar" />
+                              ) : (
+                                <div className="w-10 h-10 rounded-[14px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[15px] font-extrabold text-slate-900 shadow-sm">
+                                  {(post.profiles?.name || post.user?.name || "U")[0].toUpperCase()}
+                                </div>
+                              )}
                               <div>
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-[14px] font-bold text-slate-900">
@@ -901,8 +923,16 @@ export default function CommunityDetailPage() {
                                 {(post.communityPostReplies || []).map((reply: any) => (
                                   <div key={reply.id} className="bg-slate-50 rounded-[20px] p-4 border border-slate-100">
                                     <div className="flex items-center justify-between mb-2">
-                                      <div className="flex items-center gap-1.5">
-                                        <p className="text-[13px] font-bold text-slate-700">@{(() => {
+                                      <div className="flex items-center gap-2">
+                                        {reply.profiles?.avatar ? (
+                                          <img src={reply.profiles.avatar} className="w-6 h-6 rounded-full object-cover border border-slate-200" alt="Avatar" />
+                                        ) : (
+                                          <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-extrabold text-slate-700">
+                                            {(reply.profiles?.name || reply.user?.name || "U")[0].toUpperCase()}
+                                          </div>
+                                        )}
+                                        <div className="flex items-center gap-1.5">
+                                          <p className="text-[13px] font-bold text-slate-700">@{(() => {
                                           try {
                                             const n = reply.profiles?.name || reply.user?.name;
                                             let uni: any = {};
