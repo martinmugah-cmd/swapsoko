@@ -77,7 +77,7 @@ function BottomNav() {
   };
 
   // Hide bottom nav on certain pages
-  const hideNav = location === "/post" || location === "/edit-profile" || location === "/swap-guru" || (location.startsWith("/profile/") && location.length > 9);
+  const hideNav = location === "/post" || location === "/edit-profile" || location === "/swap-guru" || location.startsWith('/communities/') || (location.startsWith("/profile/") && location.length > 9);
 
   if (hideNav) return null;
 
@@ -324,7 +324,7 @@ function Router() {
 
   if (loading) return null;
   const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
-  const hideNav = isPreview || location === "/login" || location === "/onboarding" || (location.startsWith("/profile/") && location !== `/profile/${user?.id}`);
+  const hideNav = isPreview || location === "/login" || location === "/onboarding" || location.startsWith('/communities/') || (location.startsWith("/profile/") && location !== `/profile/${user?.id}`);
   
   return (
     <div className="app-container">

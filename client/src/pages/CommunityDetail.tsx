@@ -48,59 +48,85 @@ function EditCommunityModal({ community, onClose }: { community: any, onClose: (
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end"
+      className="fixed inset-0 bg-slate-900/30 backdrop-blur-md z-[1050] flex items-end sm:items-center justify-center sm:p-4"
       onClick={onClose}
     >
       <motion.div
         initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="bg-white w-full max-w-[480px] mx-auto rounded-t-[32px] p-5 pb-28"
+        className="w-full max-w-[480px] mx-auto bg-white rounded-t-[40px] sm:rounded-[40px] p-7 pb-10 shadow-[0_-20px_60px_rgba(0,0,0,0.1)] relative overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4" />
-        <h3 className="font-bold text-slate-900 text-lg">Edit Soko</h3>
+        <div className="absolute top-0 left-0 right-0 h-32 bg-[linear-gradient(120deg,#e0c3fc_0%,#8ec5fc_100%)] opacity-20 pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white pointer-events-none" />
         
-        <div className="mt-4 space-y-4">
+        <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6 relative z-10" />
+        
+        <div className="flex items-center gap-5 mb-8 relative z-10">
+          <motion.div 
+            animate={{ y: [0, -4, 0] }} 
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="w-16 h-16 bg-white border border-slate-100 rounded-[20px] flex items-center justify-center shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
+          >
+            <Edit2 className="w-8 h-8 text-emerald-500" />
+          </motion.div>
           <div>
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Icon</label>
-            <div className="flex gap-2 mt-2 overflow-x-auto pb-2 scrollbar-hide">
+            <h3 className="font-extrabold text-[26px] text-slate-900 tracking-tight leading-none">Edit Soko</h3>
+            <p className="text-[15px] text-slate-500 font-medium mt-1">Update community details</p>
+          </div>
+        </div>
+        
+        <div className="space-y-6 relative z-10">
+          <div>
+            <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Soko Icon</label>
+            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x -mx-7 px-7">
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => fileInputRef.current?.click()}
-                className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
-                  icon && icon.startsWith('data:image') ? "bg-green-500/10 border-2 border-green-500 text-green-500" : "bg-gray-100 border-2 border-transparent text-gray-500"
+                className={`w-16 h-16 rounded-[20px] flex items-center justify-center flex-shrink-0 snap-center shadow-sm transition-all duration-300 ${
+                  icon && icon.startsWith('data:image') ? "bg-emerald-50 border border-emerald-500 text-emerald-600 shadow-[0_4px_20px_rgba(16,185,129,0.2)]" : "bg-slate-50 border border-slate-200 border-dashed text-slate-400 hover:border-slate-300"
                 }`}
               >
-                {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : icon && icon.startsWith('data:image') ? <img src={icon} className="w-full h-full object-cover rounded-xl" /> : <ImageIcon className="w-5 h-5" />}
-              </button>
+                {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : icon && icon.startsWith('data:image') ? <img src={icon} className="w-full h-full object-cover rounded-[20px]" /> : <ImageIcon className="w-7 h-7" />}
+              </motion.button>
               {ICONS.map(i => {
                 const IconComp = { Users, GraduationCap, Laptop: Cpu, BookOpen, Gamepad2, Stethoscope, Camera, Home }[i] || Users;
+                const isSelected = icon === i;
                 return (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     key={i}
                     onClick={() => setIcon(i)}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
-                      icon === i ? "bg-green-500/10 border-2 border-green-500 text-green-500" : "bg-gray-100 border-2 border-transparent text-gray-500"
+                    className={`w-16 h-16 rounded-[20px] flex items-center justify-center flex-shrink-0 snap-center shadow-sm transition-all duration-300 relative ${
+                      isSelected ? "bg-emerald-50 border border-emerald-500 text-emerald-600" : "bg-slate-50 border border-slate-100 text-slate-500 hover:bg-slate-100"
                     }`}
                   >
-                    <IconComp className="w-5 h-5" />
-                  </button>
+                    {isSelected && <motion.div layoutId="editIconHighlight" className="absolute inset-0 rounded-[20px] shadow-[0_4px_20px_rgba(16,185,129,0.2)]" />}
+                    <IconComp className="w-7 h-7 relative z-10" />
+                  </motion.button>
                 );
               })}
             </div>
           </div>
           <div>
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Soko Name</label>
-            <input value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 border border-gray-200 rounded-3xl px-3 py-2.5 text-sm outline-none focus:border-green-500" />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Description</label>
-            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} className="w-full mt-1 border border-gray-200 rounded-3xl px-3 py-2.5 text-sm outline-none focus:border-green-500 resize-none" />
+            <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Name & Description</label>
+            <div className="space-y-3">
+              <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Vintage Fashion KE" className="w-full border border-slate-200 rounded-[20px] px-5 py-4 text-[16px] outline-none focus:border-emerald-500 focus:bg-white focus:ring-[3px] focus:ring-emerald-50 font-bold transition-all bg-slate-50 text-slate-900 placeholder-slate-400 shadow-inner" />
+              <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="What is this community about?" rows={3} className="w-full border border-slate-200 rounded-[20px] px-5 py-4 text-[16px] outline-none focus:border-emerald-500 focus:bg-white focus:ring-[3px] focus:ring-emerald-50 font-medium transition-all bg-slate-50 text-slate-900 placeholder-slate-400 resize-none shadow-inner" />
+            </div>
           </div>
         </div>
 
-        <motion.button whileTap={{ scale: 0.97 }} onClick={handleSubmit} disabled={updateMutation.isPending} className="w-full mt-6 gradient-green text-white font-bold py-3.5 rounded-3xl text-sm">
-          {updateMutation.isPending ? "Saving..." : "Save Changes"}
+        <motion.button 
+          whileTap={{ scale: 0.98 }}
+          onClick={handleSubmit} 
+          disabled={updateMutation.isPending} 
+          className="w-full mt-8 bg-slate-900 text-white font-extrabold py-5 rounded-[24px] shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:bg-black hover:shadow-[0_12px_25px_rgba(0,0,0,0.2)] transition-all flex items-center justify-center gap-2 relative z-10 text-[16px]"
+        >
+          {updateMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Check className="w-5 h-5" /> Save Changes</>}
         </motion.button>
       </motion.div>
     </motion.div>
@@ -704,9 +730,14 @@ export default function CommunityDetailPage() {
               ) : (
                 <>
                   {isJoined && (
-                    <div className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-50 mb-6 relative overflow-hidden">
-                      <div className="absolute top-0 left-0 w-full h-1.5 gradient-green" />
-                      <p className="font-extrabold text-slate-900 text-[17px] mb-4 mt-1">Post to Community</p>
+                    <div className="bg-white rounded-[32px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 mb-6 relative overflow-hidden">
+                      <div className="absolute top-0 left-0 right-0 h-1.5 bg-[linear-gradient(90deg,#3B82F6_0%,#10B981_100%)] opacity-80" />
+                      <div className="flex items-center gap-3 mb-5 mt-1">
+                        <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500">
+                          <BookOpen className="w-5 h-5" />
+                        </div>
+                        <p className="font-extrabold text-slate-900 text-[18px]">Post to Community</p>
+                      </div>
                       <form onSubmit={(e) => {
                         e.preventDefault();
                         const target = e.target as HTMLFormElement;
@@ -722,21 +753,25 @@ export default function CommunityDetailPage() {
                             utils.communityPosts.list.invalidate();
                           }
                         });
-                      }} className="space-y-4">
-                        <input name="title" placeholder="Title" className="w-full text-[14px] font-semibold bg-gray-50 border border-transparent rounded-2xl px-4 py-3 focus:outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:text-gray-400" />
-                        <textarea name="content" placeholder="Write something..." className="w-full text-[14px] font-medium bg-gray-50 border border-transparent rounded-2xl px-4 py-3 focus:outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:text-gray-400 resize-none h-24" />
-                        <div className="flex justify-between items-center pt-2">
+                      }} className="space-y-3">
+                        <input name="title" placeholder="What's on your mind?" className="w-full text-[15px] font-bold bg-slate-50 border border-slate-100 rounded-[20px] px-5 py-4 focus:outline-none focus:bg-white focus:border-emerald-500 focus:ring-[3px] focus:ring-emerald-50 transition-all placeholder:text-slate-400 shadow-inner text-slate-900" />
+                        <textarea name="content" placeholder="Add more details..." className="w-full text-[15px] font-medium bg-slate-50 border border-slate-100 rounded-[20px] px-5 py-4 focus:outline-none focus:bg-white focus:border-emerald-500 focus:ring-[3px] focus:ring-emerald-50 transition-all placeholder:text-slate-400 resize-none h-28 shadow-inner text-slate-900 leading-relaxed" />
+                        
+                        <div className="flex justify-between items-center pt-3 gap-3">
                           {isAdmin ? (
-                            <select name="type" className="text-[12px] font-extrabold text-gray-600 bg-gray-100 border-none rounded-full px-4 py-2 outline-none cursor-pointer hover:bg-gray-200 transition-colors">
-                              <option value="announcement">Announcement</option>
-                              <option value="question">Question</option>
-                            </select>
+                            <div className="relative flex-1 max-w-[200px]">
+                              <select name="type" className="w-full text-[13px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 rounded-full pl-4 pr-10 py-3 outline-none cursor-pointer hover:bg-slate-200 transition-colors appearance-none">
+                                <option value="announcement">📢 Announcement</option>
+                                <option value="question">💬 Discussion</option>
+                              </select>
+                              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
+                            </div>
                           ) : (
                             <input type="hidden" name="type" value="question" />
                           )}
-                          <button type="submit" disabled={createPostMutation.isPending} className="bg-green-500 text-white px-6 py-2.5 rounded-2xl text-sm font-extrabold shadow-[0_4px_15px_rgba(34,197,94,0.3)] hover:scale-105 transition-transform">
-                            Post
-                          </button>
+                          <motion.button whileTap={{ scale: 0.95 }} type="submit" disabled={createPostMutation.isPending} className={`ml-auto bg-slate-900 text-white px-8 py-3.5 rounded-[20px] text-[14px] font-extrabold shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:bg-black transition-all flex items-center justify-center gap-2 ${isAdmin ? "" : "w-full sm:w-auto"}`}>
+                             {createPostMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Post Now"}
+                          </motion.button>
                         </div>
                       </form>
                     </div>
