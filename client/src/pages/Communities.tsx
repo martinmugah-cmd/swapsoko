@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef } from "react";
-import { ChevronLeft, Search, Users, Cpu, BookOpen, Gamepad2, Camera, Home, Stethoscope, GraduationCap, Plus, Check, Loader2, Image as ImageIcon, Heart } from "lucide-react";
+import { ChevronLeft, Search, Users, Cpu, BookOpen, Gamepad2, Camera, Home, Stethoscope, GraduationCap, Plus, Check, Loader2, Image as ImageIcon, Heart, Lock } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -338,133 +338,192 @@ export default function CommunitiesPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-[#F5F5F7] text-slate-900 bottom-nav-safe selection:bg-emerald-500/20 font-sans"
+      className="min-h-screen bg-[#F8FAFC] text-slate-900 bottom-nav-safe selection:bg-emerald-500/20 font-sans"
     >
-      {/* iOS 26 style Dynamic Header & Search */}
-      <div className="sticky top-0 z-40 px-4 pt-4 pb-3 bg-[#F5F5F7]/80 backdrop-blur-3xl border-b border-black/[0.02]">
-        <div className="flex items-center justify-between mb-4">
-          <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-full bg-black/5 hover:bg-black/10 transition-colors">
-            <ChevronLeft className="w-5 h-5 text-slate-900" />
-          </button>
-          <h1 className="font-bold text-slate-900 text-lg tracking-tight">Soko</h1>
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setShowCreate(true)}
-            className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20 hover:bg-emerald-600 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-          </motion.button>
-        </div>
-        
-        <div className="relative group">
-          <div className="relative flex items-center gap-3 bg-black/5 border border-transparent rounded-2xl px-4 py-3.5 transition-all group-focus-within:bg-white group-focus-within:border-black/10 group-focus-within:shadow-sm">
-            <Search className="w-5 h-5 text-slate-400 group-focus-within:text-slate-600 transition-colors" />
+      {/* Dynamic Floating Header */}
+      <div className="sticky top-0 z-40 px-4 pt-4 pb-2">
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="flex items-center justify-between bg-white/70 backdrop-blur-3xl border border-white/50 shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-[24px] px-4 py-3"
+        >
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100/50 hover:bg-slate-200/80 transition-colors">
+              <ChevronLeft className="w-5 h-5 text-slate-900" />
+            </button>
+            <h1 className="font-extrabold text-slate-900 text-[20px] tracking-tight">Soko</h1>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setShowCreate(true)}
+              className="px-4 py-2.5 rounded-full bg-slate-900 text-white flex items-center gap-2 shadow-[0_8px_20px_rgba(0,0,0,0.12)] hover:bg-black transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="text-[13px] font-bold">New</span>
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+
+      <div className="px-4 py-4 pb-32 space-y-5">
+        {/* Search Bar - Floating */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 25 }}
+          className="relative group"
+        >
+          <div className="absolute inset-0 bg-emerald-500/5 rounded-3xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+          <div className="relative flex items-center gap-3 bg-white border border-slate-100 rounded-[24px] px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.03)] transition-all group-focus-within:shadow-[0_8px_30px_rgba(0,0,0,0.08)] group-focus-within:border-emerald-100">
+            <Search className="w-6 h-6 text-slate-300 group-focus-within:text-emerald-500 transition-colors" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search communities..."
-              className="flex-1 bg-transparent text-[15px] font-medium text-slate-900 placeholder-slate-400 outline-none"
+              className="flex-1 bg-transparent text-[16px] font-semibold text-slate-900 placeholder-slate-400 outline-none"
             />
           </div>
-        </div>
-      </div>
+        </motion.div>
 
-      <div className="px-4 py-6 pb-28 space-y-4">
-        {/* Featured Banner - Clean, soft iridescent light card */}
+        {/* Breathtaking Animated Mesh Gradient Banner */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-[28px] p-6 shadow-[0_20px_40px_rgba(0,0,0,0.04)] bg-white border border-black/[0.02]"
+          transition={{ delay: 0.2, type: "spring", stiffness: 300, damping: 25 }}
+          className="relative overflow-hidden rounded-[32px] p-7 shadow-[0_20px_40px_rgba(0,0,0,0.06)] border border-white/60 bg-white group cursor-pointer"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-emerald-50/50 -z-20" />
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,#fdfbfb_0%,#ebedee_100%)] opacity-50" />
+          
+          {/* Animated blobs */}
           <motion.div 
-            animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }} 
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-100 rounded-full blur-[40px] -z-10 pointer-events-none" 
+            animate={{ 
+              scale: [1, 1.2, 1],
+              x: [0, 20, 0],
+              y: [0, -20, 0]
+            }} 
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-10 -right-10 w-48 h-48 bg-emerald-200/50 rounded-full blur-[40px] pointer-events-none" 
+          />
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.3, 1],
+              x: [0, -30, 0],
+              y: [0, 20, 0]
+            }} 
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute -bottom-10 -left-10 w-56 h-56 bg-blue-100/50 rounded-full blur-[50px] pointer-events-none" 
           />
           
           <div className="flex items-center justify-between relative z-10">
-            <div>
-              <p className="text-slate-900 font-extrabold text-[20px] tracking-tight">Your Campus Hub</p>
-              <p className="text-emerald-600 font-semibold text-[13px] mt-1">Connect with students near you</p>
+            <div className="pr-4">
+              <span className="inline-block px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-[10px] font-bold tracking-widest uppercase mb-3">Featured</span>
+              <p className="text-slate-900 font-extrabold text-[24px] tracking-tight leading-tight">Your Campus Hub</p>
+              <p className="text-slate-500 font-medium text-[14px] mt-1.5 leading-relaxed">Connect, trade, and vibe with verified students near you.</p>
             </div>
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <Users className="w-7 h-7 text-white" />
+            <div className="w-16 h-16 shrink-0 rounded-[20px] bg-white/80 backdrop-blur-md flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.08)] border border-white/50 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+              <Users className="w-8 h-8 text-emerald-500" />
             </div>
           </div>
         </motion.div>
 
         {/* Community List */}
-        <AnimatePresence>
-          {filtered.map((community: any, i: number) => {
-            const isJoined = allJoined.has(community.id);
-              const IconComp = ({ Users, GraduationCap, Laptop: Cpu, BookOpen, Gamepad2, Stethoscope, Camera, Home } as any)[community.icon] || Users;
-              return (
-                <motion.div
-                  key={community.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
-                  className="bg-white rounded-[24px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-black/[0.02] flex items-center gap-4 cursor-pointer group hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all"
-                  onClick={() => navigate(`/communities/${community.id}`)}
-                >
-                  <div className="w-12 h-12 rounded-2xl bg-[#F5F5F7] flex items-center justify-center text-slate-700 overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
-                    {community.icon?.startsWith("data:image") || community.icon?.startsWith("http") ? (
-                      <img src={community.icon} className="w-full h-full object-cover" />
-                    ) : (
-                      <IconComp className="w-6 h-6" />
-                    )}
-                  </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-slate-900 text-[15px] truncate tracking-tight">{community.name}</p>
-                  <p className="text-[13px] text-slate-500 mt-0.5 line-clamp-1 font-medium leading-relaxed">
-                    {(() => {
-                      try {
-                        const parsed = JSON.parse(community.description || "{}");
-                        return parsed.text !== undefined ? parsed.text : community.description;
-                      } catch(e) {
-                        return community.description;
-                      }
-                    })()}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                      <span className="text-slate-700">{community.memberCount || 0}</span> MEMBERS
-                    </span>
-                    {community.type === "public" && (
-                      <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-widest">Public</span>
-                    )}
-                  </div>
-                </div>
-                {community.creatorId !== user?.id && (
-                  <div className="flex flex-col gap-2 items-center">
-                    <motion.button
-                      whileTap={{ scale: 0.9 }}
-                      onClick={(e) => handleJoin(e, community)}
-                      className={`px-4 py-2 rounded-full text-[12px] font-bold transition-all shadow-sm ${
-                        isJoined
-                          ? "bg-black/5 text-slate-900"
-                          : community.type === "private"
-                          ? "bg-slate-900 text-white"
-                          : "bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600"
-                      }`}
-                    >
-                      {isJoined ? <><Check className="w-3 h-3 inline mr-1 -mt-0.5" /> Joined</> : community.type === "private" ? "Request" : "Join"}
-                    </motion.button>
-                  </div>
-                )}
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
+        <div className="flex flex-col gap-4 pt-2">
+          <AnimatePresence>
+            {filtered.map((community: any, i: number) => {
+              const isJoined = allJoined.has(community.id);
+                const IconComp = ({ Users, GraduationCap, Laptop: Cpu, BookOpen, Gamepad2, Stethoscope, Camera, Home } as any)[community.icon] || Users;
+                return (
+                  <motion.div
+                    key={community.id}
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ delay: 0.1 + (i * 0.05), type: "spring", stiffness: 300, damping: 25 }}
+                    className="bg-white rounded-[28px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-100 flex flex-col gap-4 cursor-pointer group hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:border-emerald-100 transition-all duration-300 relative overflow-hidden"
+                    onClick={() => navigate(`/communities/${community.id}`)}
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-slate-50 to-transparent rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    <div className="flex items-center gap-4 relative z-10">
+                      <div className="w-14 h-14 rounded-[20px] bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700 overflow-hidden shrink-0 group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
+                        {community.icon?.startsWith("data:image") || community.icon?.startsWith("http") ? (
+                          <img src={community.icon} className="w-full h-full object-cover" />
+                        ) : (
+                          <IconComp className="w-7 h-7 text-slate-700" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-extrabold text-slate-900 text-[17px] truncate tracking-tight group-hover:text-emerald-600 transition-colors">{community.name}</p>
+                        <p className="text-[14px] text-slate-500 mt-0.5 line-clamp-1 font-medium leading-relaxed">
+                          {(() => {
+                            try {
+                              const parsed = JSON.parse(community.description || "{}");
+                              return parsed.text !== undefined ? parsed.text : community.description;
+                            } catch(e) {
+                              return community.description;
+                            }
+                          })()}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-50 relative z-10">
+                      <div className="flex items-center gap-2">
+                        <div className="flex -space-x-2">
+                          {[1,2,3].map(n => (
+                             <div key={n} className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center overflow-hidden">
+                                <Users className="w-3 h-3 text-slate-400" />
+                             </div>
+                          ))}
+                        </div>
+                        <span className="text-[12px] font-bold text-slate-400 ml-1">
+                          <span className="text-slate-700">{community.memberCount || 0}</span> members
+                        </span>
+                      </div>
+                      
+                      {community.creatorId !== user?.id && (
+                        <motion.button
+                          whileTap={{ scale: 0.9 }}
+                          onClick={(e) => handleJoin(e, community)}
+                          className={`px-5 py-2.5 rounded-full text-[13px] font-bold transition-all shadow-sm flex items-center gap-1.5 ${
+                            isJoined
+                              ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                              : community.type === "private"
+                              ? "bg-slate-900 text-white hover:bg-black hover:shadow-lg"
+                              : "bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600 hover:shadow-emerald-500/30"
+                          }`}
+                        >
+                          {isJoined ? <><Check className="w-3.5 h-3.5" /> Joined</> : community.type === "private" ? "Request" : "Join"}
+                        </motion.button>
+                      )}
+                    </div>
+                  </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
 
         {filtered.length === 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 flex flex-col items-center">
-            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
-               <Search className="w-8 h-8 text-slate-300" />
-            </div>
-            <p className="font-bold text-slate-900 text-[17px] tracking-tight">No communities found</p>
-            <p className="text-slate-500 text-[14px] mt-1 font-medium">Try a different search term</p>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            transition={{ type: "spring", damping: 20 }}
+            className="text-center py-24 flex flex-col items-center bg-white rounded-[32px] border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] mt-4"
+          >
+            <motion.div 
+              animate={{ y: [0, -10, 0] }} 
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="w-24 h-24 bg-slate-50 rounded-[24px] flex items-center justify-center mb-6 shadow-inner border border-slate-100"
+            >
+               <Search className="w-10 h-10 text-slate-300" />
+            </motion.div>
+            <p className="font-extrabold text-slate-900 text-[20px] tracking-tight">Nothing found</p>
+            <p className="text-slate-500 text-[15px] mt-2 font-medium max-w-[200px]">Try searching for something else, or create a new Soko.</p>
+            <button onClick={() => setShowCreate(true)} className="mt-8 px-6 py-3 rounded-full bg-slate-100 text-slate-900 font-bold hover:bg-slate-200 transition-colors">
+              Create a Soko
+            </button>
           </motion.div>
         )}
       </div>
@@ -474,22 +533,25 @@ export default function CommunitiesPage() {
         {showJoinCodeModal && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[1050] flex items-center justify-center p-4"
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[1050] flex items-center justify-center p-4"
             onClick={() => setShowJoinCodeModal(null)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.8, opacity: 0, y: 30 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.8, opacity: 0, y: 30 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="w-full max-w-sm rounded-[32px] p-7 shadow-[0_40px_80px_rgba(0,0,0,0.12)] border border-black/[0.04] bg-white relative overflow-hidden"
+              className="w-full max-w-sm rounded-[36px] p-8 shadow-[0_40px_80px_rgba(0,0,0,0.2)] border border-white bg-white relative overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              <h3 className="font-bold text-slate-900 text-xl text-center mb-2 tracking-tight">Join {showJoinCodeModal.name}</h3>
-              <p className="text-slate-500 text-sm text-center mb-6 font-medium leading-relaxed">Enter the invite code to join this private community.</p>
+              <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-slate-100 shadow-sm">
+                 <Lock className="w-7 h-7 text-slate-700" />
+              </div>
+              <h3 className="font-extrabold text-slate-900 text-[22px] text-center mb-2 tracking-tight">Private Soko</h3>
+              <p className="text-slate-500 text-[15px] text-center mb-8 font-medium leading-relaxed px-4">Enter the invite code to join <span className="font-bold text-slate-700">{showJoinCodeModal.name}</span>.</p>
               
               <input
                 id="joinCodeInput"
-                placeholder="Invite Code"
-                className="w-full bg-[#F5F5F7] border border-transparent rounded-2xl px-4 py-4 text-center text-lg outline-none focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 uppercase font-bold tracking-[0.2em] mb-6 text-slate-900 placeholder-slate-400 transition-all"
+                placeholder="INVITE CODE"
+                className="w-full bg-[#F8FAFC] border border-slate-100 rounded-[20px] px-4 py-5 text-center text-[18px] outline-none focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 uppercase font-extrabold tracking-[0.3em] mb-8 text-slate-900 placeholder-slate-300 transition-all shadow-inner"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -499,8 +561,8 @@ export default function CommunitiesPage() {
               />
               
               <div className="flex gap-3 relative z-10">
-                <button onClick={() => setShowJoinCodeModal(null)} className="flex-1 py-4 rounded-2xl text-[14px] font-bold bg-[#F5F5F7] hover:bg-gray-200 text-slate-700 transition-colors">Cancel</button>
-                <button onClick={() => handleJoinWithCode((document.getElementById('joinCodeInput') as HTMLInputElement)?.value)} className="flex-1 py-4 rounded-2xl text-[14px] font-bold bg-slate-900 hover:bg-black text-white shadow-lg shadow-black/10 transition-all">Join</button>
+                <button onClick={() => setShowJoinCodeModal(null)} className="flex-1 py-4 rounded-[20px] text-[15px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">Cancel</button>
+                <button onClick={() => handleJoinWithCode((document.getElementById('joinCodeInput') as HTMLInputElement)?.value)} className="flex-1 py-4 rounded-[20px] text-[15px] font-bold bg-slate-900 hover:bg-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.15)] transition-all">Join</button>
               </div>
             </motion.div>
           </motion.div>
