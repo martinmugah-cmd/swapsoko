@@ -853,8 +853,8 @@ export default function CommunityDetailPage() {
                           
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
-                              {post.profiles?.avatar ? (
-                                <img src={post.profiles.avatar} className="w-10 h-10 rounded-[14px] object-cover border border-slate-100 shadow-sm" alt="Avatar" />
+                              {(post.profiles?.avatarUrl || post.user?.avatar_url) ? (
+                                <img src={post.profiles?.avatarUrl || post.user?.avatar_url} className="w-10 h-10 rounded-[14px] object-cover border border-slate-100 shadow-sm" alt="Avatar" />
                               ) : (
                                 <div className="w-10 h-10 rounded-[14px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[15px] font-extrabold text-slate-900 shadow-sm">
                                   {(post.profiles?.name || post.user?.name || "U")[0].toUpperCase()}
@@ -924,8 +924,8 @@ export default function CommunityDetailPage() {
                                   <div key={reply.id} className="bg-slate-50 rounded-[20px] p-4 border border-slate-100">
                                     <div className="flex items-center justify-between mb-2">
                                       <div className="flex items-center gap-2">
-                                        {reply.profiles?.avatar ? (
-                                          <img src={reply.profiles.avatar} className="w-6 h-6 rounded-full object-cover border border-slate-200" alt="Avatar" />
+                                        {(reply.profiles?.avatarUrl || reply.user?.avatar_url) ? (
+                                          <img src={reply.profiles?.avatarUrl || reply.user?.avatar_url} className="w-6 h-6 rounded-full object-cover border border-slate-200" alt="Avatar" />
                                         ) : (
                                           <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-extrabold text-slate-700">
                                             {(reply.profiles?.name || reply.user?.name || "U")[0].toUpperCase()}

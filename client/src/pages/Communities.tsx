@@ -234,6 +234,75 @@ function CreateSokoModal({ onClose, myProfile }: { onClose: () => void; myProfil
   );
 }
 
+const SokoCard = ({ community, i, isJoined, navigate, user, handleJoin }: any) => {
+  const IconComp = ({ Users, GraduationCap, Laptop: Cpu, BookOpen, Gamepad2, Stethoscope, Camera, Home } as any)[community.icon] || Users;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: 0.1 + (i * 0.05), type: "spring", stiffness: 300, damping: 25 }}
+      className="bg-white rounded-[28px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-100 flex flex-col gap-4 cursor-pointer group hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:border-emerald-100 transition-all duration-300 relative overflow-hidden"
+      onClick={() => navigate(`/communities/${community.id}`)}
+    >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-slate-50 to-transparent rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      <div className="flex items-center gap-4 relative z-10">
+        <div className="w-14 h-14 rounded-[20px] bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700 overflow-hidden shrink-0 group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
+          {community.icon?.startsWith("data:image") || community.icon?.startsWith("http") ? (
+            <img src={community.icon} className="w-full h-full object-cover" />
+          ) : (
+            <IconComp className="w-7 h-7 text-slate-700" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-extrabold text-slate-900 text-[17px] truncate tracking-tight group-hover:text-emerald-600 transition-colors">{community.name}</p>
+          <p className="text-[14px] text-slate-500 mt-0.5 line-clamp-1 font-medium leading-relaxed">
+            {(() => {
+              try {
+                const parsed = JSON.parse(community.description || "{}");
+                return parsed.text !== undefined ? parsed.text : community.description;
+              } catch(e) {
+                return community.description;
+              }
+            })()}
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-between pt-3 border-t border-slate-50 relative z-10">
+        <div className="flex items-center gap-2">
+          <div className="flex -space-x-2">
+            {[1,2,3].map(n => (
+               <div key={n} className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center overflow-hidden">
+                  <Users className="w-3 h-3 text-slate-400" />
+               </div>
+            ))}
+          </div>
+          <span className="text-[12px] font-bold text-slate-400 ml-1">
+            <span className="text-slate-700">{community.memberCount || 0}</span> members
+          </span>
+        </div>
+        
+        {community.creatorId !== user?.id && (
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={(e) => handleJoin(e, community)}
+            className={`px-5 py-2.5 rounded-full text-[13px] font-bold transition-all shadow-sm flex items-center gap-1.5 ${
+              isJoined
+                ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : community.type === "private"
+                ? "bg-slate-900 text-white hover:bg-black hover:shadow-lg"
+                : "bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600 hover:shadow-emerald-500/30"
+            }`}
+          >
+            {isJoined ? <><Check className="w-3.5 h-3.5" /> Joined</> : community.type === "private" ? "Request" : "Join"}
+          </motion.button>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
 import { useAppStore } from "@/store";
 
 export default function CommunitiesPage() {
@@ -267,6 +336,8 @@ export default function CommunitiesPage() {
     (c.description || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const joinedSokos = filtered.filter((c: any) => allJoined.has(c.id));
+  const discoverSokos = filtered.filter((c: any) => !allJoined.has(c.id));
 
 
   const handleJoin = (e: React.MouseEvent, community: any) => {
@@ -445,79 +516,28 @@ export default function CommunitiesPage() {
         </motion.div>
 
         {/* Community List */}
-        <div className="flex flex-col gap-4 pt-2">
-          <AnimatePresence>
-            {filtered.map((community: any, i: number) => {
-              const isJoined = allJoined.has(community.id);
-                const IconComp = ({ Users, GraduationCap, Laptop: Cpu, BookOpen, Gamepad2, Stethoscope, Camera, Home } as any)[community.icon] || Users;
-                return (
-                  <motion.div
-                    key={community.id}
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ delay: 0.1 + (i * 0.05), type: "spring", stiffness: 300, damping: 25 }}
-                    className="bg-white rounded-[28px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-100 flex flex-col gap-4 cursor-pointer group hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:border-emerald-100 transition-all duration-300 relative overflow-hidden"
-                    onClick={() => navigate(`/communities/${community.id}`)}
-                  >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-slate-50 to-transparent rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
-                    <div className="flex items-center gap-4 relative z-10">
-                      <div className="w-14 h-14 rounded-[20px] bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700 overflow-hidden shrink-0 group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
-                        {community.icon?.startsWith("data:image") || community.icon?.startsWith("http") ? (
-                          <img src={community.icon} className="w-full h-full object-cover" />
-                        ) : (
-                          <IconComp className="w-7 h-7 text-slate-700" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-extrabold text-slate-900 text-[17px] truncate tracking-tight group-hover:text-emerald-600 transition-colors">{community.name}</p>
-                        <p className="text-[14px] text-slate-500 mt-0.5 line-clamp-1 font-medium leading-relaxed">
-                          {(() => {
-                            try {
-                              const parsed = JSON.parse(community.description || "{}");
-                              return parsed.text !== undefined ? parsed.text : community.description;
-                            } catch(e) {
-                              return community.description;
-                            }
-                          })()}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-50 relative z-10">
-                      <div className="flex items-center gap-2">
-                        <div className="flex -space-x-2">
-                          {[1,2,3].map(n => (
-                             <div key={n} className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center overflow-hidden">
-                                <Users className="w-3 h-3 text-slate-400" />
-                             </div>
-                          ))}
-                        </div>
-                        <span className="text-[12px] font-bold text-slate-400 ml-1">
-                          <span className="text-slate-700">{community.memberCount || 0}</span> members
-                        </span>
-                      </div>
-                      
-                      {community.creatorId !== user?.id && (
-                        <motion.button
-                          whileTap={{ scale: 0.9 }}
-                          onClick={(e) => handleJoin(e, community)}
-                          className={`px-5 py-2.5 rounded-full text-[13px] font-bold transition-all shadow-sm flex items-center gap-1.5 ${
-                            isJoined
-                              ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                              : community.type === "private"
-                              ? "bg-slate-900 text-white hover:bg-black hover:shadow-lg"
-                              : "bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600 hover:shadow-emerald-500/30"
-                          }`}
-                        >
-                          {isJoined ? <><Check className="w-3.5 h-3.5" /> Joined</> : community.type === "private" ? "Request" : "Join"}
-                        </motion.button>
-                      )}
-                    </div>
-                  </motion.div>
-              );
-            })}
-          </AnimatePresence>
+        <div className="flex flex-col gap-8 pt-2">
+          {joinedSokos.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <h2 className="text-[13px] font-extrabold text-slate-400 uppercase tracking-widest px-2 mb-1">Your Sokos</h2>
+              <AnimatePresence>
+                {joinedSokos.map((community: any, i: number) => (
+                  <SokoCard key={community.id} community={community} i={i} isJoined={true} navigate={navigate} user={user} handleJoin={handleJoin} />
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {discoverSokos.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <h2 className="text-[13px] font-extrabold text-slate-400 uppercase tracking-widest px-2 mb-1">Discover Others</h2>
+              <AnimatePresence>
+                {discoverSokos.map((community: any, i: number) => (
+                  <SokoCard key={community.id} community={community} i={i} isJoined={false} navigate={navigate} user={user} handleJoin={handleJoin} />
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
 
         {filtered.length === 0 && (
