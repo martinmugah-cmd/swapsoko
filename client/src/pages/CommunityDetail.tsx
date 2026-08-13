@@ -831,74 +831,78 @@ export default function CommunityDetailPage() {
                         if (a.type !== 'announcement' && b.type === 'announcement') return 1;
                         return new Date(b.createdAt || Date.now()).getTime() - new Date(a.createdAt || Date.now()).getTime();
                       }).map((post: any) => (
-                        <div key={post.id} className={`bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50 relative overflow-hidden flex flex-col`}>
-                          <div className={`absolute top-0 bottom-0 left-0 w-[6px] ${post.type === 'announcement' ? 'bg-[#F97316]' : 'bg-[#3B82F6]'}`} />
+                        <div key={post.id} className="bg-white rounded-[32px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 relative overflow-hidden flex flex-col group">
                           
-                          <div className="pl-3">
-                            <div className="flex items-center justify-between mb-3">
-                              <span className={`text-xs font-black px-2.5 py-1 rounded-lg uppercase tracking-wider ${post.type === 'announcement' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
-                                {post.type}
-                              </span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-[11px] font-bold text-gray-400">{new Date(post.createdAt || Date.now()).toLocaleDateString()}</span>
-                                {(isAdmin || post.userId === user?.id) && (
-                                  <button
-                                    onClick={() => {
-                                      toast("Are you sure you want to delete this post?", {
-                                        action: {
-                                          label: "Delete",
-                                          onClick: () => deletePostMutation.mutate({ id: post.id }, {
-                                            onSuccess: () => {
-                                              toast.success("Post deleted");
-                                              utils.communityPosts.list.invalidate();
-                                            }
-                                          })
-                                        }
-                                      });
-                                    }}
-                                    className="text-gray-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-full transition-colors"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                )}
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-[14px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[15px] font-extrabold text-slate-900 shadow-sm">
+                                {(post.profiles?.name || post.user?.name || "U")[0].toUpperCase()}
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[14px] font-bold text-slate-900">
+                                    {(() => {
+                                      try {
+                                        const n = post.profiles?.name || post.user?.name;
+                                        let uni: any = {};
+                                        let desc: any = {};
+                                        try { uni = JSON.parse(post.profiles?.university || "{}"); } catch(e) {}
+                                        try { desc = JSON.parse(post.profiles?.description || "{}"); } catch(e) {}
+                                        let un = desc.username || uni.username;
+                                        if (un) return un;
+                                        return n && n !== "SwapSoko User" ? n.split(" ").join("").toLowerCase() : "user";
+                                      } catch(e) { return "user"; }
+                                    })()}
+                                  </span>
+                                  {post.profiles?.isStudentVerified && <GraduationCap className="w-4 h-4 text-emerald-500" />}
+                                </div>
+                                <span className="text-[12px] font-semibold text-slate-400">{new Date(post.createdAt || Date.now()).toLocaleDateString()}</span>
                               </div>
                             </div>
-                            <h4 className="font-extrabold text-[16px] text-slate-900 leading-snug">{post.title}</h4>
-                            <p className="text-[13.5px] font-medium text-gray-600 mt-1.5 whitespace-pre-wrap leading-relaxed">{post.content}</p>
                             
-                            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] font-extrabold text-gray-400">
-                              <div className="flex items-center gap-1.5">
-                                <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[9px] text-slate-900">
-                                  {(post.profiles?.name || post.user?.name || "U")[0].toUpperCase()}
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <span>By {(() => {
-                                    try {
-                                      const n = post.profiles?.name || post.user?.name;
-                                      let uni: any = {};
-                                      let desc: any = {};
-                                      try { uni = JSON.parse(post.profiles?.university || "{}"); } catch(e) {}
-                                      try { desc = JSON.parse(post.profiles?.description || "{}"); } catch(e) {}
-                                      let un = desc.username || uni.username;
-                                      if (un) return un;
-                                      return n && n !== "SwapSoko User" ? n.split(" ").join("").toLowerCase() : "user";
-                                    } catch(e) { return "user"; }
-                                  })()}</span>
-                                  {post.profiles?.isStudentVerified && <GraduationCap className="w-3.5 h-3.5 text-[#3B82F6]" />}
-                                </div>
-                              </div>
+                            <div className="flex items-center gap-3">
+                              <span className={`text-[11px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-wider ${
+                                post.type === 'announcement' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-blue-50 text-blue-600 border border-blue-100'
+                              }`}>
+                                {post.type === 'announcement' ? '📢 Announcement' : '💬 Discussion'}
+                              </span>
+                              
+                              {(isAdmin || post.userId === user?.id) && (
+                                <motion.button
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => {
+                                    toast("Are you sure you want to delete this post?", {
+                                      action: {
+                                        label: "Delete",
+                                        onClick: () => deletePostMutation.mutate({ id: post.id }, {
+                                          onSuccess: () => {
+                                            toast.success("Post deleted");
+                                            utils.communityPosts.list.invalidate();
+                                          }
+                                        })
+                                      }
+                                    });
+                                  }}
+                                  className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </motion.button>
+                              )}
                             </div>
                           </div>
 
+                          <h4 className="font-extrabold text-[18px] text-slate-900 leading-snug tracking-tight">{post.title}</h4>
+                          <p className="text-[14px] font-medium text-slate-600 mt-2 whitespace-pre-wrap leading-relaxed">{post.content}</p>
+
                           {post.type !== 'announcement' && (
-                            <div className="mt-4 pt-4 border-t border-gray-100">
-                              <div className="space-y-2 mb-3">
+                            <div className="mt-5 pt-5 border-t border-slate-100">
+                              <div className="space-y-3 mb-4">
                                 {(post.communityPostReplies || []).map((reply: any) => (
-                                  <div key={reply.id} className="bg-gray-50 rounded-2xl p-3">
-                                    <p className="text-xs text-slate-900">{reply.content}</p>
-                                    <div className="flex justify-between items-center mt-1">
-                                      <div className="flex items-center gap-1">
-                                        <p className="text-xs text-gray-400">@{(() => {
+                                  <div key={reply.id} className="bg-slate-50 rounded-[20px] p-4 border border-slate-100">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="flex items-center gap-1.5">
+                                        <p className="text-[13px] font-bold text-slate-700">@{(() => {
                                           try {
                                             const n = reply.profiles?.name || reply.user?.name;
                                             let uni: any = {};
@@ -910,10 +914,11 @@ export default function CommunityDetailPage() {
                                             return n && n !== "SwapSoko User" ? n.split(" ").join("").toLowerCase() : "user";
                                           } catch(e) { return "user"; }
                                         })()}</p>
-                                        {reply.profiles?.isStudentVerified && <GraduationCap className="w-3 h-3 text-[#3B82F6]" />}
+                                        {reply.profiles?.isStudentVerified && <GraduationCap className="w-3.5 h-3.5 text-emerald-500" />}
                                       </div>
-                                      <p className="text-xs text-gray-400">{new Date(reply.createdAt || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                                      <p className="text-[11px] font-semibold text-slate-400">{new Date(reply.createdAt || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                                     </div>
+                                    <p className="text-[13px] font-medium text-slate-600 leading-relaxed">{reply.content}</p>
                                   </div>
                                 ))}
                               </div>
@@ -929,10 +934,10 @@ export default function CommunityDetailPage() {
                                   }
                                 });
                               }} className="flex gap-2">
-                                <input name="replyContent" placeholder="Write a reply..." className="flex-1 bg-gray-50 rounded-full px-3 py-1.5 text-xs outline-none focus:border focus:border-green-500" />
-                                <button type="submit" disabled={createReplyMutation.isPending} className="gradient-green text-white px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">
-                                  Reply
-                                </button>
+                                <input name="replyContent" placeholder="Write a reply..." className="flex-1 bg-slate-50 border border-slate-100 rounded-full px-5 py-3 text-[14px] font-medium outline-none focus:border-emerald-500 focus:bg-white focus:ring-[3px] focus:ring-emerald-50 transition-all placeholder-slate-400 text-slate-900 shadow-inner" />
+                                <motion.button whileTap={{ scale: 0.95 }} type="submit" disabled={createReplyMutation.isPending} className="bg-slate-900 text-white px-6 py-3 rounded-full text-[14px] font-extrabold shadow-[0_4px_15px_rgba(0,0,0,0.1)] hover:bg-black transition-colors flex items-center gap-2">
+                                  {createReplyMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Reply"}
+                                </motion.button>
                               </form>
                             </div>
                           )}
