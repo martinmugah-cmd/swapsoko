@@ -61,6 +61,16 @@ export default function Home() {
     ]);
   };
 
+  const [guruTextIndex, setGuruTextIndex] = useState(0);
+  const guruCapabilities = ["Evaluate items instantly", "Spot fake or overpriced items", "Generate fair swap deals", "Draft quick counter-offers"];
+  
+  useEffect(() => {
+     const interval = setInterval(() => {
+        setGuruTextIndex(prev => (prev + 1) % guruCapabilities.length);
+     }, 4000);
+     return () => clearInterval(interval);
+  }, []);
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
@@ -244,9 +254,22 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="flex items-center justify-between bg-white/60 border border-white/80 rounded-[24px] p-2 backdrop-blur-xl shadow-sm">
-                <span className="text-slate-700 text-[14px] font-bold px-3">Evaluate items instantly</span>
-                <div className="w-10 h-10 rounded-[18px] bg-slate-900 text-white flex items-center justify-center shadow-md shrink-0 hover:bg-slate-800 transition-colors">
+              <div className="flex items-center justify-between bg-white/60 border border-white/80 rounded-[24px] p-2 backdrop-blur-xl shadow-sm overflow-hidden h-[56px]">
+                <div className="flex-1 relative h-full flex items-center px-3 overflow-hidden">
+                   <AnimatePresence mode="wait">
+                      <motion.span 
+                         key={guruTextIndex}
+                         initial={{ opacity: 0, y: 10 }}
+                         animate={{ opacity: 1, y: 0 }}
+                         exit={{ opacity: 0, y: -10 }}
+                         transition={{ duration: 0.3 }}
+                         className="text-slate-700 text-[14px] font-bold absolute"
+                      >
+                         {guruCapabilities[guruTextIndex]}
+                      </motion.span>
+                   </AnimatePresence>
+                </div>
+                <div className="w-10 h-10 rounded-[18px] bg-slate-900 text-white flex items-center justify-center shadow-md shrink-0 hover:bg-slate-800 transition-colors z-10 relative">
                   <ArrowRight size={18} className="font-black" />
                 </div>
               </div>

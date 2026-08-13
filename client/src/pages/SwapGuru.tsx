@@ -20,10 +20,9 @@ function GuruLoader({ state }: { state: "working" | "solving" | "searching" | "c
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
         <ThinkingOrb state={state === "working" ? "weaving" : state} size={20} theme="dark" />
       </div>
-      <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 text-white px-5 py-3.5 rounded-3xl rounded-bl-sm max-w-[75%] relative flex items-center gap-3 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none rounded-3xl rounded-bl-sm" />
-        <ThinkingOrb state={state} size={20} theme="dark" />
-        <span className="text-[14px] font-medium tracking-wide text-white/90">
+      <div className="bg-white border border-slate-200 text-slate-800 px-5 py-3.5 rounded-[24px] rounded-bl-sm max-w-[75%] relative flex items-center gap-3 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
+        <ThinkingOrb state={state} size={20} theme="light" />
+        <span className="text-[14px] font-medium tracking-wide">
           {state === "working" ? "Calculating valuation..." : "Swap Guru is thinking..."}
         </span>
       </div>
@@ -44,16 +43,15 @@ function MessageBubble({ msg, onPropose }: { msg: { role: "user" | "guru"; conte
       <div
         className={`max-w-[75%] px-5 py-3.5 rounded-[24px] text-[15px] leading-[22px] shadow-sm relative overflow-hidden ${
           isUser
-            ? "bg-gradient-to-br from-green-400 to-emerald-600 text-white rounded-br-[4px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] border border-white/10"
-            : "bg-slate-900/80 backdrop-blur-xl text-white rounded-bl-[4px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/10"
+            ? "bg-slate-900 text-white rounded-br-[4px] shadow-[0_8px_20px_rgba(0,0,0,0.1)] border border-slate-800"
+            : "bg-white/90 backdrop-blur-xl text-slate-800 rounded-bl-[4px] shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/60"
         }`}
       >
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none rounded-[24px]" />
         
         {isUser ? (
           <p className="font-medium relative z-10">{msg.content}</p>
         ) : (
-          <div className="prose prose-sm max-w-none text-white/90 prose-p:leading-[24px] relative z-10 prose-strong:text-white prose-strong:font-bold prose-a:text-emerald-400">
+          <div className="prose prose-sm max-w-none text-slate-800 prose-p:leading-[24px] relative z-10 prose-strong:text-slate-900 prose-strong:font-bold prose-a:text-emerald-500">
             <Streamdown>{msg.content}</Streamdown>
             
             {/* Render tagged listings if they exist */}
@@ -66,18 +64,18 @@ function MessageBubble({ msg, onPropose }: { msg: { role: "user" | "guru"; conte
                    const img = imgs[0] || null;
                    
                    return (
-                     <div key={i} className="flex items-center bg-white/5 p-2 rounded-[20px] border border-white/10 shadow-sm gap-3 backdrop-blur-md">
-                        <div className="w-12 h-12 rounded-[14px] overflow-hidden bg-slate-800 shrink-0 border border-white/5">
+                     <div key={i} className="flex items-center bg-slate-50 p-2 rounded-[20px] border border-slate-100 shadow-sm gap-3">
+                        <div className="w-12 h-12 rounded-[14px] overflow-hidden bg-slate-100 shrink-0 border border-slate-200/50">
                            {img ? <img src={img} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Package className="w-4 h-4 text-slate-400"/></div>}
                         </div>
                         <div className="flex-1 min-w-0">
-                           <p className="text-[13px] font-bold text-white truncate">{l.title}</p>
-                           <p className="text-[11px] font-medium text-slate-400 truncate">By {l.profiles?.name || 'User'}</p>
+                           <p className="text-[13px] font-bold text-slate-900 truncate">{l.title}</p>
+                           <p className="text-[11px] font-medium text-slate-500 truncate">By {l.profiles?.name || 'User'}</p>
                         </div>
                         <motion.button 
                            whileTap={{ scale: 0.95 }}
                            onClick={() => onPropose(l)} 
-                           className="text-[11px] bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 font-bold px-3 py-1.5 rounded-full shrink-0 transition-colors border border-emerald-500/20"
+                           className="text-[11px] bg-emerald-50 text-emerald-600 hover:bg-emerald-100 font-bold px-3 py-1.5 rounded-full shrink-0 transition-colors border border-emerald-100"
                         >
                            Propose
                         </motion.button>
@@ -99,10 +97,16 @@ export default function SwapGuruPage() {
   const [messages, setMessages] = useState<Array<{ role: "user" | "guru"; content: string; listings?: any[] }>>([]);
 
   const getGreeting = useCallback(() => {
-    const greetings = ["Rada", "Mambo", "Uko fiti", "Niambie", "Vipi", "Sasa"];
-    const name = user?.name ? user.name.split(" ")[0] : "there";
+    const greetings = [
+      "Karibu kastoma, camera mkononi, bei ni maelewano!",
+      "Oya mbogi, hapa tunaosha macho na mali safi!",
+      "Sasa kiongozi! Mali ni wewe na mdomo wako!",
+      "Rada bosi! Hapa ni bei ya jioni na mali ya asubuhi!",
+      "Vipi mkuu, mali imefika na ni ile safi. Una swapa nini leo?"
+    ];
+    const name = user?.name ? user.name.split(" ")[0] : "msee";
     const randomG = greetings[Math.floor(Math.random() * greetings.length)];
-    return `${randomG} ${name}! I'm **Swap Guru**.\n\nWhat would you like to swap today?`;
+    return `${randomG}\n\nMimi ni **Swap Guru**. Hapa ni kwenye deals zote zinapikwa. Ni nini unataka tuchanganue leo?`;
   }, [user]);
 
   useEffect(() => {
