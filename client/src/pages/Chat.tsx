@@ -194,13 +194,13 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8, scale: 0.95 }}
+      initial={{ opacity: 0, y: 15, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-2`}
+      transition={{ type: "spring", stiffness: 350, damping: 28 }}
+      className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4`}
     >
       {!isOwn && (
-        <div className="w-7 h-7 rounded-full gradient-green flex items-center justify-center mr-2 flex-shrink-0 self-end mb-1 cursor-pointer overflow-hidden" onClick={() => onViewProfile ? onViewProfile(msg.senderId) : navigate(`/profile/${msg.senderId}`)}>
+        <div className="w-8 h-8 rounded-[12px] bg-slate-900/80 backdrop-blur-xl flex items-center justify-center mr-3 flex-shrink-0 self-end mb-1 cursor-pointer overflow-hidden border border-white/10 shadow-sm" onClick={() => onViewProfile ? onViewProfile(msg.senderId) : navigate(`/profile/${msg.senderId}`)}>
            {(() => {
               const ProfileAvatar = ({ uid }: { uid: string }) => {
                  const query = trpc.profile.get.useQuery({ id: uid }, { enabled: !!uid });
@@ -223,19 +223,28 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
       )}
       <div className={`max-w-[75%] ${isOwn ? "items-end" : "items-start"} flex flex-col`}>
         {isVoice ? (
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-3xl ${isOwn ? "gradient-green rounded-br-sm text-white" : "bg-white card-shadow rounded-bl-sm"}`}>
-            <VoicePlayer url={msg.content} isOwn={isOwn} />
+          <div className={`flex items-center gap-2 px-4 py-2 rounded-[24px] relative overflow-hidden shadow-sm ${
+            isOwn 
+               ? "bg-gradient-to-br from-green-400 to-emerald-600 text-white rounded-br-[4px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] border border-white/10" 
+               : "bg-slate-900/80 backdrop-blur-xl text-white rounded-bl-[4px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/10"
+          }`}>
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none rounded-[24px]" />
+            <div className="relative z-10 w-full">
+               <VoicePlayer url={msg.content} isOwn={isOwn} />
+            </div>
           </div>
         ) : isImage ? (
           <div 
             onClick={() => onImageClick?.(msg.imageUrl || msg.content)}
-            className={`rounded-2xl overflow-hidden cursor-pointer ${isOwn ? "border-2 border-green-500" : "border-2 border-white shadow-sm"}`}
+            className={`rounded-[20px] overflow-hidden cursor-pointer shadow-sm relative border ${isOwn ? "border-emerald-500/30 shadow-[0_8px_20px_rgba(16,185,129,0.2)]" : "border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)]"}`}
           >
-            <img src={msg.imageUrl || msg.content} alt="shared" className="w-48 h-auto max-h-64 object-cover" />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
+            <img src={msg.imageUrl || msg.content} alt="shared" className="w-48 h-auto max-h-64 object-cover relative z-10" />
           </div>
         ) : isQuickReply ? (
-          <div className={`px-4 py-2 rounded-3xl border-2 ${isOwn ? "border-green-500 text-green-500 bg-[#F0FDF4]" : "border-[#2563EB] text-blue-600 bg-[#EFF6FF]"}`}>
-            <span className="text-xs font-semibold">{msg.content}</span>
+          <div className={`px-5 py-2.5 rounded-[20px] shadow-sm relative overflow-hidden border ${isOwn ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500 shadow-[0_4px_12px_rgba(16,185,129,0.1)]" : "bg-slate-900/10 border-white/10 text-slate-800 shadow-sm backdrop-blur-md"}`}>
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
+            <span className="text-[14px] font-bold relative z-10">{msg.content}</span>
           </div>
         ) : isProposal ? (
           (() => {
@@ -275,58 +284,60 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
             }
             
             return (
-              <div className={`w-64 rounded-2xl p-5 shadow-sm border ${isOwn ? "bg-gradient-to-br from-[#22C55E]/10 to-[#10B981]/10 border-green-500/30 backdrop-blur-md" : "bg-white/90 backdrop-blur-md border-gray-100"}`}>
-                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200/50">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isOwn ? "bg-green-500/20 text-green-500" : "bg-blue-600/20 text-blue-600"}`}>
+              <div className={`w-64 rounded-[24px] p-5 shadow-sm relative overflow-hidden ${isOwn ? "bg-gradient-to-br from-green-400 to-emerald-600 text-white border border-white/10 shadow-[0_8px_20px_rgba(16,185,129,0.25)]" : "bg-slate-900/80 backdrop-blur-xl text-white border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)]"}`}>
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
+                
+                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/10 relative z-10">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isOwn ? "bg-white/20 text-white" : "bg-white/10 text-emerald-400"}`}>
                     <Handshake className="w-4 h-4" />
                   </div>
-                  <h4 className="font-extrabold text-slate-900 text-[15px]">{pData.wishId ? "Swish Offer" : "Swap Offer"}</h4>
+                  <h4 className="font-extrabold text-[15px] drop-shadow-sm">{pData.wishId ? "Swish Offer" : "Swap Offer"}</h4>
                 </div>
                 {pData.listingTitle && (
-                  <div className="flex items-center gap-3 mb-3 bg-white/50 p-2.5 rounded-2xl">
+                  <div className="flex items-center gap-3 mb-3 bg-white/10 p-2.5 rounded-2xl border border-white/5 relative z-10">
                      {!pData.wishId && (
                        pData.listingImage ? (
                           <img src={pData.listingImage} alt="Listing" className="w-10 h-10 rounded-lg object-cover shrink-0 shadow-sm" />
                        ) : (
-                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-                             <Image className="w-4 h-4 text-gray-400" />
+                          <div className="w-10 h-10 rounded-lg bg-black/20 flex items-center justify-center shrink-0">
+                             <Image className="w-4 h-4 text-white/50" />
                           </div>
                        )
                      )}
-                     <p className="text-sm font-extrabold text-slate-900 line-clamp-2">
+                     <p className="text-sm font-extrabold line-clamp-2">
                         {pData.wishId && !pData.listingTitle.startsWith('Wish:') ? `Wish: ${pData.listingTitle}` : pData.listingTitle}
                      </p>
                   </div>
                 )}
-                <p className="text-xs text-gray-600 mb-2">{pData.message || "No message attached"}</p>
+                <p className="text-xs font-medium text-white/80 mb-2 relative z-10">{pData.message || "No message attached"}</p>
                 {pData.offerItems && (
-                  <div className="mb-2 p-2 bg-gray-50 rounded-lg border border-gray-100">
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Offered Items</span>
-                    <p className="text-xs font-bold text-gray-800">{pData.offerItems}</p>
+                  <div className="mb-2 p-2 bg-black/20 rounded-lg border border-white/5 relative z-10">
+                    <span className="text-[9px] font-black text-white/50 uppercase tracking-widest block mb-1">Offered Items</span>
+                    <p className="text-xs font-bold">{pData.offerItems}</p>
                   </div>
                 )}
                 {pData.cashTopUp > 0 && (
-                  <p className="text-xs font-bold text-green-500 mb-2">+ KES {pData.cashTopUp}</p>
+                  <p className="text-xs font-bold text-emerald-300 mb-2 relative z-10 drop-shadow-sm">+ KES {pData.cashTopUp}</p>
                 )}
                 {!isOwn && !pData.status && (
-                  <div className="flex flex-col gap-2 mt-4">
-                    <button onClick={() => onOpenAgreement?.(pData.listingId, msg.id, false, pData)} className="w-full bg-slate-900 text-white text-xs font-bold py-2.5 rounded-full shadow-[0_4px_14px_rgba(0,0,0,0.1)] hover:bg-[#1E293B] transition-all">
+                  <div className="flex flex-col gap-2 mt-4 relative z-10">
+                    <button onClick={() => onOpenAgreement?.(pData.listingId, msg.id, false, pData)} className="w-full bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-full shadow-[0_4px_14px_rgba(16,185,129,0.3)] hover:bg-emerald-400 transition-all border border-emerald-400/50">
                       Accept Offer
                     </button>
                     <div className="flex gap-2">
-                      <button onClick={() => onCounterProposal?.(pData, msg.id)} className="flex-1 bg-white border border-gray-200 text-slate-900 text-xs font-bold py-2.5 rounded-full hover:bg-gray-50 transition-all">
+                      <button onClick={() => onCounterProposal?.(pData, msg.id)} className="flex-1 bg-white/10 border border-white/20 text-white text-xs font-bold py-2.5 rounded-full hover:bg-white/20 transition-all">
                         Counter
                       </button>
-                      <button onClick={() => onRejectProposal?.(pData, msg.id)} className="flex-1 bg-[#FEF2F2] border border-red-100 text-red-600 text-xs font-bold py-2.5 rounded-full hover:bg-red-50 transition-all">
+                      <button onClick={() => onRejectProposal?.(pData, msg.id)} className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold py-2.5 rounded-full hover:bg-red-500/20 transition-all">
                         Reject
                       </button>
                     </div>
                   </div>
                 )}
                 {pData.status ? (
-                  <p className={`text-xs mt-2 text-center uppercase tracking-wider font-bold ${pData.status === 'rejected' ? 'text-red-500' : pData.status === 'accepted' ? 'text-green-500' : 'text-blue-500'}`}>Offer {pData.status}</p>
+                  <p className={`text-xs mt-2 text-center uppercase tracking-wider font-bold relative z-10 ${pData.status === 'rejected' ? 'text-red-300' : pData.status === 'accepted' ? 'text-emerald-300' : 'text-blue-300'}`}>Offer {pData.status}</p>
                 ) : isOwn ? (
-                  <p className="text-xs text-gray-400 mt-2 text-center uppercase tracking-wider font-bold">Offer Sent</p>
+                  <p className="text-xs text-white/50 mt-2 text-center uppercase tracking-wider font-bold relative z-10">Offer Sent</p>
                 ) : null}
               </div>
             );
@@ -710,21 +721,27 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                    </p>
                 </div>
               ) : (
-                <div className={`px-4 py-3 rounded-2xl text-[15px] leading-relaxed whitespace-pre-wrap shadow-sm ${isOwn ? "gradient-green text-white rounded-br-[4px]" : "apple-glass-dark text-white rounded-bl-[4px]"}`}>
+                <div className={`px-5 py-3.5 rounded-[24px] text-[15px] leading-[22px] whitespace-pre-wrap shadow-sm relative overflow-hidden ${
+                  isOwn 
+                    ? "bg-gradient-to-br from-green-400 to-emerald-600 text-white rounded-br-[4px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] border border-white/10" 
+                    : "bg-slate-900/80 backdrop-blur-xl text-white rounded-bl-[4px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/10"
+                }`}>
+                  <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none rounded-[24px]" />
+                  <div className="relative z-10 font-medium">
                   {locationCoords ? (
                     <div className="flex flex-col gap-2">
-                      <p className="font-medium">{contentText.split('\n')[0] || "Shared Location"}</p>
+                      <p>{contentText.split('\n')[0] || "Shared Location"}</p>
                       <div 
                         onClick={() => window.open(`https://maps.google.com/?q=${locationCoords?.lat},${locationCoords?.lng}`, '_blank')}
-                        className="h-40 w-[200px] sm:w-[250px] rounded-xl overflow-hidden relative z-0 cursor-pointer group"
+                        className="h-40 w-[200px] sm:w-[250px] rounded-[16px] overflow-hidden relative z-0 cursor-pointer group shadow-inner border border-white/10"
                       >
                         <MapContainer center={[locationCoords.lat, locationCoords.lng]} zoom={15} style={{ height: "100%", width: "100%", pointerEvents: 'none' }}>
                           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                           <Marker position={[locationCoords.lat, locationCoords.lng]} />
                         </MapContainer>
-                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors z-10 flex items-center justify-center">
-                          <div className="bg-white/90 rounded-full p-2 backdrop-blur-sm shadow-sm">
-                            <MapPin className="w-5 h-5 text-gray-700" />
+                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors z-10 flex items-center justify-center backdrop-blur-[2px]">
+                          <div className="bg-white/90 rounded-full p-2.5 backdrop-blur-md shadow-sm text-slate-800">
+                            <MapPin className="w-5 h-5" />
                           </div>
                         </div>
                       </div>
@@ -732,6 +749,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                   ) : (
                     contentText
                   )}
+                  </div>
                 </div>
               ))}
           </div>
