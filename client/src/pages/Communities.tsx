@@ -36,21 +36,21 @@ function CreateSokoModal({ onClose, myProfile }: { onClose: () => void; myProfil
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = () => {
-    let myProfileIsStudentVerified = user?.metadata?.isStudentVerified === true || user?.user_metadata?.isStudentVerified === true;
-    let myProfileUniversity = user?.metadata?.university || user?.user_metadata?.university || "";
-    if (!myProfileIsStudentVerified && myProfile) {
-      try {
-        const u = JSON.parse(myProfile.university || "{}");
-        const d = JSON.parse(myProfile.description || "{}");
-        myProfileIsStudentVerified = u.isStudentVerified || d.isStudentVerified || myProfile.isStudentVerified || false;
-        if (!myProfileUniversity) {
-           myProfileUniversity = u.val || myProfile.university || "";
-        }
-        if (myProfileUniversity.startsWith('{')) myProfileUniversity = "";
-      } catch(e) {}
-    }
+  let myProfileIsStudentVerified = user?.metadata?.isStudentVerified === true || user?.user_metadata?.isStudentVerified === true;
+  let myProfileUniversity = user?.metadata?.university || user?.user_metadata?.university || "";
+  if (!myProfileIsStudentVerified && myProfile) {
+    try {
+      const u = JSON.parse(myProfile.university || "{}");
+      const d = JSON.parse(myProfile.description || "{}");
+      myProfileIsStudentVerified = u.isStudentVerified || d.isStudentVerified || myProfile.isStudentVerified || false;
+      if (!myProfileUniversity) {
+         myProfileUniversity = u.val || myProfile.university || "";
+      }
+      if (myProfileUniversity.startsWith('{')) myProfileUniversity = "";
+    } catch(e) {}
+  }
 
+  const handleSubmit = () => {
     if (!name.trim()) { toast.error("Please enter a name"); return; }
     if (type === "campus" && !myProfileIsStudentVerified) { toast.error("You must verify your student email during onboarding or in your profile to create a Campus Soko!"); return; }
     
@@ -169,20 +169,22 @@ function CreateSokoModal({ onClose, myProfile }: { onClose: () => void; myProfil
                 <Users className="w-6 h-6" />
                 <span className="text-[11px] font-extrabold tracking-widest uppercase">Public</span>
               </motion.button>
+              {myProfileIsStudentVerified && (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setType("campus")}
+                  className={`flex-1 p-4 rounded-[24px] text-center flex flex-col items-center gap-2 border transition-all duration-300 relative overflow-hidden ${
+                    type === "campus" ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-[0_8px_20px_rgba(16,185,129,0.1)]" : "border-slate-100 bg-white text-slate-500 shadow-sm hover:border-slate-200"
+                  }`}
+                >
+                  {type === "campus" && <motion.div layoutId="typeHighlight" className="absolute inset-0 bg-emerald-500/5" />}
+                  <GraduationCap className="w-6 h-6" />
+                  <span className="text-[11px] font-extrabold tracking-widest uppercase">Campus</span>
+                </motion.button>
+              )}
               <motion.button
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setType("campus")}
-                className={`flex-1 p-4 rounded-[24px] text-center flex flex-col items-center gap-2 border transition-all duration-300 relative overflow-hidden ${
-                  type === "campus" ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-[0_8px_20px_rgba(16,185,129,0.1)]" : "border-slate-100 bg-white text-slate-500 shadow-sm hover:border-slate-200"
-                }`}
-              >
-                {type === "campus" && <motion.div layoutId="typeHighlight" className="absolute inset-0 bg-emerald-500/5" />}
-                <GraduationCap className="w-6 h-6" />
-                <span className="text-[11px] font-extrabold tracking-widest uppercase">Campus</span>
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setType("private")}
+                onClick={() => { setType("private"); if (type === "campus" && !myProfileIsStudentVerified) setType("public"); }}
                 className={`flex-1 p-4 rounded-[24px] text-center flex flex-col items-center gap-2 border transition-all duration-300 relative overflow-hidden ${
                   type === "private" ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-[0_8px_20px_rgba(16,185,129,0.1)]" : "border-slate-100 bg-white text-slate-500 shadow-sm hover:border-slate-200"
                 }`}
@@ -204,39 +206,14 @@ function CreateSokoModal({ onClose, myProfile }: { onClose: () => void; myProfil
           </AnimatePresence>
 
           <AnimatePresence>
-            {type === "campus" && (
+            {type === "campus" && myProfileIsStudentVerified && (
               <motion.div initial={{ opacity: 0, height: 0, y: -10 }} animate={{ opacity: 1, height: "auto", y: 0 }} exit={{ opacity: 0, height: 0, y: -10 }} className="overflow-hidden">
                 <div className="bg-blue-500/5 border border-blue-500/10 rounded-[24px] p-5 flex items-start gap-4 mt-2">
                   <div className="p-3 bg-white rounded-[16px] shrink-0 border border-blue-500/10 shadow-sm">
                      <GraduationCap className="w-6 h-6 text-blue-500" />
                   </div>
                   <div className="text-[14px] text-slate-600 font-medium leading-relaxed pt-1">
-                    {(() => {
-                      let myProfileIsStudentVerified = user?.metadata?.isStudentVerified === true || user?.user_metadata?.isStudentVerified === true;
-                      let myProfileUniversity = user?.metadata?.university || user?.user_metadata?.university || "";
-                      if (!myProfileIsStudentVerified && myProfile) {
-                        try {
-                          const u = JSON.parse(myProfile.university || "{}");
-                          const d = JSON.parse(myProfile.description || "{}");
-                          myProfileIsStudentVerified = u.isStudentVerified || d.isStudentVerified || myProfile.isStudentVerified || false;
-                          if (!myProfileUniversity) {
-                            myProfileUniversity = u.val || myProfile.university || "";
-                          }
-                          if (myProfileUniversity.startsWith('{')) myProfileUniversity = "";
-                        } catch(e) {}
-                      }
-                      return (
-                        <>
-                          Only verified students from <b className="text-slate-900">{myProfileUniversity || "your university"}</b> will be able to join this Soko.
-                          {!myProfileIsStudentVerified && (
-                            <div className="mt-4 bg-red-50 p-4 rounded-[20px] border border-red-100">
-                              <b className="block mb-1 text-[11px] font-extrabold uppercase tracking-widest text-red-500">Action Required</b>
-                              <span className="text-red-700 font-medium text-[13px] leading-snug">Complete your student verification via Profile settings to unlock Campus Sokos.</span>
-                            </div>
-                          )}
-                        </>
-                      );
-                    })()}
+                    Only verified students from <b className="text-slate-900">{myProfileUniversity || "your university"}</b> will be able to join this Soko.
                   </div>
                 </div>
               </motion.div>
