@@ -73,12 +73,12 @@ export default function Safety() {
         </div>
 
         {/* Gooey Interaction Area - Expanded for dragging */}
-        <div className="absolute inset-0 top-32 flex items-center justify-center overflow-visible pointer-events-none">
+        <div className="fixed inset-0 top-24 bottom-10 flex items-center justify-center overflow-visible pointer-events-none">
           {/* We use liquid-gooey with a beautiful emerald gradient/color */}
-          <Liquid blur={14} contrast={24} fill="#0f172a" shadow="0 24px 50px -12px rgba(15,23,42,0.5)">
+          <Liquid blur={14} contrast={24} fill="#0f172a" shadow="0 24px 50px -12px rgba(15,23,42,0.5)" className="w-full h-full pointer-events-none absolute inset-0 flex items-center justify-center">
             
             {/* The Draggable Base Core */}
-            <Liquid.Item effect="move" move={{ springiness: 0.3, trail: 0.7 }}>
+            <Liquid.Item morph={{ shape: true }}>
                <motion.div
                  drag
                  dragConstraints={constraintsRef}
