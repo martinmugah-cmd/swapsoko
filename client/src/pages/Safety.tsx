@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { ChevronLeft, ShieldCheck, RefreshCw } from "lucide-react";
+import { useState, useCallback, useRef } from "react";
+import { ChevronLeft, ShieldCheck, RefreshCw, Zap } from "lucide-react";
 import { useLocation } from "wouter";
 import { Liquid } from "liquid-gooey";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +9,7 @@ export default function Safety() {
   const [, navigate] = useLocation();
   const [tipOpen, setTipOpen] = useState(false);
   const [currentTip, setCurrentTip] = useState(safetyTips[0]);
+  const constraintsRef = useRef(null);
 
   const handleTap = useCallback(() => {
     if (tipOpen) {
@@ -32,85 +33,60 @@ export default function Safety() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#F5F5F7] font-sans selection:bg-emerald-500/30 overflow-hidden relative">
-      {/* Sleek Minimalist Header */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-black/[0.04] px-4 py-3 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-        <button 
-          onClick={() => navigate("/")} 
-          className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/5 transition-colors"
-        >
-          <ChevronLeft size={24} className="text-black -ml-0.5" />
-        </button>
-        <h1 className="text-[17px] font-semibold text-black tracking-tight">Trust & Safety</h1>
-        <div className="w-10 h-10" />
+    <div className="min-h-[100dvh] bg-[#F8FAFC] font-sans selection:bg-emerald-500/30 overflow-hidden relative flex flex-col">
+      {/* Webapp Theme Dark Squircle Header */}
+      <div 
+        className="sticky top-4 z-50 mx-4 rounded-3xl px-4 py-4 border border-white/10 shadow-[0_24px_50px_-12px_rgba(0,0,0,0.25)] relative overflow-hidden mb-8"
+        style={{ background: "linear-gradient(145deg, #09090B 0%, #18181B 100%)", backdropFilter: "blur(24px)" }}
+      >
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay pointer-events-none" />
+        <motion.div 
+           animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }} 
+           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
+           className="absolute -top-16 -right-16 w-48 h-48 bg-emerald-500 rounded-full blur-[40px] pointer-events-none" 
+        />
+        
+        <div className="flex items-center justify-between relative z-10 max-w-[800px] mx-auto w-full">
+          <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/5 shadow-sm transition-all text-white">
+            <ChevronLeft className="w-5 h-5 -ml-0.5" />
+          </button>
+          
+          <div className="flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2">
+            <h1 className="font-extrabold text-white text-lg flex items-center justify-center gap-1.5 drop-shadow-md tracking-tight">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" /> Safety
+            </h1>
+            <p className="text-[10px] text-gray-400 font-bold tracking-widest uppercase">Guidelines</p>
+          </div>
+
+          <div className="w-10 h-10" />
+        </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center h-[calc(100dvh-140px)] relative">
-        <div className="text-center mb-16 px-6 relative z-10">
-          <motion.div 
-             initial={{ scale: 0.9, opacity: 0 }} 
-             animate={{ scale: 1, opacity: 1 }} 
-             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-             className="w-16 h-16 rounded-[20px] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.06)] flex items-center justify-center mx-auto mb-5 border border-black/[0.04]"
-          >
-             <ShieldCheck size={32} strokeWidth={2} className="text-emerald-500" />
-          </motion.div>
-          <h2 className="text-[28px] font-semibold text-black tracking-tight mb-2">Safety Core</h2>
-          <p className="text-[15px] text-[#86868B] max-w-[280px] mx-auto leading-relaxed">
-            Tap the core to extract vital security guidelines for a perfect trade.
+      <div className="flex-1 flex flex-col items-center justify-center relative z-10" ref={constraintsRef}>
+        
+        {/* Animated Title */}
+        <div className="text-center mb-10 px-6 absolute top-10 pointer-events-none z-0">
+          <h2 className="text-[32px] font-black text-slate-900 tracking-tight mb-2 drop-shadow-sm">Protect Your Trade</h2>
+          <p className="text-[15px] text-slate-500 max-w-[280px] mx-auto leading-relaxed font-medium">
+            Drag the core. Tap to reveal a vital safety tip.
           </p>
         </div>
 
-        {/* Gooey Interaction Area */}
-        <div className="relative w-full max-w-[400px] h-[300px] flex items-end justify-center pb-10">
-          {/* We use liquid-gooey with a beautiful sleek black look */}
-          <Liquid blur={12} contrast={24} fill="#111111" shadow="0 16px 40px rgba(0,0,0,0.2)">
+        {/* Gooey Interaction Area - Expanded for dragging */}
+        <div className="absolute inset-0 top-32 flex items-center justify-center overflow-visible pointer-events-none">
+          {/* We use liquid-gooey with a beautiful emerald gradient/color */}
+          <Liquid blur={14} contrast={24} fill="#0f172a" shadow="0 24px 50px -12px rgba(15,23,42,0.5)">
             
-            {/* The Modal Droplet */}
-            <Liquid.Item 
-               morph={{ shape: true }}
-               x={0} 
-               y={tipOpen ? -140 : 0} 
-               transition={{ type: "spring", stiffness: 280, damping: 25, mass: 1.2 }}
-               className="pointer-events-auto"
-            >
-              <div 
-                className={`relative flex flex-col items-center justify-center overflow-hidden transition-all duration-[600ms] ${
-                  tipOpen ? 'w-[320px] h-[220px] rounded-[40px]' : 'w-[80px] h-[80px] rounded-full'
-                }`}
-                style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
-              >
-                <AnimatePresence>
-                  {tipOpen && (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ delay: 0.2, duration: 0.3 }}
-                      className="absolute inset-0 flex flex-col p-8 text-center"
-                    >
-                      <h3 className="text-[20px] font-bold text-white mb-3 tracking-tight">{currentTip.title}</h3>
-                      <p className="text-[14px] text-white/80 leading-relaxed font-medium mb-auto">
-                        {currentTip.desc}
-                      </p>
-                      
-                      <button 
-                        onClick={handleNext}
-                        className="mx-auto mt-4 w-12 h-12 bg-white/10 hover:bg-white/20 active:bg-white/30 rounded-full flex items-center justify-center transition-colors border border-white/10"
-                      >
-                        <RefreshCw size={20} className="text-white" />
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </Liquid.Item>
-
-            {/* The Base Core */}
-            <Liquid.Item x={0} y={0}>
-               <button 
+            {/* The Draggable Base Core */}
+            <Liquid.Item effect="move" move={{ springiness: 0.3, trail: 0.7 }}>
+               <motion.div
+                 drag
+                 dragConstraints={constraintsRef}
+                 dragElastic={0.2}
+                 whileTap={{ scale: 0.9 }}
+                 whileDrag={{ scale: 1.1 }}
                  onClick={handleTap}
-                 className="w-[100px] h-[100px] rounded-full relative active:scale-95 transition-transform duration-300"
+                 className="w-20 h-20 rounded-full cursor-grab active:cursor-grabbing flex items-center justify-center pointer-events-auto"
                >
                   <AnimatePresence>
                     {!tipOpen && (
@@ -120,20 +96,68 @@ export default function Safety() {
                         exit={{ opacity: 0 }}
                         className="absolute inset-0 flex items-center justify-center"
                       >
-                        <span className="text-white text-[13px] font-bold tracking-widest uppercase">Tap</span>
+                        <Zap size={28} className="text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
                       </motion.div>
                     )}
                   </AnimatePresence>
-               </button>
+               </motion.div>
             </Liquid.Item>
-            
+
+            {/* The Modal Droplet that morphs out of the core */}
+            <Liquid.Item 
+               morph={{ shape: true }}
+               x={0} 
+               y={tipOpen ? -130 : 0} 
+               transition={{ stiffness: 350, damping: 25, mass: 1.2 }}
+               className="pointer-events-auto z-50"
+            >
+              <div 
+                className={`relative flex flex-col items-center justify-center overflow-hidden transition-all duration-[500ms] ${
+                  tipOpen ? 'w-[320px] h-[220px] rounded-[36px]' : 'w-[80px] h-[80px] rounded-full scale-0'
+                }`}
+                style={{ transitionTimingFunction: "cubic-bezier(0.2, 1, 0.3, 1)" }}
+              >
+                <AnimatePresence>
+                  {tipOpen && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ delay: 0.15, duration: 0.3 }}
+                      className="absolute inset-0 flex flex-col p-6 text-center"
+                    >
+                      <h3 className="text-[18px] font-black text-white mb-2 tracking-tight leading-tight">{currentTip.title}</h3>
+                      <p className="text-[14px] text-slate-300 leading-relaxed font-medium mb-auto px-2">
+                        {currentTip.desc}
+                      </p>
+                      
+                      <div className="flex gap-3 justify-center mt-4">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setTipOpen(false); }}
+                          className="px-5 py-2.5 bg-white/5 hover:bg-white/10 active:bg-white/20 rounded-full text-white text-[13px] font-bold transition-colors border border-white/10"
+                        >
+                          Close
+                        </button>
+                        <button 
+                          onClick={handleNext}
+                          className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 rounded-full text-white text-[13px] font-bold transition-colors shadow-[0_4px_12px_rgba(16,185,129,0.3)]"
+                        >
+                          Next Tip
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </Liquid.Item>
+
           </Liquid>
         </div>
       </div>
       
       {/* Footer Branding */}
       <div className="absolute bottom-6 left-0 right-0 text-center pointer-events-none">
-        <p className="text-[11px] font-semibold text-[#86868B] tracking-[0.2em] uppercase">SwapSoko Secure Trading</p>
+        <p className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase drop-shadow-sm">SwapSoko Secure Trading</p>
       </div>
     </div>
   );
