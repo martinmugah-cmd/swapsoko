@@ -85,135 +85,173 @@ function CreateSokoModal({ onClose, myProfile }: { onClose: () => void; myProfil
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[1050] flex items-end justify-center"
+      className="fixed inset-0 bg-slate-900/30 backdrop-blur-md z-[1050] flex items-end sm:items-center justify-center sm:p-4"
       onClick={onClose}
     >
       <motion.div
         initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="w-full max-w-[480px] mx-auto bg-white rounded-t-[32px] p-6 pb-28 shadow-[0_-20px_60px_rgba(0,0,0,0.08)] relative overflow-hidden"
+        className="w-full max-w-[480px] mx-auto bg-white rounded-t-[40px] sm:rounded-[40px] p-7 pb-10 shadow-[0_-20px_60px_rgba(0,0,0,0.1)] relative overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6 relative z-10" />
-        <div className="flex items-center gap-4 mb-6 relative z-10">
-          <div className="w-12 h-12 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-center shadow-sm transform rotate-[-3deg]">
-            <Users className="w-6 h-6 text-emerald-500" />
-          </div>
+        <div className="absolute top-0 left-0 right-0 h-32 bg-[linear-gradient(120deg,#e0c3fc_0%,#8ec5fc_100%)] opacity-20 pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white pointer-events-none" />
+        
+        <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6 relative z-10" />
+        
+        <div className="flex items-center gap-5 mb-8 relative z-10">
+          <motion.div 
+            animate={{ y: [0, -4, 0] }} 
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="w-16 h-16 bg-white border border-slate-100 rounded-[20px] flex items-center justify-center shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
+          >
+            <Users className="w-8 h-8 text-emerald-500" />
+          </motion.div>
           <div>
-            <h3 className="font-extrabold text-2xl text-slate-900 tracking-tight">Create a Soko</h3>
-            <p className="text-sm text-slate-500 font-medium mt-0.5">Start a new community space</p>
+            <h3 className="font-extrabold text-[26px] text-slate-900 tracking-tight leading-none">Create a Soko</h3>
+            <p className="text-[15px] text-slate-500 font-medium mt-1">Start a new community space</p>
           </div>
         </div>
         
-        <div className="space-y-5 relative z-10">
+        <div className="space-y-6 relative z-10">
           <div>
-            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Soko Icon</label>
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x">
+            <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Soko Icon</label>
+            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x -mx-7 px-7">
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => fileInputRef.current?.click()}
-                className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 snap-center transition-all ${
-                  icon && icon.startsWith('data:image') ? "bg-emerald-50 border-2 border-emerald-500 text-emerald-600 shadow-sm" : "bg-[#F5F5F7] border-2 border-dashed border-gray-200 text-gray-400 hover:bg-gray-100"
+                className={`w-16 h-16 rounded-[20px] flex items-center justify-center flex-shrink-0 snap-center shadow-sm transition-all duration-300 ${
+                  icon && icon.startsWith('data:image') ? "bg-emerald-50 border border-emerald-500 text-emerald-600 shadow-[0_4px_20px_rgba(16,185,129,0.2)]" : "bg-slate-50 border border-slate-200 border-dashed text-slate-400 hover:border-slate-300"
                 }`}
               >
-                {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : icon && icon.startsWith('data:image') ? <img src={icon} className="w-full h-full object-cover rounded-2xl" /> : <ImageIcon className="w-6 h-6" />}
-              </button>
+                {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : icon && icon.startsWith('data:image') ? <img src={icon} className="w-full h-full object-cover rounded-[20px]" /> : <ImageIcon className="w-7 h-7" />}
+              </motion.button>
               {ICONS.map(i => {
                 const IconComp = { Users, GraduationCap, Laptop: Cpu, BookOpen, Gamepad2, Stethoscope, Camera, Home }[i] || Users;
+                const isSelected = icon === i;
                 return (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     key={i}
                     onClick={() => setIcon(i)}
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 snap-center transition-all ${
-                      icon === i ? "bg-emerald-50 border-2 border-emerald-500 text-emerald-600 shadow-sm scale-105" : "bg-[#F5F5F7] border-2 border-transparent text-slate-500 hover:bg-gray-100"
+                    className={`w-16 h-16 rounded-[20px] flex items-center justify-center flex-shrink-0 snap-center shadow-sm transition-all duration-300 relative ${
+                      isSelected ? "bg-emerald-50 border border-emerald-500 text-emerald-600" : "bg-slate-50 border border-slate-100 text-slate-500 hover:bg-slate-100"
                     }`}
                   >
-                    <IconComp className="w-6 h-6" />
-                  </button>
+                    {isSelected && <motion.div layoutId="iconHighlight" className="absolute inset-0 rounded-[20px] shadow-[0_4px_20px_rgba(16,185,129,0.2)]" />}
+                    <IconComp className="w-7 h-7 relative z-10" />
+                  </motion.button>
                 );
               })}
             </div>
           </div>
           <div>
-            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Name & Description</label>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Vintage Fashion KE" className="w-full border border-gray-200 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-50 font-medium transition-all bg-[#F5F5F7] text-slate-900 placeholder-slate-400 mb-3" />
-            <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="What is this community about?" rows={2} className="w-full border border-gray-200 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-50 font-medium transition-all bg-[#F5F5F7] text-slate-900 placeholder-slate-400 resize-none" />
+            <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Name & Description</label>
+            <div className="space-y-3">
+              <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Vintage Fashion KE" className="w-full border border-slate-200 rounded-[20px] px-5 py-4 text-[16px] outline-none focus:border-emerald-500 focus:bg-white focus:ring-[3px] focus:ring-emerald-50 font-bold transition-all bg-slate-50 text-slate-900 placeholder-slate-400 shadow-inner" />
+              <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="What is this community about?" rows={3} className="w-full border border-slate-200 rounded-[20px] px-5 py-4 text-[16px] outline-none focus:border-emerald-500 focus:bg-white focus:ring-[3px] focus:ring-emerald-50 font-medium transition-all bg-slate-50 text-slate-900 placeholder-slate-400 resize-none shadow-inner" />
+            </div>
           </div>
           <div>
-            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Access Type</label>
-            <div className="flex gap-2">
-              <button
+            <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Access Type</label>
+            <div className="flex gap-3">
+              <motion.button
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setType("public")}
-                className={`flex-1 p-3 rounded-2xl text-center flex flex-col items-center gap-1 border transition-all ${
-                  type === "public" ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm" : "border-gray-200 bg-white text-slate-500 hover:bg-gray-50"
+                className={`flex-1 p-4 rounded-[24px] text-center flex flex-col items-center gap-2 border transition-all duration-300 relative overflow-hidden ${
+                  type === "public" ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-[0_8px_20px_rgba(16,185,129,0.1)]" : "border-slate-100 bg-white text-slate-500 shadow-sm hover:border-slate-200"
                 }`}
               >
-                <Users className="w-5 h-5 mb-1" />
-                <span className="text-[11px] font-bold tracking-wide uppercase">Public</span>
-              </button>
-              <button
+                {type === "public" && <motion.div layoutId="typeHighlight" className="absolute inset-0 bg-emerald-500/5" />}
+                <Users className="w-6 h-6" />
+                <span className="text-[11px] font-extrabold tracking-widest uppercase">Public</span>
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setType("campus")}
-                className={`flex-1 p-3 rounded-2xl text-center flex flex-col items-center gap-1 border transition-all ${
-                  type === "campus" ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm" : "border-gray-200 bg-white text-slate-500 hover:bg-gray-50"
+                className={`flex-1 p-4 rounded-[24px] text-center flex flex-col items-center gap-2 border transition-all duration-300 relative overflow-hidden ${
+                  type === "campus" ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-[0_8px_20px_rgba(16,185,129,0.1)]" : "border-slate-100 bg-white text-slate-500 shadow-sm hover:border-slate-200"
                 }`}
               >
-                <GraduationCap className="w-5 h-5 mb-1" />
-                <span className="text-[11px] font-bold tracking-wide uppercase">Campus</span>
-              </button>
-              <button
+                {type === "campus" && <motion.div layoutId="typeHighlight" className="absolute inset-0 bg-emerald-500/5" />}
+                <GraduationCap className="w-6 h-6" />
+                <span className="text-[11px] font-extrabold tracking-widest uppercase">Campus</span>
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setType("private")}
-                className={`flex-1 p-3 rounded-2xl text-center flex flex-col items-center gap-1 border transition-all ${
-                  type === "private" ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm" : "border-gray-200 bg-white text-slate-500 hover:bg-gray-50"
+                className={`flex-1 p-4 rounded-[24px] text-center flex flex-col items-center gap-2 border transition-all duration-300 relative overflow-hidden ${
+                  type === "private" ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-[0_8px_20px_rgba(16,185,129,0.1)]" : "border-slate-100 bg-white text-slate-500 shadow-sm hover:border-slate-200"
                 }`}
               >
-                <div className="w-5 h-5 mb-1 flex items-center justify-center font-serif text-lg font-bold leading-none">P</div>
-                <span className="text-[11px] font-bold tracking-wide uppercase">Private</span>
-              </button>
+                {type === "private" && <motion.div layoutId="typeHighlight" className="absolute inset-0 bg-emerald-500/5" />}
+                <Lock className="w-6 h-6" />
+                <span className="text-[11px] font-extrabold tracking-widest uppercase">Private</span>
+              </motion.button>
             </div>
           </div>
           
-          {type === "private" && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="overflow-hidden">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block mt-1">Invite Code</label>
-              <input value={inviteCode} onChange={e => setInviteCode(e.target.value)} placeholder="e.g. SECRET123" className="w-full border border-gray-200 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-50 font-bold tracking-widest uppercase transition-all bg-[#F5F5F7] text-slate-900 placeholder-slate-400" />
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {type === "private" && (
+              <motion.div initial={{ opacity: 0, height: 0, y: -10 }} animate={{ opacity: 1, height: "auto", y: 0 }} exit={{ opacity: 0, height: 0, y: -10 }} className="overflow-hidden">
+                <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-3 block mt-2">Invite Code</label>
+                <input value={inviteCode} onChange={e => setInviteCode(e.target.value)} placeholder="e.g. SECRET123" className="w-full border border-slate-200 rounded-[20px] px-5 py-4 text-[16px] outline-none focus:border-emerald-500 focus:bg-white focus:ring-[3px] focus:ring-emerald-50 font-extrabold tracking-[0.2em] uppercase transition-all bg-slate-50 text-slate-900 placeholder-slate-300 shadow-inner" />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {type === "campus" && (
-            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex items-start gap-3 mt-2">
-              <div className="p-2 bg-blue-100 rounded-xl shrink-0 mt-0.5 border border-blue-200">
-                 <GraduationCap className="w-5 h-5 text-blue-600" />
-              </div>
-              <div className="text-[13px] text-blue-800 font-medium leading-relaxed pt-1">
-                {(() => {
-                  let myProfileIsStudentVerified = user?.metadata?.isStudentVerified === true || user?.user_metadata?.isStudentVerified === true;
-                  let myProfileUniversity = user?.metadata?.university || user?.user_metadata?.university || "";
-                  if (!myProfileIsStudentVerified && myProfile) {
-                    try {
-                      const u = JSON.parse(myProfile.university || "{}");
-                      const d = JSON.parse(myProfile.description || "{}");
-                      myProfileIsStudentVerified = u.isStudentVerified || d.isStudentVerified || myProfile.isStudentVerified || false;
-                      if (!myProfileUniversity) {
-                        myProfileUniversity = u.val || myProfile.university || "";
+          <AnimatePresence>
+            {type === "campus" && (
+              <motion.div initial={{ opacity: 0, height: 0, y: -10 }} animate={{ opacity: 1, height: "auto", y: 0 }} exit={{ opacity: 0, height: 0, y: -10 }} className="overflow-hidden">
+                <div className="bg-blue-500/5 border border-blue-500/10 rounded-[24px] p-5 flex items-start gap-4 mt-2">
+                  <div className="p-3 bg-white rounded-[16px] shrink-0 border border-blue-500/10 shadow-sm">
+                     <GraduationCap className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <div className="text-[14px] text-slate-600 font-medium leading-relaxed pt-1">
+                    {(() => {
+                      let myProfileIsStudentVerified = user?.metadata?.isStudentVerified === true || user?.user_metadata?.isStudentVerified === true;
+                      let myProfileUniversity = user?.metadata?.university || user?.user_metadata?.university || "";
+                      if (!myProfileIsStudentVerified && myProfile) {
+                        try {
+                          const u = JSON.parse(myProfile.university || "{}");
+                          const d = JSON.parse(myProfile.description || "{}");
+                          myProfileIsStudentVerified = u.isStudentVerified || d.isStudentVerified || myProfile.isStudentVerified || false;
+                          if (!myProfileUniversity) {
+                            myProfileUniversity = u.val || myProfile.university || "";
+                          }
+                          if (myProfileUniversity.startsWith('{')) myProfileUniversity = "";
+                        } catch(e) {}
                       }
-                      if (myProfileUniversity.startsWith('{')) myProfileUniversity = "";
-                    } catch(e) {}
-                  }
-                  return (
-                    <>
-                      Only verified students from <b className="text-blue-900">{myProfileUniversity || "your university"}</b> will be able to join this Soko.
-                      {!myProfileIsStudentVerified && <p className="text-red-600 mt-3 bg-red-50 p-3 rounded-xl border border-red-100 font-medium text-[12px] leading-relaxed"><b className="block mb-0.5 uppercase tracking-wider text-[10px]">Action Required</b> Complete your student verification via the Profile settings to unlock Campus Sokos.</p>}
-                    </>
-                  );
-                })()}
-              </div>
-            </div>
-          )}
+                      return (
+                        <>
+                          Only verified students from <b className="text-slate-900">{myProfileUniversity || "your university"}</b> will be able to join this Soko.
+                          {!myProfileIsStudentVerified && (
+                            <div className="mt-4 bg-red-50 p-4 rounded-[20px] border border-red-100">
+                              <b className="block mb-1 text-[11px] font-extrabold uppercase tracking-widest text-red-500">Action Required</b>
+                              <span className="text-red-700 font-medium text-[13px] leading-snug">Complete your student verification via Profile settings to unlock Campus Sokos.</span>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        <button onClick={handleSubmit} disabled={createMutation.isPending} className="w-full mt-8 bg-slate-900 hover:bg-black text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-black/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 relative z-10">
+        <motion.button 
+          whileTap={{ scale: 0.98 }}
+          onClick={handleSubmit} 
+          disabled={createMutation.isPending} 
+          className="w-full mt-8 bg-slate-900 text-white font-extrabold py-5 rounded-[24px] shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:bg-black hover:shadow-[0_12px_25px_rgba(0,0,0,0.2)] transition-all flex items-center justify-center gap-2 relative z-10 text-[16px]"
+        >
           {createMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Check className="w-5 h-5" /> Create Soko</>}
-        </button>
+        </motion.button>
       </motion.div>
     </motion.div>
   );
