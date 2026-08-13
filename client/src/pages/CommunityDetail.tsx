@@ -946,6 +946,7 @@ export default function CommunityDetailPage() {
                                         })()}</p>
                                         {reply.profiles?.isStudentVerified && <GraduationCap className="w-3.5 h-3.5 text-emerald-500" />}
                                       </div>
+                                      </div>
                                       <p className="text-[11px] font-semibold text-slate-400">{new Date(reply.createdAt || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                                     </div>
                                     <p className="text-[13px] font-medium text-slate-600 leading-relaxed">{reply.content}</p>
