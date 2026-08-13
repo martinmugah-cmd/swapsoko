@@ -2372,11 +2372,23 @@ const createProxy = (path: string[] = []): any => {
                     });
 
                   if (variables.toUserId) {
+                    let senderName = "Someone";
+                    if (variables.userId) {
+                        const { data: senderData } = await supabase.from('profiles').select('name, university').eq('user_id', variables.userId).single();
+                        if (senderData) {
+                            senderName = senderData.name;
+                            try {
+                                const desc = JSON.parse(senderData.university || "{}");
+                                if (desc.username) senderName = "@" + desc.username;
+                                else if (senderName && senderName !== "SwapSoko User") senderName = "@" + senderName.split(" ").join("").toLowerCase();
+                            } catch(e) {}
+                        }
+                    }
                     await supabase.from('notifications').insert({
                       user_id: variables.toUserId,
                       type: 'proposal',
                       title: 'New Swap Proposal',
-                      message: 'Someone sent you an offer for your listing!',
+                      message: `${senderName} sent you an offer for your listing!`,
                       is_read: false
                     });
                   }
