@@ -185,39 +185,29 @@ export default function SwapGuruPage() {
   return (
     <div className="min-h-[100dvh] bg-[#F8FAFC] flex flex-col font-sans selection:bg-emerald-500/30 relative overflow-hidden">
       
-      {/* Webapp Theme Dark Squircle Header */}
-      <div 
-        className="sticky top-4 z-40 mx-4 rounded-3xl px-4 py-4 border border-white/10 shadow-[0_24px_50px_-12px_rgba(0,0,0,0.25)] relative overflow-hidden mb-2"
-        style={{ background: "linear-gradient(145deg, #09090B 0%, #18181B 100%)", backdropFilter: "blur(24px)" }}
-      >
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay pointer-events-none" />
+      {/* Dynamic Floating Header */}
+      <div className="sticky top-0 z-40 px-4 pt-4 pb-2">
         <motion.div 
-           animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }} 
-           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
-           className="absolute -top-16 -right-16 w-48 h-48 bg-green-500 rounded-full blur-[40px] pointer-events-none" 
-        />
-        <motion.div 
-           animate={{ scale: [1, 1.15, 1], opacity: [0.1, 0.15, 0.1] }} 
-           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }} 
-           className="absolute -bottom-16 -left-16 w-48 h-48 bg-[#6366F1] rounded-full blur-[40px] pointer-events-none" 
-        />
-
-        <div className="flex items-center justify-between relative z-10 max-w-[800px] mx-auto w-full">
-          <button onClick={() => window.history.back()} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/5 shadow-sm transition-all text-white">
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="flex items-center justify-between bg-white/70 backdrop-blur-3xl border border-white/50 shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-[24px] px-4 py-3 max-w-[800px] mx-auto w-full"
+        >
+          <button onClick={() => window.history.back()} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100/50 hover:bg-slate-200/80 transition-colors text-slate-900">
             <ChevronLeft className="w-5 h-5 -ml-0.5" />
           </button>
           
           <div className="flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2">
-            <h1 className="font-extrabold text-white text-lg flex items-center justify-center gap-1.5 drop-shadow-md tracking-tight">
-              <Sparkles className="w-4 h-4 text-emerald-400" /> Swap Guru
+            <h1 className="font-extrabold text-slate-900 text-[18px] flex items-center justify-center gap-1.5 tracking-tight">
+              <Sparkles className="w-4 h-4 text-emerald-500" /> Swap Guru
             </h1>
-            <p className="text-[10px] text-gray-400 font-bold tracking-widest uppercase">AI Assistant</p>
+            <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase">AI Assistant</p>
           </div>
 
-          <button onClick={() => setMessages([{ role: "guru", content: getGreeting() }])} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/5 shadow-sm transition-all text-white">
+          <button onClick={() => setMessages([{ role: "guru", content: getGreeting() }])} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100/50 hover:bg-slate-200/80 transition-colors text-slate-900">
             <RotateCcw className="w-4 h-4" />
           </button>
-        </div>
+        </motion.div>
       </div>
 
       {/* Messages Area */}

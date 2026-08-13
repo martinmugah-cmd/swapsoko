@@ -587,42 +587,54 @@ export default function SwapWishesPage() {
       animate={{ opacity: 1 }}
       className="min-h-screen bg-[#F8FAFC] bottom-nav-safe"
     >
-      {/* Header */}
-      <div className="page-header px-4 py-3">
-        <div className="flex items-center justify-between mb-3">
-          <button onClick={() => navigate("/")} className="w-8 h-8 flex items-center justify-center">
-            <ChevronLeft className="w-5 h-5 text-slate-900" />
-          </button>
-          <h1 className="font-bold text-slate-900 text-base flex items-center gap-1.5">
-            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" /> {"Swishes"}
-          </h1>
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setShowCreate(true)}
-            className="w-8 h-8 gradient-green rounded-full flex items-center justify-center"
-          >
-            <Plus className="w-4 h-4 text-white" />
-          </motion.button>
-        </div>
+      {/* Dynamic Floating Header */}
+      <div className="sticky top-0 z-40 px-4 pt-4 pb-2">
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="flex flex-col gap-3 bg-white/70 backdrop-blur-3xl border border-white/50 shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-[24px] px-4 py-3 max-w-[800px] mx-auto w-full"
+        >
+          <div className="flex items-center justify-between">
+            <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100/50 hover:bg-slate-200/80 transition-colors text-slate-900">
+              <ChevronLeft className="w-5 h-5 -ml-0.5" />
+            </button>
+            
+            <div className="flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2">
+              <h1 className="font-extrabold text-slate-900 text-[18px] flex items-center justify-center gap-1.5 tracking-tight">
+                <Star className="w-4 h-4 text-emerald-500 fill-emerald-500" /> Swishes
+              </h1>
+              <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Wishes & Cycles</p>
+            </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2">
-          {[
-            { id: "wishes", label: "Wishes Board" },
-            { id: "cycles", label: "Multi-Way Swap" },
-          ].map(tab => (
             <motion.button
-              key={tab.id}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 py-2 rounded-2xl text-xs font-semibold transition-colors ${
-                activeTab === tab.id ? "gradient-green text-white" : "bg-gray-100 text-gray-600"
-              }`}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setShowCreate(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-50 hover:bg-emerald-100 transition-colors text-emerald-600"
             >
-              {tab.label}
+              <Plus className="w-5 h-5" />
             </motion.button>
-          ))}
-        </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-2">
+            {[
+              { id: "wishes", label: "Wishes Board" },
+              { id: "cycles", label: "Multi-Way Swap" },
+            ].map(tab => (
+              <motion.button
+                key={tab.id}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex-1 py-2 rounded-[16px] text-[13px] font-bold transition-all ${
+                  activeTab === tab.id ? "bg-slate-900 text-white shadow-md" : "bg-slate-100/50 text-slate-600 hover:bg-slate-200/50"
+                }`}
+              >
+                {tab.label}
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
       </div>
 
       <div className="px-4 py-4 space-y-3">

@@ -190,46 +190,57 @@ export default function NotificationsPage() {
       animate={{ opacity: 1 }}
       className="min-h-screen bg-[#F8FAFC] bottom-nav-safe"
     >
-      {/* Header */}
-      <div className="page-header px-4 py-3">
-        <div className="flex items-center justify-between mb-3">
-          <button onClick={() => navigate("/")} className="w-8 h-8 flex items-center justify-center">
-            <ChevronLeft className="w-5 h-5 text-slate-900" />
-          </button>
-          <div className="flex items-center gap-2">
-            <h1 className="font-bold text-slate-900 text-base">{"Notifications"}</h1>
-            {unreadCount > 0 && (
-              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-bold">{unreadCount}</span>
-              </div>
-            )}
-          </div>
-          {unreadCount > 0 && (
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={markAllRead}
-              className="text-xs text-green-500 font-semibold"
-            >
-              Mark all read
-            </motion.button>
-          )}
-        </div>
+      {/* Dynamic Floating Header */}
+      <div className="sticky top-0 z-40 px-4 pt-4 pb-2">
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="flex flex-col gap-3 bg-white/70 backdrop-blur-3xl border border-white/50 shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-[24px] px-4 py-3 max-w-[800px] mx-auto w-full"
+        >
+          <div className="flex items-center justify-between relative">
+            <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100/50 hover:bg-slate-200/80 transition-colors text-slate-900 relative z-10">
+              <ChevronLeft className="w-5 h-5 -ml-0.5" />
+            </button>
+            
+            <div className="flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2">
+              <h1 className="font-extrabold text-slate-900 text-[18px] flex items-center justify-center gap-1.5 tracking-tight">
+                <Bell className="w-4 h-4 text-emerald-500" /> Notifications
+              </h1>
+              <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Updates</p>
+            </div>
 
-        {/* Filter tabs */}
-        <div className="flex gap-2">
-          {(["all", "unread"] as const).map(f => (
-            <motion.button
-              key={f}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setFilter(f)}
-              className={`px-5 py-2 rounded-full text-xs font-bold capitalize transition-all shadow-sm ${
-                filter === f ? "bg-slate-900 text-white" : "bg-white/70 backdrop-blur-md text-gray-500 border border-gray-100 hover:bg-white"
-              }`}
-            >
-              {f === "all" ? "All" : `Unread (${unreadCount})`}
-            </motion.button>
-          ))}
-        </div>
+            <div className="flex items-center relative z-10">
+              {unreadCount > 0 ? (
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={markAllRead}
+                  className="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[12px] font-bold"
+                >
+                  Read All
+                </motion.button>
+              ) : (
+                <div className="w-10 h-10" />
+              )}
+            </div>
+          </div>
+
+          {/* Filter tabs */}
+          <div className="flex gap-2">
+            {(["all", "unread"] as const).map(f => (
+              <motion.button
+                key={f}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setFilter(f)}
+                className={`flex-1 py-2 rounded-[16px] text-[13px] font-bold capitalize transition-all ${
+                  filter === f ? "bg-slate-900 text-white shadow-md" : "bg-slate-100/50 text-slate-600 hover:bg-slate-200/50"
+                }`}
+              >
+                {f === "all" ? "All" : `Unread (${unreadCount})`}
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
       </div>
 
       <div className="px-4 py-4 space-y-2">

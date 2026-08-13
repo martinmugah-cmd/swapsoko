@@ -235,32 +235,50 @@ export default function PostPage() {
       animate={{ opacity: 1 }}
       className="min-h-screen bg-[#F8FAFC] flex flex-col"
     >
-      {/* Header */}
-      <div className="page-header px-4 py-3">
-        <div className="flex items-center justify-between mb-3">
-          <button onClick={() => step > 1 ? setStep(s => s - 1) : navigate("/")} className="w-8 h-8 flex items-center justify-center">
-            <ChevronLeft className="w-5 h-5 text-slate-900" />
-          </button>
-          <h1 className="font-bold text-slate-900 text-base">{"Post Item"}</h1>
-          <div className="w-8" />
-        </div>
-
-        {/* Step indicator */}
-        <div className="flex items-center gap-2">
-          {steps.map((s, i) => (
-            <div key={s.id} className="flex items-center gap-2 flex-1">
-              <div className={`flex items-center gap-1.5 ${step >= s.id ? "text-green-500" : "text-gray-400"}`}>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step >= s.id ? "bg-green-500 text-white" : "bg-gray-200 text-gray-400"}`}>
-                  {step > s.id ? <CheckCircle2 className="w-4 h-4" /> : s.id}
-                </div>
-                <span className="text-xs font-medium">{s.label}</span>
-              </div>
-              {i < steps.length - 1 && (
-                <div className={`flex-1 h-0.5 rounded-full ${step > s.id ? "bg-green-500" : "bg-gray-200"}`} />
-              )}
+      {/* Dynamic Floating Header */}
+      <div className="sticky top-0 z-40 px-4 pt-4 pb-2">
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="flex flex-col gap-4 bg-white/70 backdrop-blur-3xl border border-white/50 shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-[24px] px-4 py-3 max-w-[800px] mx-auto w-full"
+        >
+          <div className="flex items-center justify-between relative">
+            <button onClick={() => step > 1 ? setStep(s => s - 1) : navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100/50 hover:bg-slate-200/80 transition-colors text-slate-900 relative z-10">
+              <ChevronLeft className="w-5 h-5 -ml-0.5" />
+            </button>
+            
+            <div className="flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2">
+              <h1 className="font-extrabold text-slate-900 text-[18px] flex items-center justify-center gap-1.5 tracking-tight">
+                <Plus className="w-4 h-4 text-emerald-500" /> Post Listing
+              </h1>
+              <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Step {step} of 3</p>
             </div>
-          ))}
-        </div>
+
+            <div className="w-10 h-10 relative z-10" />
+          </div>
+
+          {/* Step indicator */}
+          <div className="flex items-center justify-between px-2">
+            {steps.map((s, i) => (
+              <div key={s.id} className="flex items-center flex-1">
+                <div className="flex flex-col items-center gap-1.5 w-full">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-extrabold transition-colors ${
+                    step >= s.id ? "bg-emerald-500 text-white shadow-[0_4px_12px_rgba(16,185,129,0.3)]" : "bg-slate-100 text-slate-400"
+                  }`}>
+                    {step > s.id ? <Check className="w-4 h-4" /> : s.id}
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${step >= s.id ? "text-slate-900" : "text-slate-400"}`}>{s.label}</span>
+                </div>
+                {i < steps.length - 1 && (
+                  <div className={`flex-1 h-1 rounded-full -mt-5 mx-2 transition-colors ${
+                    step > s.id ? "bg-emerald-500" : "bg-slate-100"
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
 
       <div className="flex-1 px-4 py-4 overflow-y-auto bottom-nav-safe">
