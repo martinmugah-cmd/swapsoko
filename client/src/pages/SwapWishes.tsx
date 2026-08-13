@@ -34,14 +34,14 @@ function SwapChain({ cycle }: { cycle: { legs: any[]; type: string; matchScore?:
     >
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-500/20">
-            <Repeat2 className="w-5 h-5 text-white" strokeWidth={2.5} />
+          <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-md shadow-orange-500/20">
+            <Flame className="w-5 h-5 text-white" strokeWidth={2.5} />
           </div>
           <div>
             <h3 className="font-extrabold text-slate-900 text-[15px] tracking-tight">
               {cycle.type === "3way" ? "3-Way" : "4-Way"} Swap Cycle
             </h3>
-            <p className="text-[11px] font-bold text-gray-500 tracking-wide uppercase mt-0.5">Automated Match</p>
+            <p className="text-[11px] font-bold text-slate-500 tracking-wide uppercase mt-0.5">Automated Match</p>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1.5">
@@ -749,8 +749,8 @@ export default function SwapWishesPage() {
                 ))
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-                  <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                    <Repeat className="w-12 h-12 text-indigo-500" />
+                  <div className="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <Flame className="w-12 h-12 text-orange-500" />
                   </div>
                   <h3 className="text-xl font-extrabold text-slate-900 tracking-tight mb-2">No Cycles Found Yet</h3>
                   <p className="text-slate-500 text-[15px] font-medium max-w-[260px] leading-relaxed mb-8">
@@ -759,7 +759,7 @@ export default function SwapWishesPage() {
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate("/post")}
-                    className="flex items-center justify-center gap-2 w-full max-w-[240px] bg-indigo-500 text-white font-extrabold text-[15px] py-4 rounded-[20px] shadow-[0_8px_20px_rgba(99,102,241,0.25)] hover:shadow-[0_12px_25px_rgba(99,102,241,0.35)] hover:-translate-y-0.5 transition-all"
+                    className="flex items-center justify-center gap-2 w-full max-w-[240px] bg-gradient-to-r from-orange-500 to-red-500 text-white font-extrabold text-[15px] py-4 rounded-[20px] shadow-[0_8px_20px_rgba(249,115,22,0.25)] hover:shadow-[0_12px_25px_rgba(249,115,22,0.35)] hover:-translate-y-0.5 transition-all"
                   >
                     <Plus className="w-5 h-5" /> Add a Listing
                   </motion.button>

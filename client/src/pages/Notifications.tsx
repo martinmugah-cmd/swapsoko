@@ -11,10 +11,12 @@ function NotificationItem({ notif, index, onMarkRead, onAccept, onDecline, navig
   const [swiped, setSwiped] = useState(false);
   const swipeThreshold = -60;
 
+  const isUnread = !notif.isRead;
+
   return (
-    <div className="relative rounded-[24px] overflow-hidden mb-2 shadow-sm bg-gray-100">
+    <div className="relative rounded-[24px] mb-3 bg-emerald-500">
       {/* Background Action: Mark Read / Dismiss */}
-      <div className="absolute inset-0 bg-green-500 flex items-center justify-end px-6 rounded-[24px]">
+      <div className="absolute inset-0 flex items-center justify-end px-6 rounded-[24px]">
         <Check className="w-6 h-6 text-white" />
       </div>
 
@@ -48,54 +50,56 @@ function NotificationItem({ notif, index, onMarkRead, onAccept, onDecline, navig
             navigate(notif.link);
           }
         }}
-        className={`bg-white/90 backdrop-blur-xl rounded-[24px] p-5 border flex items-start gap-4 cursor-pointer relative z-10 hover:bg-white transition-colors ${
-          !notif.isRead ? "border-green-500/30 shadow-[0_4px_20px_rgba(34,197,94,0.08)]" : "border-transparent shadow-[0_2px_12px_rgba(0,0,0,0.03)]"
+        className={`relative z-10 w-full p-4 rounded-[24px] flex items-start gap-4 cursor-pointer transition-colors shadow-sm ${
+          isUnread 
+            ? "bg-[#F0FDF4] border border-[#BBF7D0]" 
+            : "bg-white border border-[#E2E8F0] hover:bg-slate-50"
         }`}
       >
         <div
-          className="w-[52px] h-[52px] rounded-[18px] flex items-center justify-center flex-shrink-0 shadow-sm"
-          style={{ backgroundColor: notif.color + "15", border: `1px solid ${notif.color}30` }}
+          className={`w-[42px] h-[42px] rounded-full flex items-center justify-center flex-shrink-0 border ${
+            isUnread ? "bg-[#DCFCE7] border-[#BBF7D0]" : "bg-[#F1F5F9] border-[#E2E8F0]"
+          }`}
         >
-          {notif.icon === "proposal" && <ArrowRightLeft size={22} color={notif.color} />}
-          {notif.icon === "message" && <MessageCircle size={22} color={notif.color} />}
-          {notif.icon === "wish_match" && <Star size={22} color={notif.color} />}
-          {notif.icon === "swap_completed" && <CheckCircle2 size={22} color={notif.color} />}
-          {notif.icon === "trust" && <Shield size={22} color={notif.color} />}
-          {notif.icon === "community" && <Users size={22} color={notif.color} />}
-          {!["proposal", "message", "wish_match", "swap_completed", "trust", "community"].includes(notif.icon) && <Bell size={22} color={notif.color} />}
+          {notif.icon === "proposal" && <ArrowRightLeft size={18} className={isUnread ? "text-[#16A34A]" : "text-[#64748B]"} />}
+          {notif.icon === "message" && <MessageCircle size={18} className={isUnread ? "text-[#16A34A]" : "text-[#64748B]"} />}
+          {notif.icon === "wish_match" && <Star size={18} className={isUnread ? "text-[#16A34A]" : "text-[#64748B]"} />}
+          {notif.icon === "swap_completed" && <CheckCircle2 size={18} className={isUnread ? "text-[#16A34A]" : "text-[#64748B]"} />}
+          {notif.icon === "trust" && <Shield size={18} className={isUnread ? "text-[#16A34A]" : "text-[#64748B]"} />}
+          {notif.icon === "community" && <Users size={18} className={isUnread ? "text-[#16A34A]" : "text-[#64748B]"} />}
+          {!["proposal", "message", "wish_match", "swap_completed", "trust", "community"].includes(notif.icon) && <Bell size={18} className={isUnread ? "text-[#16A34A]" : "text-[#64748B]"} />}
         </div>
+        
         <div className="flex-1 min-w-0 pt-0.5">
           <div className="flex items-center justify-between mb-1">
-            <p className={`text-[15px] truncate pr-2 ${!notif.isRead ? "font-extrabold text-slate-900" : "font-bold text-gray-700"}`}>
+            <p className={`text-[15px] font-bold truncate pr-2 ${isUnread ? "text-slate-900" : "text-slate-700"}`}>
               {notif.title}
             </p>
-            <span className="text-[11px] font-bold text-gray-400 flex-shrink-0 uppercase tracking-wider">
+            <span className="text-[10px] font-extrabold text-slate-400 flex-shrink-0 uppercase tracking-wider">
               {formatDistanceToNow(notif.time, { addSuffix: true })}
             </span>
           </div>
-          <p className="text-[14px] text-gray-500 mt-1 leading-relaxed line-clamp-2 font-medium">{notif.body || notif.message}</p>
-          {notif.type === "community_request" && !notif.isRead && (
+          <p className="text-[14px] text-slate-500 mt-0.5 leading-snug line-clamp-2 font-medium">{notif.body || notif.message}</p>
+          
+          {notif.type === "community_request" && isUnread && (
             <div className="flex gap-2 mt-4">
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={(e) => onAccept(e, notif)}
-                className="px-5 py-2.5 bg-slate-900 text-white text-[13px] font-bold rounded-full shadow-md hover:bg-[#1E293B] transition-colors"
+                className="px-5 py-2.5 bg-slate-900 text-white text-[13px] font-bold rounded-full shadow-md hover:bg-slate-800 transition-colors"
               >
                 Approve
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={(e) => onDecline(e, notif)}
-                className="px-5 py-2.5 bg-white border border-gray-200 text-slate-900 text-[13px] font-bold rounded-full shadow-sm hover:bg-gray-50 transition-colors"
+                className="px-5 py-2.5 bg-white border border-slate-200 text-slate-900 text-[13px] font-bold rounded-full shadow-sm hover:bg-slate-50 transition-colors"
               >
                 Decline
               </motion.button>
             </div>
           )}
         </div>
-        {!notif.isRead && (
-          <div className="absolute top-5 right-5 w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
-        )}
       </motion.div>
     </div>
   );
