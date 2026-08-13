@@ -12,7 +12,7 @@ import { ReportModal } from "@/components/ReportModal";
 
 // ─── Propose Swap Modal ───────────────────────────────────────────────────────
 export function ProposeSwapModal({ listing, onClose, onSend }: { listing: any; onClose: () => void; onSend: (msg: string, cash: number, options?: any) => void }) {
-    const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("");
   const [cashTopUp, setCashTopUp] = useState(0);
   const [offerItems, setOfferItems] = useState("");
   const [mpesaEnabled, setMpesaEnabled] = useState(false);
@@ -28,7 +28,7 @@ export function ProposeSwapModal({ listing, onClose, onSend }: { listing: any; o
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed-overlay bg-slate-900/40 backdrop-blur-sm z-[1050] flex items-end justify-center"
+      className="fixed-overlay bg-black/60 backdrop-blur-md z-[1050] flex items-end justify-center"
       onClick={onClose}
     >
       <motion.div
@@ -36,62 +36,65 @@ export function ProposeSwapModal({ listing, onClose, onSend }: { listing: any; o
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="bg-white w-full max-w-[480px] rounded-t-[32px] p-6 pb-28 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] relative"
+        className="w-full max-w-[480px] rounded-t-[32px] p-6 pb-28 shadow-[0_-10px_50px_rgba(0,0,0,0.5)] relative overflow-hidden border-t border-white/10"
+        style={{ background: "linear-gradient(145deg, #0f172a 0%, #020617 100%)" }}
         onClick={e => e.stopPropagation()}
       >
-        <button onClick={onClose} className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
+
+        <button onClick={onClose} className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center bg-white/5 rounded-full text-white/70 hover:bg-white/10 transition-colors border border-white/5 z-10">
           <X className="w-4 h-4" />
         </button>
 
-        <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
-        <h3 className="font-extrabold text-slate-900 text-2xl tracking-tight">{isDonation ? "Claim Donation" : "Propose Swap"}</h3>
-        <p className="text-gray-500 text-sm mt-1 flex items-center gap-1.5">
-          <Repeat2 className="w-4 h-4 text-green-500" />
-          For: <span className="font-semibold text-slate-900 truncate max-w-[200px]">{listing.title}</span>
+        <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-6 relative z-10" />
+        <h3 className="font-extrabold text-white text-2xl tracking-tight relative z-10">{isDonation ? "Claim Donation" : "Propose Swap"}</h3>
+        <p className="text-slate-400 text-sm mt-1 flex items-center gap-1.5 relative z-10">
+          <Repeat2 className="w-4 h-4 text-emerald-400" />
+          For: <span className="font-semibold text-white truncate max-w-[200px]">{listing.title}</span>
         </p>
 
-        <div className="mt-6 space-y-4">
+        <div className="mt-6 space-y-4 relative z-10">
           {!isDonation && (
             <div>
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">What you're offering</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">What you're offering</label>
               <input
                 value={offerItems}
                 onChange={e => setOfferItems(e.target.value)}
                 placeholder="e.g. iPhone 11, Laptop..."
-                className="w-full mt-1.5 bg-gray-50 border border-transparent rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all font-medium text-slate-900 placeholder:text-gray-400"
+                className="w-full mt-1.5 bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-emerald-500 focus:bg-white/10 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-white placeholder:text-slate-500 shadow-inner"
               />
             </div>
           )}
 
           <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">Message (optional)</label>
+            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Message (optional)</label>
             <textarea
               value={message}
               onChange={e => setMessage(e.target.value)}
               placeholder={isDonation ? "Introduce yourself and why you'd like this..." : "Add a friendly note to your proposal..."}
               rows={2}
-              className="w-full mt-1.5 bg-gray-50 border border-transparent rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all resize-none font-medium text-slate-900 placeholder:text-gray-400"
+              className="w-full mt-1.5 bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-emerald-500 focus:bg-white/10 focus:ring-4 focus:ring-emerald-500/10 transition-all resize-none font-medium text-white placeholder:text-slate-500 shadow-inner"
             />
           </div>
 
           {!isDonation && (
-            <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-2xl p-4 transition-all hover:shadow-md hover:shadow-[#22C55E]/5">
+            <div className="bg-emerald-900/10 border border-emerald-500/20 rounded-2xl p-4 transition-all hover:border-emerald-500/30">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center shadow-sm">
+                  <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-[0_2px_10px_rgba(16,185,129,0.3)] border border-emerald-400/50">
                     <span className="text-white text-xs font-black">M</span>
                   </div>
-                  <span className="text-[15px] font-bold text-[#166534]">M-Pesa Top-Up</span>
+                  <span className="text-[15px] font-bold text-emerald-400">M-Pesa Top-Up</span>
                 </div>
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setMpesaEnabled(!mpesaEnabled)}
-                  className={`w-12 h-7 rounded-full transition-colors flex items-center shadow-inner ${mpesaEnabled ? "bg-green-500" : "bg-gray-300"}`}
+                  className={`w-12 h-7 rounded-full transition-colors flex items-center shadow-inner border ${mpesaEnabled ? "bg-emerald-500 border-emerald-400" : "bg-white/10 border-white/10"}`}
                 >
                   <motion.div
                     animate={{ x: mpesaEnabled ? 22 : 2 }}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    className="w-6 h-6 bg-white rounded-full shadow-md"
+                    className="w-5 h-5 bg-white rounded-full shadow-md"
                   />
                 </motion.button>
               </div>
@@ -103,31 +106,31 @@ export function ProposeSwapModal({ listing, onClose, onSend }: { listing: any; o
                     exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="mt-4 pt-4 border-t border-[#BBF7D0]">
+                    <div className="mt-4 pt-4 border-t border-emerald-500/20">
                       <div className="flex items-center justify-between mb-2">
-                        <label className="text-xs font-semibold text-[#166534]">Cash amount (KES)</label>
+                        <label className="text-xs font-semibold text-emerald-400">Cash amount (KES)</label>
                         {listing?.cashTopUpAmount > 0 && (
                           <button 
                             onClick={() => setCashTopUp(listing.cashTopUpAmount)}
-                            className="text-xs bg-white text-green-500 px-2.5 py-1 rounded-full font-bold shadow-sm border border-green-500/20 hover:bg-green-500 hover:text-white transition-colors"
+                            className="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full font-bold border border-emerald-500/20 hover:bg-emerald-500 hover:text-white transition-colors"
                           >
                             Auto-fill: {listing.cashTopUpAmount}
                           </button>
                         )}
                       </div>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">KES</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-500">KES</span>
                         <input
                           type="number"
                           value={cashTopUp || ''}
                           onChange={e => setCashTopUp(Number(e.target.value))}
                           placeholder={listing?.cashTopUpAmount > 0 ? `${listing.cashTopUpAmount}` : "0"}
-                          className="w-full bg-white border border-[#BBF7D0] rounded-2xl pl-12 pr-4 py-3.5 text-[16px] font-bold text-slate-900 outline-none focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/20 transition-all shadow-inner"
+                          className="w-full bg-black/40 border border-emerald-500/20 rounded-2xl pl-12 pr-4 py-3.5 text-[16px] font-bold text-white outline-none focus:border-emerald-500 focus:bg-black/60 focus:ring-4 focus:ring-emerald-500/10 transition-all shadow-inner"
                         />
                       </div>
-                      <p className="text-[11px] font-medium text-gray-500 mt-2 flex justify-between">
+                      <p className="text-[11px] font-medium text-slate-400 mt-2 flex justify-between">
                         <span>Paid via M-Pesa at meetup</span>
-                        {listing?.cashTopUpAmount > 0 && <span className="text-green-500">Target: ~KES {listing.cashTopUpAmount}</span>}
+                        {listing?.cashTopUpAmount > 0 && <span className="text-emerald-400">Target: ~KES {listing.cashTopUpAmount}</span>}
                       </p>
                     </div>
                   </motion.div>
@@ -138,10 +141,10 @@ export function ProposeSwapModal({ listing, onClose, onSend }: { listing: any; o
 
           {listing.lat && listing.lng && (
             <div className="flex gap-3 pt-2">
-              <a href={`https://www.google.com/maps/dir/?api=1&destination=${listing.lat},${listing.lng}`} target="_blank" rel="noreferrer" className="flex-1 py-3 text-xs font-bold text-center bg-blue-50/50 rounded-2xl text-blue-600 border border-blue-100 hover:bg-blue-100 transition-colors">
+              <a href={`https://www.google.com/maps/dir/?api=1&destination=${listing.lat},${listing.lng}`} target="_blank" rel="noreferrer" className="flex-1 py-3 text-xs font-bold text-center bg-blue-500/10 rounded-2xl text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition-colors">
                 Google Maps
               </a>
-              <a href={`https://waze.com/ul?ll=${listing.lat},${listing.lng}&navigate=yes`} target="_blank" rel="noreferrer" className="flex-1 py-3 text-xs font-bold text-center bg-cyan-50/50 rounded-2xl text-cyan-600 border border-cyan-100 hover:bg-cyan-100 transition-colors">
+              <a href={`https://waze.com/ul?ll=${listing.lat},${listing.lng}&navigate=yes`} target="_blank" rel="noreferrer" className="flex-1 py-3 text-xs font-bold text-center bg-cyan-500/10 rounded-2xl text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors">
                 Waze
               </a>
             </div>
@@ -164,7 +167,7 @@ export function ProposeSwapModal({ listing, onClose, onSend }: { listing: any; o
                onClose();
             }}
             disabled={!isDonation && !offerItems && (!mpesaEnabled || cashTopUp <= 0)}
-            className="w-full mt-4 bg-green-500 text-white font-extrabold text-[15px] py-4 rounded-2xl shadow-[0_8px_20px_rgba(34,197,94,0.25)] hover:shadow-[0_12px_25px_rgba(34,197,94,0.35)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+            className="w-full mt-4 bg-emerald-500 text-white font-extrabold text-[15px] py-4 rounded-2xl shadow-[0_8px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_12px_25px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none border border-emerald-400/50"
           >
             {isDonation ? "Claim Free" : "Send Proposal"}
           </button>
