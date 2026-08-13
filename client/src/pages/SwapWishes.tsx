@@ -390,7 +390,7 @@ export function WishCard({ wish, onRespond, hideOfferButton }: { wish: any; onRe
 
 // ─── Create Wish Modal ────────────────────────────────────────────────────────
 export function CreateWishModal({ onClose, communityId }: { onClose: () => void; communityId?: number }) {
-    const { user } = useAuth();
+  const { user } = useAuth();
   const createMutation = trpc.wishes.create.useMutation();
   const [requestedItem, setRequestedItem] = useState("");
   const [offeringInput, setOfferingInput] = useState("");
@@ -419,10 +419,10 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
     }, {
       onSuccess: () => { 
         utils.wishes.list.invalidate();
-        toast.success("Wish posted!"); 
+        toast.success("Swish posted!"); 
         onClose(); 
       },
-      onError: (err: any) => { toast.error("Failed to post wish"); console.error(err); }
+      onError: (err: any) => { toast.error("Failed to post swish"); console.error(err); }
     });
   };
 
@@ -442,28 +442,32 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
         className="bg-white w-full max-w-[480px] rounded-t-[32px] p-6 pb-28 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] relative"
         onClick={e => e.stopPropagation()}
       >
-        <button onClick={onClose} className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors">
+        <button onClick={onClose} className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200 transition-colors">
           <X className="w-4 h-4" />
         </button>
 
-        <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
-        <h3 className="font-extrabold text-slate-900 text-2xl tracking-tight">Post a Swap Wish</h3>
-        <p className="text-gray-500 text-sm mt-1">Tell the community what you're looking for.</p>
+        <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6" />
+        
+        <div className="flex items-center gap-2 mb-1">
+          <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+          <h3 className="font-extrabold text-slate-900 text-2xl tracking-tight">Post a Swish</h3>
+        </div>
+        <p className="text-slate-500 text-[13px] font-medium">Let the community know what you're looking for.</p>
 
-        <div className="mt-6 space-y-4">
+        <div className="mt-6 space-y-5">
           <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">I Need *</label>
+            <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest ml-1 block mb-1.5">I Need *</label>
             <input
               value={requestedItem}
               onChange={e => setRequestedItem(e.target.value)}
               placeholder="e.g. iPhone 11, Laptop..."
-              className="w-full mt-1.5 bg-gray-50 border border-transparent rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all font-medium text-slate-900 placeholder:text-gray-400"
+              className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-yellow-400 focus:bg-white focus:ring-4 focus:ring-yellow-400/10 transition-all font-semibold text-slate-900 placeholder:text-slate-400"
             />
           </div>
 
           <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">I'm Offering</label>
-            <div className="flex gap-2 mt-1.5">
+            <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest ml-1 block mb-1.5">I'm Offering</label>
+            <div className="flex gap-2">
               <input
                 value={offeringInput}
                 onChange={e => setOfferingInput(e.target.value)}
@@ -474,7 +478,7 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
                   }
                 }}
                 placeholder="Add items you can offer..."
-                className="flex-1 bg-gray-50 border border-transparent rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all font-medium text-slate-900 placeholder:text-gray-400"
+                className="flex-1 bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-yellow-400 focus:bg-white focus:ring-4 focus:ring-yellow-400/10 transition-all font-semibold text-slate-900 placeholder:text-slate-400"
               />
               <motion.button
                 whileTap={{ scale: 0.9 }}
@@ -484,7 +488,7 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
                     setOfferingInput("");
                   }
                 }}
-                className="w-14 h-14 bg-green-500 rounded-2xl flex items-center justify-center shadow-sm shadow-[#22C55E]/20"
+                className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center shadow-md hover:bg-slate-800 transition-colors"
               >
                 <Plus className="w-5 h-5 text-white" />
               </motion.button>
@@ -495,10 +499,10 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   key={i} 
-                  className="flex items-center gap-1.5 bg-[#F0FDF4] border border-[#BBF7D0] text-[#166534] font-semibold text-sm px-3 py-1.5 rounded-full shadow-sm"
+                  className="flex items-center gap-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 font-bold text-[13px] px-3 py-1.5 rounded-full shadow-sm"
                 >
                   {item}
-                  <button onClick={() => setOfferingItems(prev => prev.filter((_, idx) => idx !== i))} className="hover:bg-[#BBF7D0] rounded-full p-0.5 transition-colors">
+                  <button onClick={() => setOfferingItems(prev => prev.filter((_, idx) => idx !== i))} className="hover:bg-yellow-200 rounded-full p-0.5 transition-colors">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </motion.span>
@@ -507,14 +511,14 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
           </div>
 
           <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">Urgency</label>
-            <div className="flex gap-2 mt-1.5 bg-gray-50 p-1 rounded-2xl border border-gray-100">
+            <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest ml-1 block mb-1.5">Urgency</label>
+            <div className="flex gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
               {(["low", "medium", "high"] as const).map(u => (
                 <button
                   key={u}
                   onClick={() => setUrgency(u)}
-                  className={`flex-1 py-2.5 rounded-2xl text-sm font-bold capitalize transition-all duration-200 ${
-                    urgency === u ? "bg-white text-slate-900 shadow-sm ring-1 ring-gray-200/50" : "text-gray-400 hover:text-gray-600"
+                  className={`flex-1 py-2 rounded-[14px] text-[13px] font-bold capitalize transition-all duration-200 ${
+                    urgency === u ? "bg-white text-slate-900 shadow-sm border border-slate-200/50" : "text-slate-400 hover:text-slate-600"
                   }`}
                 >
                   {u === "high" ? <><Flame className={`w-3.5 h-3.5 inline mr-1 ${urgency === 'high' ? 'text-red-500' : ''}`} /> Urgent</> : 
@@ -526,12 +530,12 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
           </div>
 
           <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">Expiry Date (Optional)</label>
+            <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest ml-1 block mb-1.5">Expiry Date (Optional)</label>
             <input
               type="date"
               value={expiryDate}
               onChange={e => setExpiryDate(e.target.value)}
-              className="w-full mt-1.5 bg-gray-50 border border-transparent rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-[#22C55E]/10 transition-all font-medium text-slate-900 text-gray-500 block appearance-none"
+              className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-yellow-400 focus:bg-white focus:ring-4 focus:ring-yellow-400/10 transition-all font-semibold text-slate-900 placeholder:text-slate-400 block appearance-none"
             />
           </div>
         </div>
@@ -540,9 +544,9 @@ export function CreateWishModal({ onClose, communityId }: { onClose: () => void;
           whileTap={{ scale: 0.97 }}
           onClick={handleSubmit}
           disabled={createMutation.isPending || !requestedItem.trim()}
-          className="w-full mt-6 bg-green-500 text-white font-extrabold text-[15px] py-4 rounded-2xl shadow-[0_8px_20px_rgba(34,197,94,0.25)] hover:shadow-[0_12px_25px_rgba(34,197,94,0.35)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          className="w-full mt-8 bg-yellow-400 text-yellow-950 font-extrabold text-[15px] py-4 rounded-full shadow-[0_8px_20px_rgba(250,204,21,0.3)] hover:shadow-[0_12px_25px_rgba(250,204,21,0.4)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
         >
-          {createMutation.isPending ? "Posting..." : "Post Wish"}
+          {createMutation.isPending ? "Posting..." : "Post Swish"}
         </motion.button>
       </motion.div>
     </motion.div>
@@ -699,19 +703,19 @@ export default function SwapWishesPage() {
               })()}
               {(wishesQuery.data?.items || []).length === 0 && (
                 <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-                  <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                    <Star className="w-12 h-12 text-emerald-500 fill-emerald-500/20" />
+                  <div className="w-24 h-24 bg-yellow-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <Star className="w-12 h-12 text-yellow-400 fill-yellow-400/20" />
                   </div>
-                  <h3 className="text-xl font-extrabold text-slate-900 tracking-tight mb-2">No Wishes Yet</h3>
+                  <h3 className="text-xl font-extrabold text-slate-900 tracking-tight mb-2">No Swishes Yet</h3>
                   <p className="text-slate-500 text-[15px] font-medium max-w-[260px] leading-relaxed mb-8">
                     Be the first to let the community know what you're looking for.
                   </p>
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setShowCreate(true)}
-                    className="flex items-center justify-center gap-2 w-full max-w-[240px] bg-emerald-500 text-white font-extrabold text-[15px] py-4 rounded-[20px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] hover:shadow-[0_12px_25px_rgba(16,185,129,0.35)] hover:-translate-y-0.5 transition-all"
+                    className="flex items-center justify-center gap-2 w-full max-w-[240px] bg-yellow-400 text-yellow-950 font-extrabold text-[15px] py-4 rounded-full shadow-[0_8px_20px_rgba(250,204,21,0.25)] hover:shadow-[0_12px_25px_rgba(250,204,21,0.35)] hover:-translate-y-0.5 transition-all"
                   >
-                    <Plus className="w-5 h-5" /> Post Your First Wish
+                    <Plus className="w-5 h-5" /> Post Your First Swish
                   </motion.button>
                 </div>
               )}
@@ -745,8 +749,8 @@ export default function SwapWishesPage() {
                 ))
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-                  <div className="w-24 h-24 bg-slate-100/80 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                    <Repeat className="w-12 h-12 text-slate-400" />
+                  <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <Repeat className="w-12 h-12 text-indigo-500" />
                   </div>
                   <h3 className="text-xl font-extrabold text-slate-900 tracking-tight mb-2">No Cycles Found Yet</h3>
                   <p className="text-slate-500 text-[15px] font-medium max-w-[260px] leading-relaxed mb-8">
@@ -755,7 +759,7 @@ export default function SwapWishesPage() {
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate("/post")}
-                    className="flex items-center justify-center gap-2 w-full max-w-[240px] bg-slate-900 text-white font-extrabold text-[15px] py-4 rounded-[20px] shadow-[0_8px_20px_rgba(15,23,42,0.25)] hover:shadow-[0_12px_25px_rgba(15,23,42,0.35)] hover:-translate-y-0.5 transition-all"
+                    className="flex items-center justify-center gap-2 w-full max-w-[240px] bg-indigo-500 text-white font-extrabold text-[15px] py-4 rounded-[20px] shadow-[0_8px_20px_rgba(99,102,241,0.25)] hover:shadow-[0_12px_25px_rgba(99,102,241,0.35)] hover:-translate-y-0.5 transition-all"
                   >
                     <Plus className="w-5 h-5" /> Add a Listing
                   </motion.button>
