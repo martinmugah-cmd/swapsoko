@@ -1017,38 +1017,54 @@ export default function CommunityDetailPage() {
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              className="bg-white w-full max-w-md rounded-t-[36px] p-6 pb-28 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]"
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-white w-full max-w-md rounded-t-[40px] p-7 pb-10 shadow-[0_-20px_60px_rgba(0,0,0,0.1)] relative overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
-              <h3 className="font-extrabold text-slate-900 text-xl mb-6 text-center tracking-tight">Post to {community.name}</h3>
-              <div className="space-y-4">
-                <button
+              <div className="absolute top-0 left-0 right-0 h-32 bg-[linear-gradient(120deg,#e0c3fc_0%,#8ec5fc_100%)] opacity-20 pointer-events-none" />
+              <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white pointer-events-none" />
+
+              <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-8 relative z-10" />
+              <h3 className="font-extrabold text-[22px] text-slate-900 tracking-tight leading-none text-center mb-6 relative z-10">Post to {community.name}</h3>
+              
+              <div className="space-y-4 relative z-10">
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     if (!isAuthenticated) return toast("Please login first");
                     if (!isJoined) return toast("Join the community first");
                     setShowActionSheet(false); navigate(`/post?communityId=${communityId}`); 
                   }}
-                  className="w-full bg-[#EFF6FF] border border-[#BFDBFE] text-blue-600 font-extrabold py-4.5 rounded-2xl flex items-center justify-center gap-2.5 shadow-sm hover:bg-blue-100 transition-colors"
+                  className="w-full bg-slate-50 text-slate-900 font-extrabold py-5 rounded-[24px] flex items-center justify-center gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100 hover:bg-white hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-emerald-200 transition-all group"
                 >
-                  <Package className="w-5 h-5" /> Post a Swap Listing
-                </button>
-                <button
+                  <div className="w-10 h-10 rounded-[16px] bg-emerald-50 text-emerald-500 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                    <Package className="w-5 h-5" />
+                  </div>
+                  <span className="text-[15px]">Post a Swap Listing</span>
+                </motion.button>
+                
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     if (!isAuthenticated) return toast("Please login first");
                     if (!isJoined) return toast("Join the community first");
                     setShowActionSheet(false); setShowCreateWish(true); 
                   }}
-                  className="w-full bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-extrabold py-4.5 rounded-2xl flex items-center justify-center gap-2.5 shadow-sm hover:bg-red-50 transition-colors"
+                  className="w-full bg-slate-50 text-slate-900 font-extrabold py-5 rounded-[24px] flex items-center justify-center gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100 hover:bg-white hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-pink-200 transition-all group"
                 >
-                  <Star className="w-5 h-5" /> Post a Swish (Wish)
-                </button>
-                <button
+                  <div className="w-10 h-10 rounded-[16px] bg-pink-50 text-pink-500 flex items-center justify-center group-hover:bg-pink-100 transition-colors">
+                    <Star className="w-5 h-5" />
+                  </div>
+                  <span className="text-[15px]">Post a Swish (Wish)</span>
+                </motion.button>
+                
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => setShowActionSheet(false)}
-                  className="w-full bg-gray-50 border border-gray-100 text-gray-500 font-extrabold py-4.5 rounded-2xl mt-2 hover:bg-gray-100 transition-colors"
+                  className="w-full mt-4 bg-slate-900 text-white font-extrabold py-5 rounded-[24px] shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:bg-black hover:shadow-[0_12px_25px_rgba(0,0,0,0.2)] transition-all flex items-center justify-center gap-2 text-[15px]"
                 >
                   Cancel
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           </motion.div>
