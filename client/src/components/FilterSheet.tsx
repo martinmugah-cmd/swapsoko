@@ -55,24 +55,26 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[90vh] max-w-md mx-auto inset-x-0 bottom-0 rounded-t-[32px] px-0 pb-0 gap-0 flex flex-col bg-white/80 backdrop-blur-xl border-t border-white/50 shadow-[0_-12px_40px_rgba(0,0,0,0.12)] [&>button.absolute]:hidden">
-        <SheetHeader className="px-6 py-5 border-b border-gray-200/50 bg-transparent z-10 sticky top-0 flex-shrink-0">
+      <SheetContent side="bottom" className="h-[90vh] max-w-md mx-auto inset-x-0 bottom-0 rounded-t-[32px] px-0 pb-0 gap-0 flex flex-col bg-[#F3F4F6] border-t border-white/50 shadow-[0_-12px_40px_rgba(0,0,0,0.12)] [&>button.absolute]:hidden">
+        <SheetHeader className="px-6 py-5 border-b-0 bg-transparent z-10 sticky top-0 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <SheetTitle className="text-xl font-extrabold flex items-center gap-2 m-0 text-slate-900">
-              <Filter className="w-5 h-5 text-green-500" /> Filters {activeCount > 0 && <span className="bg-green-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center leading-none shadow-sm">{activeCount}</span>}
+            <SheetTitle className="text-[20px] font-extrabold flex items-center gap-2 m-0 text-slate-900 tracking-tight">
+              <Filter className="w-5 h-5 text-emerald-500" /> Filters
+              {activeCount > 0 && <span className="bg-emerald-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-sm ml-1">{activeCount}</span>}
             </SheetTitle>
-            <button onClick={clearAll} className="text-sm font-bold text-gray-400 hover:text-red-500 transition-colors">Clear All</button>
+            <button onClick={clearAll} className="text-[14px] font-bold text-slate-400 hover:text-slate-600 transition-colors">Clear All</button>
           </div>
         </SheetHeader>
         
-        <div className="flex-1 overflow-y-auto px-6 py-4">
-          <div className="space-y-6 pb-32">
+        <div className="flex-1 overflow-y-auto px-5 py-2">
+          <div className="space-y-5 pb-32">
+            
             {/* Group 1: General (Category & Looking For) */}
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm">
-               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60">
-                 <span className="text-[15px] font-medium text-slate-900">Category</span>
+            <div className="bg-white rounded-3xl border border-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
+               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100/80">
+                 <span className="text-[15px] font-semibold text-slate-800">Category</span>
                  <Select value={filters.categories?.[0] || 'All'} onValueChange={val => setFilters({ /* @ts-ignore */ categories: [val] })}>
-                   <SelectTrigger className="w-[160px] h-9 bg-slate-100/50 border-slate-200 text-slate-700 font-medium rounded-lg">
+                   <SelectTrigger className="w-[150px] h-9 bg-white border border-slate-200 text-slate-600 font-medium rounded-xl text-[13px] shadow-sm">
                      <SelectValue placeholder="All Categories" />
                    </SelectTrigger>
                    <SelectContent className="rounded-xl">
@@ -93,10 +95,10 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
                  </Select>
                </div>
 
-               <div className="flex items-center justify-between px-4 py-3">
-                 <span className="text-[15px] font-medium text-slate-900">Looking For</span>
+               <div className="flex items-center justify-between px-5 py-4">
+                 <span className="text-[15px] font-semibold text-slate-800">Looking For</span>
                  <Select value={filters.wantedCategories?.[0] || 'All'} onValueChange={val => setFilters({ /* @ts-ignore */ wantedCategories: [val] })}>
-                   <SelectTrigger className="w-[160px] h-9 bg-slate-100/50 border-slate-200 text-slate-700 font-medium rounded-lg">
+                   <SelectTrigger className="w-[150px] h-9 bg-white border border-slate-200 text-slate-600 font-medium rounded-xl text-[13px] shadow-sm">
                      <SelectValue placeholder="Any Category" />
                    </SelectTrigger>
                    <SelectContent className="rounded-xl">
@@ -113,11 +115,11 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
             </div>
 
             {/* Group 2: Specifics (Distance & Condition) */}
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm">
-               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60">
-                 <span className="text-[15px] font-medium text-slate-900">Distance</span>
+            <div className="bg-white rounded-3xl border border-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
+               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100/80">
+                 <span className="text-[15px] font-semibold text-slate-800">Distance</span>
                  <Select value={filters.maxDistanceKm || 'Anywhere'} onValueChange={val => setFilters({ /* @ts-ignore */ maxDistanceKm: val })}>
-                   <SelectTrigger className="w-[160px] h-9 bg-slate-100/50 border-slate-200 text-slate-700 font-medium rounded-lg">
+                   <SelectTrigger className="w-[150px] h-9 bg-white border border-slate-200 text-slate-600 font-medium rounded-xl text-[13px] shadow-sm">
                      <SelectValue placeholder="Anywhere" />
                    </SelectTrigger>
                    <SelectContent className="rounded-xl">
@@ -131,10 +133,10 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
                  </Select>
                </div>
 
-               <div className="flex items-center justify-between px-4 py-3">
-                 <span className="text-[15px] font-medium text-slate-900">Condition</span>
+               <div className="flex items-center justify-between px-5 py-4">
+                 <span className="text-[15px] font-semibold text-slate-800">Condition</span>
                  <Select value={filters.conditions?.[0] || 'Any'} onValueChange={val => setFilters({ /* @ts-ignore */ conditions: [val] })}>
-                   <SelectTrigger className="w-[160px] h-9 bg-slate-100/50 border-slate-200 text-slate-700 font-medium rounded-lg">
+                   <SelectTrigger className="w-[150px] h-9 bg-white border border-slate-200 text-slate-600 font-medium rounded-xl text-[13px] shadow-sm">
                      <SelectValue placeholder="Any Condition" />
                    </SelectTrigger>
                    <SelectContent className="rounded-xl">
@@ -150,63 +152,63 @@ export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChang
             </div>
 
             {/* Group 3: Estimated Swap Value (ESV) */}
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-sm p-4">
-                <span className="text-[15px] font-medium text-slate-900 block mb-3">Estimated Value (KES)</span>
+            <div className="bg-white rounded-3xl border border-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-5">
+                <span className="text-[15px] font-semibold text-slate-800 block mb-4">Estimated Value (KES)</span>
                 <div className="flex items-center gap-3">
-                    <div className="flex-1 bg-slate-50 rounded-xl px-3 py-2 border border-slate-200/80 flex items-center shadow-inner">
+                    <div className="flex-1 bg-[#F8FAFC] rounded-[14px] px-3 py-2.5 border border-slate-100 flex items-center">
                         <input 
                             type="number" 
                             placeholder="Min" 
                             value={filters.minEsv || ""}
                             onChange={e => setFilters({ /* @ts-ignore */ minEsv: e.target.value ? parseInt(e.target.value) : null })}
-                            className="bg-transparent w-full outline-none text-[15px] font-medium text-slate-900 placeholder:text-slate-400 text-center"
+                            className="bg-transparent w-full outline-none text-[14px] font-medium text-slate-800 placeholder:text-slate-400 text-center"
                         />
                     </div>
                     <span className="text-slate-300 font-bold">-</span>
-                    <div className="flex-1 bg-slate-50 rounded-xl px-3 py-2 border border-slate-200/80 flex items-center shadow-inner">
+                    <div className="flex-1 bg-[#F8FAFC] rounded-[14px] px-3 py-2.5 border border-slate-100 flex items-center">
                         <input 
                             type="number" 
                             placeholder="Max" 
                             value={filters.maxEsv || ""}
                             onChange={e => setFilters({ /* @ts-ignore */ maxEsv: e.target.value ? parseInt(e.target.value) : null })}
-                            className="bg-transparent w-full outline-none text-[15px] font-medium text-slate-900 placeholder:text-slate-400 text-center"
+                            className="bg-transparent w-full outline-none text-[14px] font-medium text-slate-800 placeholder:text-slate-400 text-center"
                         />
                     </div>
                 </div>
             </div>
 
             {/* Group 4: Preferences Toggles */}
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm">
-                <label className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200/60 cursor-pointer active:bg-slate-50 transition-colors">
-                    <span className="text-[15px] font-medium text-slate-900">Accepts Cash Top-up</span>
-                    <div className={`w-[51px] h-[31px] rounded-full transition-colors relative shadow-inner ${filters.cashTopUpAllowed ? 'bg-green-500' : 'bg-slate-200'}`}>
+            <div className="bg-white rounded-3xl border border-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
+                <label className="flex items-center justify-between px-5 py-4 border-b border-slate-100/80 cursor-pointer active:bg-slate-50 transition-colors">
+                    <span className="text-[15px] font-semibold text-slate-800">Accepts Cash Top-up</span>
+                    <div className={`w-[52px] h-[32px] rounded-full transition-colors relative shadow-inner ${filters.cashTopUpAllowed ? 'bg-[#10B981]' : 'bg-[#E2E8F0]'}`}>
                         <input type="checkbox" className="sr-only" checked={!!filters.cashTopUpAllowed} onChange={e => setFilters({ cashTopUpAllowed: e.target.checked })} />
-                        <div className={`w-[27px] h-[27px] bg-white rounded-full absolute top-[2px] shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-transform ${filters.cashTopUpAllowed ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
+                        <div className={`w-[28px] h-[28px] bg-white rounded-full absolute top-[2px] shadow-md transition-transform ${filters.cashTopUpAllowed ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
                     </div>
                 </label>
                 
-                <label className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200/60 cursor-pointer active:bg-slate-50 transition-colors">
-                    <span className="text-[15px] font-medium text-slate-900">Pure Barter Only</span>
-                    <div className={`w-[51px] h-[31px] rounded-full transition-colors relative shadow-inner ${(filters as any).noCashNeeded ? 'bg-green-500' : 'bg-slate-200'}`}>
+                <label className="flex items-center justify-between px-5 py-4 border-b border-slate-100/80 cursor-pointer active:bg-slate-50 transition-colors">
+                    <span className="text-[15px] font-semibold text-slate-800">Pure Barter Only</span>
+                    <div className={`w-[52px] h-[32px] rounded-full transition-colors relative shadow-inner ${(filters as any).noCashNeeded ? 'bg-[#10B981]' : 'bg-[#E2E8F0]'}`}>
                         <input type="checkbox" className="sr-only" checked={!!(filters as any).noCashNeeded} onChange={e => setFilters({ /* @ts-ignore */ noCashNeeded: e.target.checked })} />
-                        <div className={`w-[27px] h-[27px] bg-white rounded-full absolute top-[2px] shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-transform ${(filters as any).noCashNeeded ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
+                        <div className={`w-[28px] h-[28px] bg-white rounded-full absolute top-[2px] shadow-md transition-transform ${(filters as any).noCashNeeded ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
                     </div>
                 </label>
 
-                <label className="flex items-center justify-between px-4 py-3.5 cursor-pointer active:bg-slate-50 transition-colors">
-                    <span className="text-[15px] font-medium text-slate-900">Multi-Way Swaps</span>
-                    <div className={`w-[51px] h-[31px] rounded-full transition-colors relative shadow-inner ${(filters as any).multiWayAvailable ? 'bg-green-500' : 'bg-slate-200'}`}>
+                <label className="flex items-center justify-between px-5 py-4 cursor-pointer active:bg-slate-50 transition-colors">
+                    <span className="text-[15px] font-semibold text-slate-800">Multi-Way Swaps</span>
+                    <div className={`w-[52px] h-[32px] rounded-full transition-colors relative shadow-inner ${(filters as any).multiWayAvailable ? 'bg-[#10B981]' : 'bg-[#E2E8F0]'}`}>
                         <input type="checkbox" className="sr-only" checked={!!(filters as any).multiWayAvailable} onChange={e => setFilters({ /* @ts-ignore */ multiWayAvailable: e.target.checked })} />
-                        <div className={`w-[27px] h-[27px] bg-white rounded-full absolute top-[2px] shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-transform ${(filters as any).multiWayAvailable ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
+                        <div className={`w-[28px] h-[28px] bg-white rounded-full absolute top-[2px] shadow-md transition-transform ${(filters as any).multiWayAvailable ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
                     </div>
                 </label>
             </div>
           </div>
         </div>
         
-        <SheetFooter className="p-4 bg-transparent border-t border-gray-200/30 sm:rounded-bl-[32px] z-10 sticky bottom-0 backdrop-blur-xl">
+        <SheetFooter className="p-4 bg-transparent sm:rounded-bl-[32px] z-10 sticky bottom-0">
            <SheetClose asChild>
-             <button className="w-full bg-slate-900 hover:bg-black text-white font-extrabold text-[15px] py-4 rounded-2xl shadow-lg transition-transform active:scale-95">
+             <button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[15px] py-4 rounded-full shadow-[0_8px_20px_rgba(15,23,42,0.25)] hover:-translate-y-0.5 transition-all active:scale-95">
                Show Results
              </button>
            </SheetClose>

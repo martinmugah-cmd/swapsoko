@@ -616,7 +616,7 @@ export default function SwapWishesPage() {
               <h1 className="font-extrabold text-slate-900 text-[18px] flex items-center justify-center gap-1.5 tracking-tight">
                 <Star className="w-4 h-4 text-emerald-500 fill-emerald-500" /> Swishes
               </h1>
-              <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Wishes & Cycles</p>
+              <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Swishes & Cycles</p>
             </div>
 
             <motion.button
@@ -631,7 +631,7 @@ export default function SwapWishesPage() {
           {/* Tabs */}
           <div className="flex gap-2">
             {[
-              { id: "wishes", label: "Wishes Board" },
+              { id: "wishes", label: "Swishes Board" },
               { id: "cycles", label: "Multi-Way Swap" },
             ].map(tab => (
               <motion.button

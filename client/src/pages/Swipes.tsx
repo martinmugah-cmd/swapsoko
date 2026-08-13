@@ -1039,13 +1039,12 @@ const [detailedListing, setDetailedListing] = useState<any>(null);
               className="flex flex-col items-center justify-center h-full min-h-[50vh] px-8 text-center"
             >
               <div className="relative mb-6">
-                <div className="absolute inset-0 bg-swap-green/20 blur-2xl rounded-full scale-[1.8]"></div>
-                <div className="relative w-20 h-20 bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[2rem] flex items-center justify-center rotate-3 transform-gpu">
-                  <Search className="w-8 h-8 text-slate-700 -rotate-3" strokeWidth={2.5} />
+                <div className="relative w-24 h-24 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.03)] rounded-[2rem] flex items-center justify-center transform-gpu">
+                  <Search className="w-8 h-8 text-slate-800" strokeWidth={2.5} />
                 </div>
               </div>
-              <h3 className="font-semibold text-slate-900 text-[22px] tracking-tight mb-2.5">You're all caught up</h3>
-              <p className="text-slate-500 text-[15px] max-w-[260px] leading-relaxed">
+              <h3 className="font-extrabold text-slate-900 text-[22px] tracking-tight mb-2.5">You're all caught up</h3>
+              <p className="text-slate-500 text-[15px] font-medium max-w-[260px] leading-relaxed">
                 You've seen all the latest listings nearby. Check back later for new items.
               </p>
               {items.length > 0 && (

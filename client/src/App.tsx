@@ -384,6 +384,9 @@ function Router() {
             <Route path="/notifications">
               <PageTransition><NotificationsPage /></PageTransition>
             </Route>
+            <Route path="/verification">
+              <PageTransition><VerificationPage /></PageTransition>
+            </Route>
             <Route>
               <PageTransition><NotFound /></PageTransition>
             </Route>
@@ -405,6 +408,8 @@ function App() {
             <Toaster
               position="top-center"
             />
+            <SavedItemsSyncer />
+            <LocationTracker />
             <Router />
           </TooltipProvider>
         </LanguageProvider>

@@ -267,94 +267,176 @@ function AdminReportsList() {
                    } else if (parsedDesc.text || parsedDesc.description || parsedDesc.name) {
                        displayDesc = parsedDesc.text || parsedDesc.description || parsedDesc.name;
                    } else {
-                       displayDesc = "System Action / Proposal Update";
+                          return (
+                <Card key={r.id} className="relative overflow-hidden group hover:shadow-md transition-all">
+                    {r.priority === 'high' && <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500 rounded-l-lg z-10" />}
+                    <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Badge variant={r.priority === 'high' ? 'destructive' : r.priority === 'medium' ? 'default' : 'secondary'} className="uppercase tracking-widest text-[10px]">
+                                {r.priority} Priority
+                              </Badge>
+                              <span className="text-[12px] font-bold text-muted-foreground">Reported by {r.reporterName || 'Unknown'}</span>
+                            </div>
+                            <span className="text-xs font-semibold text-muted-foreground">{formatDistanceToNow(new Date(r.createdAt || r.created_at || Date.now()), { addSuffix: true })}</span>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col md:flex-row gap-6">
+                            {/* Report Details */}
+                            <div className="flex-1 space-y-3">
+                                <div className="flex items-center gap-2">
+                                  <CardTitle className="text-xl">{r.reason}</CardTitle>
+                                  <Badge variant="outline" className="uppercase tracking-wider">{r.targetType}</Badge>
+                                </div>
+                                {r.description ? (
+                                  <p className="text-sm bg-muted p-4 rounded-xl border leading-relaxed">
+                                     {r.description}
+                                  </p>
+                                ) : (
+                                  <p className="text-muted-foreground text-sm italic">No additional description provided by the reporter.</p>
+                                )}
+                            </div>
+
+                            {/* Target Context */}
+                            <div className="w-full md:w-1/3 bg-blue-50/50 dark:bg-blue-950/20 rounded-xl p-4 border border-blue-100 dark:border-blue-900 flex flex-col justify-between">
+                                <div>
+                                    <h5 className="text-[11px] font-black text-blue-500 uppercase tracking-widest mb-3">Reported Entity</h5>
+                                    {r.targetInfo ? (
+                                        <div className="space-y-1">
+                                            <p className="font-bold text-foreground truncate">
+                                              {(() => {
+                                                  if (r.targetType === 'message' || r.targetType === 'chat') return 'Chat Conversation';
+                                                  let n = r.targetInfo.name || r.targetInfo.title;
+                                                  if (!n && r.targetType === 'user' && r.targetInfo.university) {
+                                                      try {
+                                                          const parsed = JSON.parse(r.targetInfo.university);
+                                                          n = parsed.name || parsed.username;
+                                                      } catch(e) {}
+                                                  }
+                                                  return n || 'Unknown Entity';
+                                              })()}
+                                            </p>
+                                            {displayDesc && (
+                                                <p className="text-xs text-muted-foreground line-clamp-2">
+                                                  {displayDesc}
+                                                </p>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <p className="text-xs text-muted-foreground italic">No context available. ID: {actualTargetId || r.targetId}</p>
+                                    )}
+                                </div>
+                                <Button 
+                                    variant="link" 
+                                    size="sm"
+                                    onClick={() => setPreviewTarget(`${targetLink}?preview=true`)}
+                                    className="mt-4 px-0 h-auto self-start text-blue-600 hover:text-blue-700"
+                                >
+                                    View Context <ChevronRight className="w-3 h-3 ml-1" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center justify-end pt-4 mt-4 border-t">
+                            <Button 
+                                onClick={() => setSelectedReport(r)}
+                                className="rounded-full font-bold shadow-md"
+                            >
+                                Take Action <ChevronRight className="w-4 h-4 ml-2" />
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+);
                    }
                } else if (typeof displayDesc !== 'string') {
                    displayDesc = "No additional context";
                }
 
                return (
-               <div key={r.id} className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all flex flex-col gap-6 relative overflow-hidden group">
-                   
-                   {r.priority === 'high' && <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500 rounded-l-[32px]" />}
-                   
-                   {/* Header Row */}
-                   <div className="flex items-center justify-between">
-                       <div className="flex items-center gap-3">
-                         <span className={`px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest ${
-                             r.priority === 'high' ? 'bg-red-50 text-red-600' :
-                             r.priority === 'medium' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'
-                         }`}>{r.priority} Priority</span>
-                         <span className="text-[12px] font-bold text-gray-400">Reported by {r.reporterName || 'Unknown'}</span>
-                       </div>
-                       <span className="text-xs font-semibold text-gray-400">{formatDistanceToNow(new Date(r.createdAt || r.created_at || Date.now()), { addSuffix: true })}</span>
-                   </div>
-                   
-                   {/* Main Content */}
-                   <div className="flex flex-col md:flex-row gap-6">
-                       {/* Report Details */}
-                       <div className="flex-1 space-y-3">
-                           <div className="flex items-center gap-2">
-                             <h4 className="font-extrabold text-slate-900 text-xl">{r.reason}</h4>
-                             <span className="bg-gray-100 text-gray-500 px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">{r.targetType}</span>
-                           </div>
-                           {r.description ? (
-                             <p className="text-gray-600 text-sm bg-gray-50 p-5 rounded-2xl border border-gray-100 leading-relaxed shadow-inner">
-                                {r.description}
-                             </p>
-                           ) : (
-                             <p className="text-gray-400 text-sm italic">No additional description provided by the reporter.</p>
-                           )}
-                       </div>
+                <Card key={r.id} className="relative overflow-hidden group hover:shadow-md transition-all">
+                    {r.priority === 'high' && <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500 rounded-l-lg z-10" />}
+                    <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Badge variant={r.priority === 'high' ? 'destructive' : r.priority === 'medium' ? 'default' : 'secondary'} className="uppercase tracking-widest text-[10px]">
+                                {r.priority} Priority
+                              </Badge>
+                              <span className="text-[12px] font-bold text-muted-foreground">Reported by {r.reporterName || 'Unknown'}</span>
+                            </div>
+                            <span className="text-xs font-semibold text-muted-foreground">{formatDistanceToNow(new Date(r.createdAt || r.created_at || Date.now()), { addSuffix: true })}</span>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col md:flex-row gap-6">
+                            {/* Report Details */}
+                            <div className="flex-1 space-y-3">
+                                <div className="flex items-center gap-2">
+                                  <CardTitle className="text-xl">{r.reason}</CardTitle>
+                                  <Badge variant="outline" className="uppercase tracking-wider">{r.targetType}</Badge>
+                                </div>
+                                {r.description ? (
+                                  <p className="text-sm bg-muted p-4 rounded-xl border leading-relaxed">
+                                     {r.description}
+                                  </p>
+                                ) : (
+                                  <p className="text-muted-foreground text-sm italic">No additional description provided by the reporter.</p>
+                                )}
+                            </div>
 
-                       {/* Target Context */}
-                       <div className="w-full md:w-1/3 bg-blue-50/50 rounded-2xl p-5 border border-blue-100/50 flex flex-col justify-between">
-                           <div>
-                               <h5 className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-3">Reported Entity</h5>
-                               {r.targetInfo ? (
-                                   <div className="space-y-1">
-                                       <p className="font-bold text-slate-900 truncate">
-                                          {(() => {
-                                              if (r.targetType === 'message' || r.targetType === 'chat') return 'Chat Conversation';
-                                              let n = r.targetInfo.name || r.targetInfo.title;
-                                              if (!n && r.targetType === 'user' && r.targetInfo.university) {
-                                                  try {
-                                                      const parsed = JSON.parse(r.targetInfo.university);
-                                                      n = parsed.name || parsed.username;
-                                                  } catch(e) {}
-                                              }
-                                              return n || 'Unknown Entity';
-                                          })()}
-                                       </p>
-                                       {displayDesc && (
-                                           <p className="text-xs text-gray-500 line-clamp-2">
-                                              {displayDesc}
-                                           </p>
-                                       )}
-                                   </div>
-                               ) : (
-                                   <p className="text-xs text-gray-400 italic">No context available. ID: {actualTargetId || r.targetId}</p>
-                               )}
-                           </div>
-                           <button 
-                               onClick={() => setPreviewTarget(`${targetLink}?preview=true`)}
-                               className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
-                           >
-                               View Context <ChevronRight className="w-3 h-3" />
-                           </button>
-                       </div>
-                   </div>
+                            {/* Target Context */}
+                            <div className="w-full md:w-1/3 bg-blue-50/50 dark:bg-blue-950/20 rounded-xl p-4 border border-blue-100 dark:border-blue-900 flex flex-col justify-between">
+                                <div>
+                                    <h5 className="text-[11px] font-black text-blue-500 uppercase tracking-widest mb-3">Reported Entity</h5>
+                                    {r.targetInfo ? (
+                                        <div className="space-y-1">
+                                            <p className="font-bold text-foreground truncate">
+                                              {(() => {
+                                                  if (r.targetType === 'message' || r.targetType === 'chat') return 'Chat Conversation';
+                                                  let n = r.targetInfo.name || r.targetInfo.title;
+                                                  if (!n && r.targetType === 'user' && r.targetInfo.university) {
+                                                      try {
+                                                          const parsed = JSON.parse(r.targetInfo.university);
+                                                          n = parsed.name || parsed.username;
+                                                      } catch(e) {}
+                                                  }
+                                                  return n || 'Unknown Entity';
+                                              })()}
+                                            </p>
+                                            {displayDesc && (
+                                                <p className="text-xs text-muted-foreground line-clamp-2">
+                                                  {displayDesc}
+                                                </p>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <p className="text-xs text-muted-foreground italic">No context available. ID: {actualTargetId || r.targetId}</p>
+                                    )}
+                                </div>
+                                <Button 
+                                    variant="link" 
+                                    size="sm"
+                                    onClick={() => setPreviewTarget(`${targetLink}?preview=true`)}
+                                    className="mt-4 px-0 h-auto self-start text-blue-600 hover:text-blue-700"
+                                >
+                                    View Context <ChevronRight className="w-3 h-3 ml-1" />
+                                </Button>
+                            </div>
+                        </div>
 
-                   {/* Action Buttons */}
-                   <div className="flex items-center justify-end pt-4 border-t border-gray-100">
-                       <button 
-                           onClick={() => setSelectedReport(r)}
-                           className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-full text-sm font-bold flex items-center gap-2 shadow-md transition-all active:scale-[0.98]"
-                       >
-                           Take Action <ChevronRight className="w-4 h-4" />
-                       </button>
-                   </div>
-               </div>
+                        {/* Action Buttons */}
+                        <div className="flex items-center justify-end pt-4 mt-4 border-t">
+                            <Button 
+                                onClick={() => setSelectedReport(r)}
+                                className="rounded-full font-bold shadow-md"
+                            >
+                                Take Action <ChevronRight className="w-4 h-4 ml-2" />
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
                );
            })}
            
@@ -508,25 +590,34 @@ function AdminAuditLogs() {
     }
 
     return (
-        <div className="bg-white rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white overflow-hidden p-2">
+        <Card className="rounded-[40px] shadow-sm border overflow-hidden p-2">
             {logs.map((log: any, i: number) => (
-                <div key={log.id} className={`p-5 flex items-start gap-4 hover:bg-gray-50/80 transition-colors rounded-3xl ${i !== logs.length - 1 ? 'border-b border-gray-50/50' : ''}`}>
+                <div key={log.id} className={`p-5 flex items-start gap-4 hover:bg-muted/50 transition-colors rounded-3xl ${i !== logs.length - 1 ? 'border-b border-border' : ''}`}>
                     <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center flex-shrink-0 mt-1">
                         <Activity className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex-1">
                         <div className="flex justify-between items-center mb-1">
-                            <h4 className="font-extrabold text-slate-900">{log.action}</h4>
-                            <span className="text-[11px] font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">{formatDistanceToNow(new Date(log.created_at || Date.now()), { addSuffix: true })}</span>
+                            <p className="font-bold text-foreground">
+                                {log.actorName || 'Admin'} <span className="text-muted-foreground font-medium mx-1">performed</span> {log.action}
+                            </p>
+                            <span className="text-xs font-semibold text-muted-foreground">
+                                {formatDistanceToNow(new Date(log.createdAt || log.created_at || Date.now()), { addSuffix: true })}
+                            </span>
                         </div>
-                        <p className="text-sm text-gray-500 font-medium mb-2">Actor: <span className="font-bold text-gray-700">{log.actorName || log.profiles?.name || log.actorId || log.actor_id}</span></p>
-                        <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3 text-xs font-mono text-gray-600">
-                            Resource: {log.resourceType || log.resource_type} • {log.resourceName ? log.resourceName : log.resourceId || log.resource_id}
+                        <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="text-[10px] uppercase tracking-widest">{log.resourceType}</Badge>
+                            <span className="text-sm font-semibold text-muted-foreground">ID: {log.resourceId}</span>
                         </div>
+                        {log.details && (
+                            <div className="mt-3 bg-muted rounded-xl p-3 text-xs text-muted-foreground border">
+                                {JSON.stringify(log.details, null, 2)}
+                            </div>
+                        )}
                     </div>
                 </div>
             ))}
-        </div>
+        </Card>
     );
 }
 
@@ -605,21 +696,25 @@ function AdminUsersList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                     
                     {editingUser === userId ? (
                        <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-2xl border border-gray-100">
-                          <select 
-                             className="text-sm border-none bg-white rounded-xl px-3 py-2 font-bold text-slate-900 shadow-sm outline-none focus:ring-2 focus:ring-[#22C55E]/50"
+                          <Select
                              defaultValue={userRole}
-                             onChange={(e) => {
-                               updateRoleMutation.mutate({ userId: userId, role: e.target.value });
+                             onValueChange={(val) => {
+                               updateRoleMutation.mutate({ userId: userId, role: val });
                              }}
                           >
-                             <option value="user">User</option>
-                             <option value="moderator">Moderator</option>
-                             <option value="admin" disabled={!isSuperAdmin}>Admin</option>
-                             <option value="super_admin" disabled={!isSuperAdmin}>Super Admin</option>
-                          </select>
-                          <button onClick={() => setEditingUser(null)} className="p-2 text-gray-400 hover:text-red-500 transition-colors bg-white rounded-xl shadow-sm">
+                             <SelectTrigger className="w-[140px] text-sm font-bold shadow-sm">
+                                <SelectValue placeholder="Select role" />
+                             </SelectTrigger>
+                             <SelectContent>
+                                <SelectItem value="user">User</SelectItem>
+                                <SelectItem value="moderator">Moderator</SelectItem>
+                                <SelectItem value="admin" disabled={!isSuperAdmin}>Admin</SelectItem>
+                                <SelectItem value="super_admin" disabled={!isSuperAdmin}>Super Admin</SelectItem>
+                             </SelectContent>
+                          </Select>
+                          <Button variant="ghost" size="icon" onClick={() => setEditingUser(null)} className="text-gray-400 hover:text-red-500">
                             <XCircle className="w-5 h-5" />
-                          </button>
+                          </Button>
                        </div>
                     ) : (
                        <div className="flex items-center gap-3">

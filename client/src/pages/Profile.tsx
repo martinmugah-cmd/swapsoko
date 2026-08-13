@@ -668,105 +668,70 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
       animate={{ opacity: 1 }}
       className="min-h-screen bg-[#F8FAFC] bottom-nav-safe"
     >
-      {/* Header */}
-      <div className="bg-slate-900 px-5 pt-4 pb-6 relative overflow-hidden rounded-b-[40px] shadow-[0_10px_40px_rgba(15,23,42,0.15)]">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-green-500 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-600 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
-        </div>
+      {/* Header Profile Section */}
+      <div className="px-4 pt-4 pb-2">
+        <div className="bg-white rounded-[32px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-white">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3.5">
+              <div className="relative">
+                <div className="w-16 h-16 rounded-full bg-[#5B21B6] flex items-center justify-center overflow-hidden shadow-sm">
+                  {(displayAvatar && displayAvatar !== "null" && displayAvatar !== "undefined") ? (
+                    <img src={displayAvatar} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<span class="text-white text-2xl font-bold">${(displayName || "U")[0]}</span>`; }} />
+                  ) : (
+                    <span className="text-white text-2xl font-bold">{(displayName || "U")[0]}</span>
+                  )}
+                </div>
+                <div className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 rounded-full border-[2.5px] border-white flex items-center justify-center">
+                  <CheckCircle className="w-2.5 h-2.5 text-white fill-white" />
+                </div>
+              </div>
+              <div>
+                <h2 className="font-extrabold text-slate-900 text-lg leading-tight tracking-tight">
+                  {displayName}
+                </h2>
+                <p className="text-slate-500 text-[13px] font-medium mb-1">
+                  @{displayName.toLowerCase().replace(/\s+/g, '')}
+                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  {uniVal === "Other / Not a student" ? (
+                    <span className="py-0.5 px-2.5 text-[10px] bg-slate-100 text-slate-500 border border-slate-200/60 rounded-full font-bold uppercase tracking-wider">
+                      Not a student
+                    </span>
+                  ) : isStudentVerified ? (
+                    <span className="py-0.5 px-2.5 text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1 rounded-full font-bold uppercase tracking-wider">
+                      <CheckCircle className="w-2.5 h-2.5" /> Verified Student
+                    </span>
+                  ) : (
+                    <span className="py-0.5 px-2.5 text-[10px] bg-orange-50 text-orange-600 border border-orange-100 flex items-center gap-1 rounded-full font-bold uppercase tracking-wider">
+                      <AlertCircle className="w-2.5 h-2.5" /> Student Not Verified
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
 
-        <div className="relative flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            {onBack ? (
-              <button onClick={onBack} className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20 transition-colors">
-                <ChevronLeft className="w-5 h-5 text-white" />
-              </button>
-            ) : !isMe && (
-              <button onClick={() => window.history.back()} className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20 transition-colors">
-                <ChevronLeft className="w-5 h-5 text-white" />
-              </button>
-            )}
-            <h1 className="font-bold text-white text-lg">{"Profile"}</h1>
-          </div>
-          <div className="flex items-center gap-2">
-
-            {isMe && (
+            <div className="flex flex-col items-end gap-2">
               <motion.button 
-                whileTap={{ scale: 0.9 }} 
+                whileTap={{ scale: 0.95 }} 
                 onClick={() => navigate("/edit-profile")}
-                className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center hover:bg-slate-100 border border-slate-100 transition-colors shadow-sm"
               >
-                <Settings className="w-4 h-4 text-white" />
+                <Settings className="w-5 h-5 text-slate-600" />
               </motion.button>
-            )}
-            {!isMe && (
-              <motion.button 
-                whileTap={{ scale: 0.9 }} 
-                onClick={() => targetUserId && toggleWatchedUser(targetUserId.toString())}
-                className="flex items-center gap-1.5 bg-white/10 text-white text-xs font-semibold px-3 py-1.5 rounded-2xl hover:bg-white/20 transition-colors"
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate("/edit-profile")}
+                className="text-[11px] font-bold text-slate-600 bg-white border border-slate-200 px-3 py-1.5 rounded-full hover:bg-slate-50 transition-colors shadow-sm"
               >
-                <Heart className={`w-3.5 h-3.5 ${targetUserId && watchedUserIds.includes(targetUserId.toString()) ? 'text-red-400 fill-red-400' : 'text-white'}`} />
-                {targetUserId && watchedUserIds.includes(targetUserId.toString()) ? "Watched" : "Watch"}
+                Edit Profile
               </motion.button>
-            )}
-          </div>
-        </div>
-
-        {/* Avatar + name */}
-        <div className="relative flex items-end gap-3">
-          <div className="relative">
-            <div className="w-14 h-14 rounded-2xl gradient-green flex items-center justify-center overflow-hidden">
-              {(displayAvatar && displayAvatar !== "null" && displayAvatar !== "undefined") ? (
-                <img src={displayAvatar} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<span class="text-white text-xl font-bold">${(displayName || "U")[0]}</span>`; }} />
-              ) : (
-                <span className="text-white text-xl font-bold">{(displayName || "U")[0]}</span>
-              )}
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-[#0F172A] flex items-center justify-center">
-              <CheckCircle className="w-3 h-3 text-white fill-white" />
-            </div>
-          </div>
-          <div className="pb-1">
-            <h2 className="font-bold text-white text-base leading-tight flex items-center gap-1">
-              {displayName}
-              {isStudentVerified && <GraduationCap className="w-4 h-4 text-[#3B82F6]" />}
-            </h2>
-            <div className="flex items-center gap-1.5 mt-1">
-              {uniVal === "Other / Not a student" ? (
-                <span className="trust-badge py-0.5 px-2 text-xs bg-gray-100 text-gray-500 border border-gray-200 flex items-center gap-1 rounded-full font-bold">
-                  <CheckCircle className="w-2.5 h-2.5" /> Not a student
-                </span>
-              ) : isStudentVerified ? (
-                <span className="trust-badge-green trust-badge py-0.5 px-2 text-xs flex items-center gap-1">
-                  <CheckCircle className="w-2.5 h-2.5" /> Verified Student {uniVal !== "University" ? `• ${uniVal}` : ""}
-                </span>
-              ) : (
-                <span className="trust-badge py-0.5 px-2 text-xs bg-orange-50 text-orange-600 border border-orange-200 flex items-center gap-1 rounded-full font-bold">
-                  <AlertCircle className="w-2.5 h-2.5" /> Student Not Verified
-                </span>
-              )}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Trust Score */}
-        <div className="mt-3 bg-white/10 rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-gray-400 text-xs uppercase tracking-wide flex items-center gap-1"><Shield className="w-3 h-3 text-blue-400"/> {"Trust Score"}</p>
-            <p className="text-white font-black text-lg leading-none">{trustScore}%</p>
-          </div>
-          <div className="w-full bg-white/20 rounded-full h-1.5 overflow-hidden">
-             <motion.div 
-               initial={{ width: 0 }}
-               animate={{ width: `${trustScore}%` }}
-               transition={{ duration: 1, ease: "easeOut" }}
-               className="h-full bg-gradient-to-r from-blue-400 to-green-400 rounded-full"
-             />
-          </div>
-      </div>
-      </div>
       {isMe && (
-        <div className="px-4 mt-4">
+        <div className="px-4 mt-2">
           {(() => {
             let currentBio = "";
             let currentCampus = profile?.campus;

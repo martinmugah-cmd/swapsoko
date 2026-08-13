@@ -2374,14 +2374,16 @@ const createProxy = (path: string[] = []): any => {
                   if (variables.toUserId) {
                     let senderName = "Someone";
                     if (variables.userId) {
-                        const { data: senderData } = await supabase.from('profiles').select('name, university').eq('user_id', variables.userId).single();
+                        const { data: senderData, error } = await adminSupabase.from('profiles').select('name, university').eq('user_id', variables.userId).single();
                         if (senderData) {
-                            senderName = senderData.name;
+                            senderName = senderData.name || "Someone";
                             try {
                                 const desc = JSON.parse(senderData.university || "{}");
                                 if (desc.username) senderName = "@" + desc.username;
-                                else if (senderName && senderName !== "SwapSoko User") senderName = "@" + senderName.split(" ").join("").toLowerCase();
+                                else if (senderName && senderName !== "SwapSoko User" && senderName !== "Someone") senderName = "@" + senderName.split(" ").join("").toLowerCase();
                             } catch(e) {}
+                        } else if (error) {
+                            console.error("Error fetching sender profile:", error);
                         }
                     }
                     await supabase.from('notifications').insert({

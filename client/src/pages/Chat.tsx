@@ -335,7 +335,14 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                   </div>
                 )}
                 {pData.status ? (
-                  <p className={`text-xs mt-2 text-center uppercase tracking-wider font-bold relative z-10 ${pData.status === 'rejected' ? 'text-red-300' : pData.status === 'accepted' ? 'text-emerald-300' : 'text-blue-300'}`}>Offer {pData.status}</p>
+                  <div className="flex flex-col items-center mt-2 relative z-10">
+                    <p className={`text-xs uppercase tracking-wider font-bold ${pData.status === 'rejected' ? 'text-red-300' : pData.status === 'accepted' ? 'text-emerald-300' : 'text-blue-300'}`}>Offer {pData.status}</p>
+                    {pData.status === 'accepted' && (
+                      <button onClick={() => navigate('/verification')} className="mt-2 w-full bg-white text-slate-900 text-xs font-bold py-2 rounded-full hover:bg-gray-100 transition-colors shadow-sm">
+                        Verify Trade in Person
+                      </button>
+                    )}
+                  </div>
                 ) : isOwn ? (
                   <p className="text-xs text-white/50 mt-2 text-center uppercase tracking-wider font-bold relative z-10">Offer Sent</p>
                 ) : null}
@@ -468,12 +475,17 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                                }
                                if (!myReceiptSent) {
                                   return (
-                                    <button 
-                                      onClick={(e) => { e.stopPropagation(); onConfirmReceipt?.(0); }} 
-                                      className="w-full bg-green-50 text-green-600 border border-green-200 py-1.5 rounded-full text-xs font-bold hover:bg-green-100 transition-colors"
-                                    >
-                                      Confirm Items Received
-                                    </button>
+                                    <div className="flex flex-col gap-2 mt-2 w-full">
+                                      <button onClick={(e) => { e.stopPropagation(); navigate('/verification'); }} className="w-full bg-white border border-gray-200 py-1.5 rounded-full text-[11px] font-bold hover:bg-gray-50 transition-colors shadow-sm">
+                                        Verify Trade in Person
+                                      </button>
+                                      <button 
+                                        onClick={(e) => { e.stopPropagation(); onConfirmReceipt?.(0); }} 
+                                        className="w-full bg-green-50 text-green-600 border border-green-200 py-1.5 rounded-full text-[11px] font-bold hover:bg-green-100 transition-colors"
+                                      >
+                                        Confirm Items Received
+                                      </button>
+                                    </div>
                                   );
                                }
                                return <p className="text-center text-xs font-bold text-gray-500 uppercase tracking-widest">{allReceipts.size} of {latestRevision.participants?.length} confirmed</p>;
@@ -1948,37 +1960,47 @@ function ChatRoomItem({ room, user, onSelectRoom }: { room: any; user: any; onSe
     } catch(e) {}
   }
 
+  // Consistent pastel colors based on name length or first char
+  const colors = ["bg-[#5B21B6]", "bg-[#10B981]", "bg-[#F59E0B]", "bg-[#EC4899]", "bg-[#3B82F6]"];
+  const colorIndex = partnerName.length % colors.length;
+  const avatarColor = colors[colorIndex];
+  
+  // Extract initial properly (ignore '@' if present)
+  const initial = partnerName.startsWith('@') && partnerName.length > 1 
+      ? partnerName[1].toUpperCase() 
+      : partnerName[0]?.toUpperCase() || 'U';
+
   return (
     <motion.button
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onSelectRoom(room.id)}
-      className="w-[calc(100%-2rem)] mx-auto flex items-center gap-3 px-4 py-3.5 bg-white/70 backdrop-blur-md border border-gray-100 rounded-2xl mb-3 shadow-sm hover:shadow-md transition-all"
+      className="w-[calc(100%-2rem)] mx-auto flex items-center gap-3.5 px-4 py-4 bg-white border border-white rounded-[24px] mb-3 shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] transition-all"
     >
       <div className="relative flex-shrink-0">
-        <div className="w-12 h-12 rounded-full gradient-green flex items-center justify-center overflow-hidden">
+        <div className={`w-12 h-12 rounded-full ${avatarColor} flex items-center justify-center overflow-hidden`}>
           {room.isCycle ? (
             <Repeat2 className="w-6 h-6 text-white" />
           ) : partnerAvatar ? (
             <img src={partnerAvatar} alt={partnerName} className="w-full h-full object-cover" />
           ) : (
-            <span className="text-white font-bold">{partnerName[0]?.toUpperCase()}</span>
+            <span className="text-white text-lg font-bold">{initial}</span>
           )}
         </div>
-        <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />
+        <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full border-[2.5px] border-white" />
       </div>
       <div className="flex-1 min-w-0 text-left">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 min-w-0 pr-2">
-            <p className="font-bold text-slate-900 text-sm truncate">{partnerName}</p>
+          <div className="flex items-center gap-1.5 min-w-0 pr-2">
+            <p className="font-bold text-slate-900 text-[15px] truncate tracking-tight">{partnerName}</p>
             {!room.isCycle && profileQuery.data?.isStudentVerified && <GraduationCap className="w-3.5 h-3.5 text-[#3B82F6] flex-shrink-0" />}
           </div>
-          <span className="text-xs text-gray-400 flex-shrink-0">
+          <span className="text-[11px] font-medium text-slate-400 flex-shrink-0">
             {formatDistanceToNow(new Date(room.lastMessageAt || Date.now()), { addSuffix: true })}
           </span>
         </div>
-        <p className="text-xs text-gray-400 truncate mt-0.5">Tap to open conversation</p>
+        <p className="text-[13px] text-slate-400 truncate mt-0.5">Tap to open conversation</p>
       </div>
     </motion.button>
   );
@@ -2351,9 +2373,9 @@ function ChatList({ onSelectRoom }: { onSelectRoom: (id: number) => void }) {
 
   return (
     <div className="flex flex-col h-screen pb-20">
-      <div className="page-header px-4 py-3">
-        <div className="flex items-center justify-between">
-          <h1 className="font-bold text-slate-900 text-lg">{"Chat"}</h1>
+      <div className="page-header px-4 pt-4 pb-2">
+        <div className="bg-white rounded-[24px] px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-white flex items-center justify-between">
+          <h1 className="font-extrabold text-slate-900 text-[17px] tracking-tight">Chat</h1>
         </div>
       </div>
 
