@@ -97,16 +97,32 @@ export default function SwapGuruPage() {
   const [messages, setMessages] = useState<Array<{ role: "user" | "guru"; content: string; listings?: any[] }>>([]);
 
   const getGreeting = useCallback(() => {
+    let username = "there";
+    try {
+      const desc = JSON.parse(user?.university || "{}");
+      username = desc.username || (user?.name ? user.name.split(" ")[0] : "there");
+    } catch {
+      username = user?.name ? user.name.split(" ")[0] : "there";
+    }
+
     const greetings = [
+      // English
+      "Hey {name}! Ready to hunt for some deals?",
+      "Welcome back {name}! What are we analyzing today?",
+      "Greetings {name}! I'm Swap Guru, your ultimate trading assistant.",
+      "Hello {name}! Let's find you the perfect swap.",
+      // Gikomba Slang
       "Karibu kastoma, camera mkononi, bei ni maelewano!",
       "Oya mbogi, hapa tunaosha macho na mali safi!",
       "Sasa kiongozi! Mali ni wewe na mdomo wako!",
-      "Rada bosi! Hapa ni bei ya jioni na mali ya asubuhi!",
-      "Vipi mkuu, mali imefika na ni ile safi. Una swapa nini leo?"
+      "Rada {name}! Hapa ni bei ya jioni na mali ya asubuhi!",
+      "Vipi {name}, mali imefika na ni ile safi. Una swapa nini leo?"
     ];
-    const name = user?.name ? user.name.split(" ")[0] : "msee";
-    const randomG = greetings[Math.floor(Math.random() * greetings.length)];
-    return `${randomG}\n\nMimi ni **Swap Guru**. Hapa ni kwenye deals zote zinapikwa. Ni nini unataka tuchanganue leo?`;
+    
+    let randomG = greetings[Math.floor(Math.random() * greetings.length)];
+    randomG = randomG.replace("{name}", username);
+    
+    return `${randomG}\n\nI am **Swap Guru**. How can I help you today?`;
   }, [user]);
 
   useEffect(() => {
