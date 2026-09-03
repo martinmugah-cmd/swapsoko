@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { createClient } from '@supabase/supabase-js';
+
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -379,7 +379,8 @@ export const RecommendationEngine = {
 };
 // ───────────────────────────────────────────────────────────────────────────
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from './supabase';
+import { createClient } from '@supabase/supabase-js';
 export const adminSupabase = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
 // Helper to convert object keys
@@ -584,8 +585,7 @@ const createProxy = (path: string[] = []): any => {
                       return camelItem;
                   });
                   
-                  // Filter: Only show items in the feed that have a video attached
-                  listings = listings.filter((item: any) => item.media && item.media.some((m: any) => m.type === 'video'));
+                  // User requested to see all listings in Swipes (not just videos)
                   
                   listings.sort((a: any, b: any) => (b.feedScore || 0) - (a.feedScore || 0));
                   
@@ -824,8 +824,8 @@ const createProxy = (path: string[] = []): any => {
                 query = query.eq('creator_id', input.creatorId);
               }
 
+              let uniVal = "";
               if (path[0] === 'communities' && path[1] === 'list' && (!input || !input.creatorId)) {
-                   let uniVal = "";
                    if (activeUserId) {
                        const { data: profile } = await supabase.from('profiles').select('*').eq('user_id', activeUserId).single();
                        if (profile) {
@@ -841,11 +841,7 @@ const createProxy = (path: string[] = []): any => {
                           }
                        }
                    }
-                   if (uniVal) {
-                       query = query.or(`type.eq.public,type.eq.private,and(type.eq.campus,university.eq."${uniVal}")`);
-                   } else {
-                       query = query.or(`type.eq.public,type.eq.private`);
-                   }
+                   query = query.in('type', ['public', 'private', 'campus']);
               }
 
               let { data, error } = await query;
@@ -854,6 +850,10 @@ const createProxy = (path: string[] = []): any => {
                 console.error(`Supabase error on ${tableName}:`, error);
                 // Return empty instead of throwing to keep UI alive
                 data = [];
+              }
+              
+              if (tableName === 'communities' && path[1] === 'list' && (!input || !input.creatorId)) {
+                  data = (data || []).filter((c: any) => c.type !== 'campus' || (c.university === uniVal && uniVal !== ""));
               }
               
               // Helper to parse potential Postgres array literals or JSON strings
@@ -937,8 +937,8 @@ const createProxy = (path: string[] = []): any => {
                        // Essential rules
                        if (l.status === 'finalized' || l.status === 'reserved') return false;
                        if (path[1] === 'feed' && activeUserId && l.userId === activeUserId) return false;
-                       if (l.status === 'active' && !l.hasOffers) {
-                           let age = now - new Date(l.createdAt || 0).getTime();
+                       if (l.status === 'active' && !l.hasOffers && l.createdAt) {
+                           let age = now - new Date(l.createdAt).getTime();
                            let maxAge = 30 * 24 * 60 * 60 * 1000;
                            if (age > maxAge) return false;
                        }
