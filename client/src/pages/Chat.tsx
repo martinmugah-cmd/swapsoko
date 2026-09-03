@@ -2356,7 +2356,7 @@ function ChatList({ onSelectRoom }: { onSelectRoom: (id: number) => void }) {
           className="flex flex-col items-center"
         >
           <div className="relative mb-8">
-            <div className="relative w-24 h-24 flex items-center justify-center"><img src="/logo.jpg" alt="SwapSoko" className="w-20 h-20 object-contain drop-shadow-xl" /></div>
+            <div className="relative w-24 h-24 flex items-center justify-center"><img src="/logo.png" alt="SwapSoko" className="w-20 h-20 object-contain drop-shadow-xl" /></div>
           </div>
           
           <h2 className="font-bold text-slate-900 text-[26px] tracking-tight mb-3">Access Messages</h2>

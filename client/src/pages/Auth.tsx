@@ -122,7 +122,7 @@ export default function AuthPage() {
               whileHover={{ scale: 1.05, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <img src="/logo.jpg" alt="SwapSoko" className="w-24 h-24 object-contain drop-shadow-xl" />
+              <img src="/logo.png" alt="SwapSoko" className="w-24 h-24 object-contain drop-shadow-xl" />
             </motion.div>
             
             <h1 className="text-[32px] font-black text-slate-900 tracking-tight mb-2 text-center relative z-10">
@@ -173,7 +173,7 @@ export default function AuthPage() {
                 onClick={() => setView("landing")}
                 className="cursor-pointer"
               >
-                <img src="/logo.jpg" alt="SwapSoko" className="w-16 h-16 object-contain drop-shadow-md" />
+                <img src="/logo.png" alt="SwapSoko" className="w-16 h-16 object-contain drop-shadow-md" />
               </motion.div>
             </div>
             

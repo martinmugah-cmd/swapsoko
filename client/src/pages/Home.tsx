@@ -90,7 +90,7 @@ export default function Home() {
           <div className="bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[32px] p-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.05)] flex items-center justify-between">
             <div className="flex items-center gap-3 pl-1">
               <motion.div whileTap={{ scale: 0.9 }}>
-                <img src="/logo.jpg" className="w-10 h-10 object-contain drop-shadow-sm" alt="SwapSoko Logo" />
+                <img src="/logo.png" className="w-10 h-10 object-contain drop-shadow-sm" alt="SwapSoko Logo" />
               </motion.div>
               <div className="flex flex-col">
                 <h1 className="text-[18px] font-black text-slate-900 tracking-tight leading-none drop-shadow-sm">Swapsoko</h1>
