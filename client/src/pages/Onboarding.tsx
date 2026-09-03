@@ -222,7 +222,7 @@ export default function OnboardingPage() {
         updated_at: new Date().toISOString(),
       };
 
-      const { error: profileError } = await supabase.from('profiles').upsert(updates);
+      const { error: profileError } = await supabase.from('profiles').upsert(updates, { onConflict: 'user_id' });
       if (profileError) throw profileError;
       
       const { error: authError } = await supabase.auth.updateUser({
