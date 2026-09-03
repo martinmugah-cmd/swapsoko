@@ -215,8 +215,8 @@ export default function OnboardingPage() {
       };
 
       const updates = {
-        id: user?.id,
-        user_id: user?.id,
+        
+        user_
         name: fullName,
         university: JSON.stringify(universityData),
         updated_at: new Date().toISOString(),
