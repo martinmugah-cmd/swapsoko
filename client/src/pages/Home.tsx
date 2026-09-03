@@ -10,7 +10,7 @@ import {
   Plus, Star, MapPin, Users, Zap, Heart, Bell,
   ChevronRight, Search, 
   Sparkles, Shield, Flame, Gift, Bot, Package, ArrowRight, Activity, Clock
-} from "lucide-react";
+} from "@/lib/icons";
 
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { createPortal } from "react-dom";
@@ -37,7 +37,8 @@ export default function Home() {
   const unreadCount = (notificationsQuery.data?.notifications || []).filter((n: any) => !n.isRead).length;
   const profileQuery = trpc.profile.me.useQuery(undefined, { enabled: isAuthenticated });
 
-  const feedQuery = trpc.listings.feed.useQuery({ limit: 5 }, { enabled: !!user });
+  const { coords } = useAppStore();
+  const feedQuery = trpc.listings.feed.useQuery({ limit: 5, filters, coords }, { enabled: !!user });
   const wishesQuery = trpc.wishes.feed.useQuery({ limit: 5 }, { enabled: !!user });
   const communitiesQuery = trpc.communities.list.useQuery(undefined, { enabled: !!user });
   const cyclesQuery = trpc.multiWay.findCycles.useQuery(undefined, { enabled: !!user });
@@ -82,45 +83,14 @@ export default function Home() {
     <PullToRefresh onRefresh={handleRefresh}>
       <div className="pb-32 min-h-screen font-sans relative overflow-hidden">
         
-        {/* ── Immersive Animated Background ─────────────────────────────────────────── */}
-        <div className="fixed inset-0 z-[-1] bg-[#F4F4F9] overflow-hidden pointer-events-none">
-          <motion.div 
-            animate={{ 
-              scale: [1, 1.2, 1],
-              rotate: [0, 90, 0],
-              opacity: [0.3, 0.5, 0.3]
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute top-[-20%] left-[-20%] w-[70vw] h-[70vw] rounded-full bg-green-300/40 blur-[80px]" 
-          />
-          <motion.div 
-            animate={{ 
-              scale: [1, 1.3, 1],
-              rotate: [0, -90, 0],
-              opacity: [0.3, 0.6, 0.3]
-            }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-            className="absolute bottom-[-10%] right-[-20%] w-[80vw] h-[80vw] rounded-full bg-blue-300/30 blur-[100px]" 
-          />
-          <motion.div 
-            animate={{ 
-              scale: [1, 1.1, 1],
-              opacity: [0.2, 0.4, 0.2]
-            }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute top-[30%] right-[10%] w-[50vw] h-[50vw] rounded-full bg-purple-300/30 blur-[80px]" 
-          />
-        </div>
+        
       
         {/* ── Ultra-Premium Floating Header ────────────────────────────────────────────────── */}
         <div className="px-5 pt-5 pb-2 sticky top-0 z-50">
           <div className="bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[32px] p-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.05)] flex items-center justify-between">
             <div className="flex items-center gap-3 pl-1">
-              <motion.div
-                className="w-11 h-11 rounded-[20px] flex items-center justify-center shadow-lg shadow-black/5 overflow-hidden border border-white bg-white"
-                whileTap={{ scale: 0.9 }}
-              >
-                <img src="/logo.jpg" className="w-full h-full object-cover scale-110" />
+              <motion.div whileTap={{ scale: 0.9 }}>
+                <img src="/logo.png" className="w-10 h-10 object-contain drop-shadow-sm" alt="SwapSoko Logo" />
               </motion.div>
               <div className="flex flex-col">
                 <h1 className="text-[18px] font-black text-slate-900 tracking-tight leading-none drop-shadow-sm">Swapsoko</h1>

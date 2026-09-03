@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Plus, Bookmark, CheckCircle, MapPin, Banknote, Flag } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Plus, Bookmark, CheckCircle, MapPin, Banknote, Flag } from '@/lib/icons';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { toast } from 'sonner';

@@ -10,7 +10,7 @@ import {
   ChevronLeft, Camera, CheckCircle, Shield, AlertCircle, 
   MapPin, Settings, LogOut, Trash2, Mail, Phone, Lock, Eye, EyeOff, GraduationCap,
   Smartphone, BookOpen, Monitor, Trophy, Shirt, Sofa, Code, Music, Palette, Plane, ChefHat, Dumbbell, Film, Sparkles, Gamepad2
-} from "lucide-react";
+} from "@/lib/icons";
 
 const UNIVERSITIES = [
   { name: "JKUAT", campuses: ["Main Campus (Juja)", "Karen", "CBD Campus"] },
@@ -31,23 +31,19 @@ const UNIVERSITIES = [
   { name: "Other / Not a student", campuses: ["N/A"] }
 ];
 
-const ALL_INTERESTS = [
-  { id: "gaming", label: "Gaming", icon: <Gamepad2 className="w-4 h-4" />, color: "bg-purple-100 text-purple-700" },
-  { id: "phones", label: "Phones", icon: <Smartphone className="w-4 h-4" />, color: "bg-blue-100 text-blue-700" },
-  { id: "books", label: "Books", icon: <BookOpen className="w-4 h-4" />, color: "bg-orange-100 text-orange-700" },
-  { id: "electronics", label: "Electronics", icon: <Monitor className="w-4 h-4" />, color: "bg-gray-200 text-gray-700" },
-  { id: "photography", label: "Photography", icon: <Camera className="w-4 h-4" />, color: "bg-pink-100 text-pink-700" },
-  { id: "sports", label: "Sports", icon: <Trophy className="w-4 h-4" />, color: "bg-green-100 text-green-700" },
-  { id: "fashion", label: "Fashion", icon: <Shirt className="w-4 h-4" />, color: "bg-rose-100 text-rose-700" },
-  { id: "furniture", label: "Furniture", icon: <Sofa className="w-4 h-4" />, color: "bg-amber-100 text-amber-700" },
-  { id: "programming", label: "Programming", icon: <Code className="w-4 h-4" />, color: "bg-indigo-100 text-indigo-700" },
-  { id: "music", label: "Music", icon: <Music className="w-4 h-4" />, color: "bg-yellow-100 text-yellow-700" },
-  { id: "art", label: "Art", icon: <Palette className="w-4 h-4" />, color: "bg-red-100 text-red-700" },
-  { id: "travel", label: "Travel", icon: <Plane className="w-4 h-4" />, color: "bg-sky-100 text-sky-700" },
-  { id: "cooking", label: "Cooking", icon: <ChefHat className="w-4 h-4" />, color: "bg-orange-100 text-orange-700" },
-  { id: "fitness", label: "Fitness", icon: <Dumbbell className="w-4 h-4" />, color: "bg-teal-100 text-teal-700" },
-  { id: "movies", label: "Movies", icon: <Film className="w-4 h-4" />, color: "bg-violet-100 text-violet-700" },
-  { id: "other", label: "Other", icon: <Sparkles className="w-4 h-4" />, color: "bg-gray-200 text-gray-700" },
+const INTERESTS = [
+  { id: "gaming", label: "Gaming", icon: <Gamepad2 className="w-5 h-5" />, color: "text-purple-500", bg: "bg-purple-50" },
+  { id: "phones", label: "Phones", icon: <Smartphone className="w-5 h-5" />, color: "text-blue-500", bg: "bg-blue-50" },
+  { id: "books", label: "Books", icon: <BookOpen className="w-5 h-5" />, color: "text-orange-500", bg: "bg-orange-50" },
+  { id: "electronics", label: "Electronics", icon: <Monitor className="w-5 h-5" />, color: "text-slate-600", bg: "bg-slate-100" },
+  { id: "photography", label: "Photography", icon: <Camera className="w-5 h-5" />, color: "text-pink-500", bg: "bg-pink-50" },
+  { id: "sports", label: "Sports", icon: <Trophy className="w-5 h-5" />, color: "text-emerald-500", bg: "bg-emerald-50" },
+  { id: "fashion", label: "Fashion", icon: <Shirt className="w-5 h-5" />, color: "text-rose-500", bg: "bg-rose-50" },
+  { id: "furniture", label: "Furniture", icon: <Sofa className="w-5 h-5" />, color: "text-amber-600", bg: "bg-amber-50" },
+  { id: "programming", label: "Coding", icon: <Code className="w-5 h-5" />, color: "text-indigo-500", bg: "bg-indigo-50" },
+  { id: "music", label: "Music", icon: <Music className="w-5 h-5" />, color: "text-yellow-600", bg: "bg-yellow-50" },
+  { id: "art", label: "Art", icon: <Palette className="w-5 h-5" />, color: "text-red-500", bg: "bg-red-50" },
+  { id: "travel", label: "Travel", icon: <Plane className="w-5 h-5" />, color: "text-sky-500", bg: "bg-sky-50" },
 ];
 
 // Helper for file upload
@@ -475,10 +471,11 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 -mt-8 relative z-20 space-y-5">
+      <div className="max-w-2xl mx-auto px-4 -mt-8 relative z-20 pb-28">
+<div className="bg-white rounded-[32px] p-6 shadow-[0_8px_32px_rgba(15,23,42,0.08)] border border-slate-100 flex flex-col">
         
         {/* Profile Summary */}
-        <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 card-shadow text-center relative overflow-hidden">
+        <div className="text-center relative overflow-hidden pb-6 border-b border-slate-100">
           <div className="w-24 h-24 mx-auto rounded-full bg-gray-100 mb-4 relative group overflow-hidden border-4 border-white shadow-md">
             {avatarUrl ? (
               <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera w-8 h-8"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>`; }} />
@@ -538,7 +535,7 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
         </div>
 
         {/* Verification Card */}
-        <div className="bg-white/70 backdrop-blur-md rounded-2xl p-5 card-shadow">
+        <div className="pt-2 pb-6 border-b border-slate-100">
           <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2"><Shield className="w-4 h-4 text-green-500" /> Verifications</h3>
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm text-gray-700">
@@ -581,14 +578,14 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
 
         {/* Stats Card */}
         <div className="grid grid-cols-1 gap-3">
-          <div className="bg-white p-4 rounded-2xl card-shadow text-center">
+          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
             <p className="text-xs text-gray-500 font-semibold uppercase">Completed Swaps</p>
             <p className="text-2xl font-black text-slate-900 mt-1">{profile?.completedSwaps || 0}</p>
           </div>
         </div>
 
         {/* Personal Info */}
-        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
+        <div className="space-y-4 pt-4 pb-4 border-b border-slate-100">
           <h3 className="font-extrabold text-slate-900 pb-2 border-b border-gray-100">Personal Information</h3>
           
           <div className="grid grid-cols-2 gap-3">
@@ -626,7 +623,7 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
 
         {/* Education */}
         {university !== "Other / Not a student" && (
-          <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
+          <div className="space-y-4 pt-4 pb-4 border-b border-slate-100">
             <h3 className="font-extrabold text-slate-900 pb-2 border-b border-gray-100">Education</h3>
             
             <div>
@@ -675,56 +672,29 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
           </div>
         )}
 
-        {/* Location */}
-        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
-          <h3 className="font-extrabold text-slate-900 pb-2 border-b border-gray-100">Location</h3>
-          
-          <div>
-            <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Current Location</label>
-            <div className="flex items-center justify-between mt-1.5 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-2.5">
-              <span className="text-slate-900 text-sm font-bold truncate pr-2">
-                 {(() => {
-                    try {
-                      const l = JSON.parse(locationName);
-                      if (l.town || l.county) return `${l.town || ''}, ${l.county || ''}`.replace(/^, | ,$/, '').trim();
-                      return locationName || "Not set";
-                    } catch(e) {
-                      return locationName || "Not set";
-                    }
-                 })()}
-              </span>
-              <button onClick={handleLocationUpdate} className="text-blue-600 text-xs font-extrabold uppercase tracking-wide flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-full hover:bg-blue-100 transition-colors shrink-0">
-                <MapPin className="w-3 h-3" /> Update
-              </button>
-            </div>
-          </div>
-          
-          <div className="pt-2">
-            <div className="flex justify-between items-center mb-3">
-              <label className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Search Radius</label>
-              <span className="text-sm font-black text-green-500 bg-green-50 px-3 py-1 rounded-full">{radius} KM</span>
-            </div>
-            <input type="range" min={5} max={50} step={5} value={radius} onChange={e => setRadius(parseInt(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#22C55E]" />
-            <div className="flex justify-between text-xs font-extrabold text-gray-400 mt-2">
-              <span>5 KM</span><span>50 KM</span>
-            </div>
-          </div>
-        </div>
-
         {/* Interests */}
-        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white">
+        <div className="space-y-4 pt-4 pb-4 border-b border-slate-100">
           <h3 className="font-extrabold text-slate-900 pb-3 border-b border-gray-100 mb-4">Interests</h3>
           <div className="flex flex-wrap gap-2">
-            {ALL_INTERESTS.map(interest => {
-              const selected = interests.has(interest.id);
+            {INTERESTS.map((interest) => {
+              const isSelected = interests.has(interest.id);
               return (
                 <button
-                  key={interest.id} onClick={() => toggleInterest(interest.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-bold transition-all ${
-                    selected ? `${interest.color} shadow-sm scale-105 border-2 border-transparent` : 'bg-gray-50 border-2 border-gray-100 text-gray-500 hover:bg-gray-100'
+                  key={interest.id}
+                  type="button"
+                  onClick={() => {
+                    const next = new Set(interests);
+                    if (isSelected) next.delete(interest.id);
+                    else next.add(interest.id);
+                    setInterests(next);
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-bold border transition-all ${
+                    isSelected 
+                      ? "bg-emerald-500 text-white border-emerald-500 shadow-sm" 
+                      : "bg-slate-50 text-slate-500 border-slate-200 hover:border-emerald-200"
                   }`}
                 >
-                  {interest.icon}
+                  <span className={isSelected ? "text-white" : interest.color}>{interest.icon}</span>
                   {interest.label}
                 </button>
               );
@@ -733,7 +703,7 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
         </div>
 
         {/* Preferences & Privacy */}
-        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-4">
+        <div className="space-y-4 pt-4 pb-4 border-b border-slate-100">
           <h3 className="font-extrabold text-slate-900 pb-2 border-b border-gray-100">Preferences & Privacy</h3>
           
           <div className="space-y-4">
@@ -753,7 +723,7 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
             <ToggleRow label="Push Notifications" checked={prefs.notifications} onChange={c => setPrefs({...prefs, notifications: c})} />
           </div>
         </div>        {/* Account */}
-        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white space-y-2">
+        <div className="space-y-2 pt-4 pb-4">
           <h3 className="font-extrabold text-slate-900 pb-2 border-b border-gray-100 mb-2">Account</h3>
           
           <button onClick={() => setShowPasswordModal(true)} className="w-full flex items-center gap-3 p-3 rounded-2xl bg-gray-50/50 border border-gray-100 hover:bg-white hover:border-gray-200 text-slate-900 transition-all text-sm font-bold">
@@ -793,6 +763,8 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
         <button onClick={handleSave} disabled={loading} className="pointer-events-auto flex items-center justify-center gap-2 gradient-green text-white font-bold px-8 py-3 rounded-full shadow-[0_8px_30px_rgba(34,197,94,0.3)] border border-green-400 disabled:opacity-50 transition-transform active:scale-95">
           {loading ? "Saving..." : "Save Changes"}
         </button>
+      </div>
+
       </div>
 
       {showPasswordModal && (

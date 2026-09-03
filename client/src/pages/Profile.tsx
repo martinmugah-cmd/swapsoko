@@ -2,15 +2,15 @@ import { trpc } from "@/lib/trpc";
 import { useAppStore } from "@/store";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { ReportModal } from "@/components/ReportModal";
-import { Flag } from "lucide-react";
+import { Flag } from "@/lib/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Lock,
   Package, Star, User, Users, Bell, Settings, LogOut, Heart, MapPin, 
   Shield, ShieldAlert, Activity, CheckCircle, ChevronLeft, ChevronRight, Image as ImageIcon, 
-  Plus, Search, HelpCircle, Globe, XCircle, Handshake, RefreshCw, UserPlus, CheckCircle2,
+  Plus, Search, HelpCircle, Globe, XCircle, Handshake, RefreshCw, UserPlus, CheckCircle2, Check,
   MessageCircle, Clock, Scale, Repeat2, TrendingUp, Award, X, Camera, Trash2, Edit, Calendar, GraduationCap, AlertCircle, QrCode
-} from "lucide-react";
+} from "@/lib/icons";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -101,7 +101,7 @@ function MatchSuggestionsModal({ listing, onClose }: { listing: any, onClose: ()
                  className="bg-white/70 backdrop-blur-md border border-gray-100 card-shadow rounded-2xl p-3 cursor-pointer hover:border-green-500/50 transition-colors"
               >
                 <div className="flex gap-3">
-                  <img src={(m.target.images && m.target.images[0]) || "/logo.jpg"} className="w-16 h-16 rounded-2xl object-cover" />
+                  <img src={(m.target.images && m.target.images[0]) || "/logo.png"} className="w-16 h-16 rounded-2xl object-cover" />
                   <div className="flex-1 min-w-0">
                     <h4 className="font-bold text-slate-900 text-sm truncate">{m.target.title}</h4>
                     <p className="text-xs text-gray-400">{m.target.campus}</p>
@@ -135,12 +135,13 @@ function MatchSuggestionsModal({ listing, onClose }: { listing: any, onClose: ()
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string | number; color: string }) {
   return (
-    <div className="bg-white rounded-3xl p-3 card-shadow text-center">
-      <div className={`w-8 h-8 rounded-2xl mx-auto mb-2 flex items-center justify-center`} style={{ backgroundColor: color + "20" }}>
+    <div className="bg-white/60 backdrop-blur-3xl rounded-[24px] p-4 shadow-[0_8px_32px_rgba(15,23,42,0.04)] border border-white/80 text-center relative overflow-hidden group hover:bg-white transition-all hover:scale-[1.02] active:scale-[0.98]">
+      <div className="absolute inset-0 rounded-[24px] border border-white pointer-events-none mix-blend-overlay"></div>
+      <div className={`w-10 h-10 rounded-2xl mx-auto mb-3 flex items-center justify-center shadow-inner`} style={{ backgroundColor: color + "15" }}>
         <div style={{ color }}>{icon}</div>
       </div>
-      <p className="font-bold text-slate-900 text-lg leading-none">{value}</p>
-      <p className="text-xs text-gray-400 mt-0.5">{label}</p>
+      <p className="font-black text-slate-900 text-2xl leading-none mb-1 tracking-tight drop-shadow-sm">{value}</p>
+      <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">{label}</p>
     </div>
   );
 }
@@ -171,138 +172,131 @@ function PublicProfileView({
 
   const completedSwaps = profile?.completedSwaps ?? 0;
   
-  const acceptanceRate = profile?.acceptanceRate ?? 0;
-  const avgResponseMinutes = profile?.avgResponseTimeMinutes ?? 0;
-  const avgResponseTime = avgResponseMinutes < 60 ? `< ${Math.max(avgResponseMinutes, 1)} min` : `< ${Math.ceil(avgResponseMinutes / 60)} hr`;
-  const memberSince = new Date(profile?.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  // Safely extract profile data
+  let targetProfileData = profile;
+  if (!targetProfileData || (!targetProfileData.university && !targetProfileData.description)) {
+      targetProfileData = listingsQuery.data?.items?.[0]?.profiles || wishesQuery.data?.items?.[0]?.profiles || profile || {};
+  }
   
-  let targetProfileData = profile?.university !== undefined ? profile : (listingsQuery.data?.items?.[0]?.profiles || wishesQuery.data?.items?.[0]?.profiles || {});
   let desc: any = {};
   let uni: any = {};
   try { desc = JSON.parse(targetProfileData?.description || "{}"); } catch(e) {}
   try { uni = JSON.parse(targetProfileData?.university || "{}"); } catch(e) {}
   
   let username = desc.username || uni.username || targetProfileData?.user_metadata?.username || targetProfileData?.name?.toLowerCase().replace(/\s+/g, '') || "user";
-  let avatarUrl = targetProfileData?.avatarUrl;
-  let name = targetProfileData?.name || targetProfileData?.user_metadata?.full_name || "User";
-  let uniVal = targetProfileData?.campus || "University";
-  let isStudentVerified = targetProfileData?.isStudentVerified;
-  let bio = "";
-  let targetLat: number | null = null;
-  let targetLng: number | null = null;
-  let privacyVisibility = "Public";
-  let showDistance = true;
-  let showLastActive = true;
-
-  try {
-    const desc = JSON.parse(targetProfileData?.university || "{}");
-    const dDesc = JSON.parse(targetProfileData?.description || "{}");
-    if (desc.isStudentVerified || dDesc.isStudentVerified || targetProfileData?.isStudentVerified) isStudentVerified = true;
-    if (desc.username || dDesc.username) username = desc.username || dDesc.username;
-    if (desc.avatarUrl) avatarUrl = desc.avatarUrl;
-    if (desc.val) uniVal = desc.val;
-    if (desc.name) name = desc.name;
-    if (desc.bio) bio = desc.bio;
-    if (desc.lat && desc.lng) { targetLat = desc.lat; targetLng = desc.lng; }
-    if (desc.privacy) {
-       privacyVisibility = desc.privacy.visibility || "Public";
-       if (desc.privacy.showDistance !== undefined) showDistance = desc.privacy.showDistance;
-       if (desc.privacy.showLastActive !== undefined) showLastActive = desc.privacy.showLastActive;
-    }
-  } catch(e) {
-    if (targetProfileData?.university && !targetProfileData.university.startsWith('{')) {
-      uniVal = targetProfileData.university;
-    }
+  let avatarUrl = targetProfileData?.avatarUrl || desc.avatarUrl;
+  let name = desc.name || targetProfileData?.name || targetProfileData?.user_metadata?.full_name || "User";
+  let uniVal = desc.val || targetProfileData?.campus || "University";
+  let isStudentVerified = desc.isStudentVerified || targetProfileData?.isStudentVerified || false;
+  let institutionName = "";
+  if (targetProfileData?.university) {
+      if (targetProfileData.university.startsWith("{")) {
+          institutionName = uni.institution || "";
+          uniVal = uni.val || targetProfileData.campus || "University";
+          isStudentVerified = isStudentVerified || uni.isStudentVerified;
+      } else {
+          institutionName = targetProfileData.university;
+          uniVal = targetProfileData.campus || "University";
+      }
+  } else if (targetProfileData?.campus) {
+      uniVal = targetProfileData.campus;
   }
+  if (uniVal.includes("lng\":") || uniVal.startsWith("-1.") || uniVal.startsWith("{")) uniVal = "University";
+  if (institutionName.includes("lng\":") || institutionName.startsWith("-1.") || institutionName.startsWith("{")) institutionName = "";
+  if (institutionName.includes("lng\":") || institutionName.startsWith("-1.") || institutionName.startsWith("{")) institutionName = "";
+
+  let bio = uni.bio || desc.bio || targetProfileData?.bio || "";
+  let targetLat: number | null = desc.lat || null;
+  let targetLng: number | null = desc.lng || null;
+  let privacyVisibility = desc.privacy?.visibility || "Public";
+  let showDistance = desc.privacy?.showDistance !== false;
+  let showLastActive = desc.privacy?.showLastActive !== false;
 
   if (privacyVisibility === "SwapSoko Users" && !user) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] pb-24">
-        <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-100">
-           <button onClick={onBack} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors"><ChevronLeft size={24} className="text-slate-900"/></button>
+      <div className="min-h-screen relative overflow-y-auto bg-[#F8FAFC] pb-24">
+        <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-white/40">
+           <button onClick={onBack || (() => window.history.back())} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/60 hover:bg-white transition-colors shadow-sm"><ChevronLeft size={24} className="text-slate-900"/></button>
         </div>
         <div className="flex flex-col items-center justify-center pt-32 px-6 text-center">
-           <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-             <Lock className="w-8 h-8 text-gray-400" />
+           <div className="w-20 h-20 bg-white/60 backdrop-blur-3xl rounded-full flex items-center justify-center mb-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80">
+             <Lock className="w-8 h-8 text-slate-400" />
            </div>
-           <h2 className="text-xl font-bold text-gray-800 mb-2">Profile is Protected</h2>
-           <p className="text-sm text-gray-500 mb-8 max-w-[260px]">This user only shares their profile and listings with signed-in SwapSoko users.</p>
-           <button onClick={() => navigate("/login")} className="gradient-green text-white font-bold py-3 px-8 rounded-full shadow-lg">Sign In to View</button>
+           <h2 className="text-xl font-extrabold text-slate-900 mb-2">Profile is Protected</h2>
+           <p className="text-sm text-slate-500 mb-8 max-w-[260px] font-medium">This user only shares their profile and listings with signed-in SwapSoko users.</p>
+           <button onClick={() => navigate("/login")} className="bg-emerald-500 text-white font-bold py-3.5 px-8 rounded-full shadow-[0_8px_20px_rgba(16,185,129,0.25)] hover:-translate-y-0.5 transition-transform">Sign In to View</button>
         </div>
       </div>
     );
   }
-
   
   if (!targetLat && listingsQuery.data?.items?.[0]?.latitude) {
     targetLat = listingsQuery.data.items[0].latitude;
     targetLng = listingsQuery.data.items[0].longitude;
   }
   let distanceText = "";
-  if (showDistance) {
-    if (targetLat && targetLng && filters.coords) {
+  if (showDistance && targetLat && targetLng && filters.coords) {
       const R = 6371; // km
       const dLat = (targetLat - filters.coords.lat) * Math.PI / 180;
       const dLon = (targetLng - filters.coords.lng) * Math.PI / 180;
       const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(filters.coords.lat * Math.PI / 180) * Math.cos(targetLat * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
       const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       distanceText = dist < 1 ? `About ${(dist*1000).toFixed(0)}m away` : `About ${dist.toFixed(1)}km away`;
-    } else {
+  } else if (showDistance) {
       distanceText = "Location hidden";
-    }
   }
 
-  return (
-    <div className="min-h-[100dvh] bg-[#F8FAFC] pb-48">
+  // Consistent pastel avatar colors based on name
+  const colors = ["bg-[#5B21B6]", "bg-[#10B981]", "bg-[#F59E0B]", "bg-[#EC4899]", "bg-[#3B82F6]"];
+  const avatarBg = colors[name.length % colors.length];
 
+  return (
+    <div className="min-h-[100dvh] bg-[#F8FAFC] pb-48 relative overflow-hidden">
+      {/* Animated Background Blobs for Glassmorphism */}
+      <div className="absolute top-0 left-0 w-full h-96 overflow-hidden pointer-events-none">
+      </div>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-white to-[#F8FAFC] px-4 pt-12 pb-10 relative">
-        <button onClick={onBack || (() => window.history.back())} className="absolute top-6 left-4 w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm hover:scale-105 transition-transform z-10">
+      <div className="relative pt-12 pb-6 px-4 z-10">
+        <button onClick={onBack || (() => window.history.back())} className="absolute top-6 left-4 w-10 h-10 flex items-center justify-center bg-white/60 backdrop-blur-xl rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80 hover:scale-105 transition-transform z-20">
           <ChevronLeft className="w-6 h-6 text-slate-900" />
         </button>
         {user?.id !== targetUserId && (
-          <button onClick={() => setIsReporting(true)} className="absolute top-6 right-4 w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm hover:scale-105 transition-transform z-10">
+          <button onClick={() => setIsReporting(true)} className="absolute top-6 right-4 w-10 h-10 flex items-center justify-center bg-white/60 backdrop-blur-xl rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80 hover:scale-105 transition-transform z-20">
             <Flag className="w-5 h-5 text-red-500" />
           </button>
         )}
 
-        <div className="flex flex-col items-center text-center mt-2">
-          <div className="w-28 h-28 rounded-full bg-gray-100 overflow-hidden shadow-md border-4 border-white mb-4 relative">
+        <div className="flex flex-col items-center text-center mt-4">
+          <div className={`w-32 h-32 rounded-[40px] ${avatarBg} overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.12)] border-[4px] border-white/80 backdrop-blur-3xl mb-5 relative`}>
             {avatarUrl ? (
-              <img src={avatarUrl} className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-4xl font-black text-gray-400">${(name || "U")[0]}</div>`; }} />
+              <img src={avatarUrl} className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-5xl font-black text-white">${(name || "U")[0]}</div>`; }} />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-4xl font-black text-gray-400">{(name || "U")[0]}</div>
-            )}
-            {isStudentVerified && (
-              <div className="absolute bottom-1 right-1 bg-white rounded-full p-0.5 shadow-sm">
-                <CheckCircle2 className="w-5 h-5 fill-[#22C55E] text-white" />
-              </div>
+              <div className="w-full h-full flex items-center justify-center text-5xl font-black text-white">{(name || "U")[0]}</div>
             )}
           </div>
           
-          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">{name}</h1>
-          <div className="flex items-center gap-1 mt-0.5 justify-center">
-            <p className="text-gray-500 font-medium">@{username}</p>
-            {isStudentVerified && <GraduationCap className="w-4 h-4 text-blue-500" />}
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight drop-shadow-sm">{name}</h1>
+          <div className="flex items-center gap-1.5 mt-1 justify-center">
+            <p className="text-slate-600 font-bold text-sm bg-white/50 px-3 py-1 rounded-full backdrop-blur-md border border-white/40 shadow-sm">@{username}</p>
           </div>
           
-          <div className="flex flex-col items-center mt-3 space-y-1.5">
-            {uniVal === "Other / Not a student" ? (
-              <span className="bg-gray-100 px-3 py-1 rounded-full text-gray-500 text-sm font-semibold shadow-sm border border-gray-200 flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4" /> Not a student
+          <div className="flex flex-col items-center mt-4 space-y-2">
+            {(uniVal === "Other / Not a student" || institutionName === "Other / Not a student" || institutionName === "Other" || (uniVal === "University" && !institutionName)) ? (
+              <span className="bg-slate-100 backdrop-blur-xl px-4 py-1.5 rounded-full text-slate-500 text-xs font-bold shadow-sm border border-slate-200 flex items-center gap-1.5">
+                <User className="w-4 h-4" /> Not a student
               </span>
             ) : isStudentVerified ? (
-              <span className="bg-green-50 px-3 py-1 rounded-full text-green-700 text-sm font-semibold shadow-sm border border-green-100 flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-green-500" /> Verified Student {uniVal !== "University" ? `• ${uniVal}` : ""}
+              <span className="bg-emerald-50 backdrop-blur-xl px-4 py-1.5 rounded-full text-emerald-600 text-xs font-bold shadow-sm border border-emerald-200 flex items-center gap-1.5">
+                <CheckCircle className="w-4 h-4 text-emerald-500" /> Verified Student {institutionName ? `• ${institutionName} ${uniVal !== "University" ? '('+uniVal+')' : ''}` : (uniVal !== "University" ? `• ${uniVal}` : "")}
               </span>
             ) : (
-              <span className="bg-orange-50 px-3 py-1 rounded-full text-orange-600 text-sm font-semibold shadow-sm border border-orange-100 flex items-center gap-1.5">
-                <AlertCircle className="w-4 h-4 text-orange-500" /> Student Not Verified
+              <span className="bg-orange-50 backdrop-blur-xl px-4 py-1.5 rounded-full text-orange-600 text-xs font-bold shadow-sm border border-orange-200 flex items-center gap-1.5">
+                <AlertCircle className="w-4 h-4 text-orange-500" /> Unverified Student {institutionName ? `• ${institutionName} ${uniVal !== "University" ? '('+uniVal+')' : ''}` : (uniVal !== "University" ? `• ${uniVal}` : "")}
               </span>
             )}
             {distanceText && (
-              <p className="text-gray-400 text-xs flex items-center justify-center flex-wrap gap-1 font-medium mt-2">
+              <p className="text-slate-500 text-[11px] flex items-center justify-center flex-wrap gap-1 font-bold mt-2 uppercase tracking-widest bg-white/40 px-3 py-1 rounded-full backdrop-blur-md">
                  <MapPin className="w-3.5 h-3.5" />
                  {targetProfileData?.location_name ? (
                    <span>{targetProfileData.location_name} • {distanceText}</span>
@@ -311,53 +305,48 @@ function PublicProfileView({
                  )}
               </p>
             )}
-            {showLastActive && (
-              <p className="text-gray-400 text-xs flex items-center gap-1 font-medium mt-1">
-                 <div className="w-2 h-2 rounded-full bg-green-500" /> Active recently
-              </p>
-            )}
           </div>
         </div>
       </div>
 
-      <div className="px-4 mt-6 space-y-4 relative z-20">
+      <div className="px-4 mt-2 space-y-4 relative z-20">
         {/* Bio */}
         {bio && (
-          <div className="bg-white p-5 rounded-3xl shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
-            <h3 className="font-extrabold text-gray-900 text-lg mb-2 tracking-tight">About</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">{bio}</p>
+          <div className="bg-white/60 backdrop-blur-3xl p-5 rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80">
+            <h3 className="font-extrabold text-slate-900 text-lg mb-2 tracking-tight">About</h3>
+            <p className="text-slate-700 text-sm font-medium leading-relaxed">{bio}</p>
           </div>
         )}
 
         {/* Active Listings Carousel */}
-        <div className="bg-white py-5 rounded-3xl shadow-[0_2px_15px_rgba(0,0,0,0.03)] overflow-hidden">
+        <div className="bg-white/60 backdrop-blur-3xl py-5 rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80 overflow-hidden">
           <div className="px-5 flex items-center justify-between mb-4">
-             <h3 className="font-extrabold text-gray-900 text-lg tracking-tight">Active Listings</h3>
-             <span onClick={() => setShowGrid(true)} className="text-blue-600 text-xs font-bold cursor-pointer hover:underline">See All</span>
+             <h3 className="font-extrabold text-slate-900 text-lg tracking-tight">Active Listings</h3>
+             <span onClick={() => setShowGrid(true)} className="text-emerald-600 text-xs font-bold cursor-pointer hover:underline bg-emerald-500/10 px-3 py-1 rounded-full">See All</span>
           </div>
           <div className="flex overflow-x-auto hide-scrollbar px-5 pb-2 gap-3">
             {listingsQuery.isLoading ? (
                <div className="flex gap-3">
                  {[1, 2, 3].map((i) => (
-                   <div key={`sk-${i}`} className="min-w-[140px] w-[140px] h-36 bg-gray-100 rounded-2xl animate-pulse"></div>
+                   <div key={`sk-${i}`} className="min-w-[140px] w-[140px] h-36 bg-white/50 rounded-[24px] animate-pulse border border-white/60"></div>
                  ))}
                </div>
             ) : listingsQuery.data?.items?.length === 0 ? (
-               <div className="text-xs text-gray-400 font-medium">No active listings</div>
+               <div className="text-xs text-slate-500 font-bold bg-white/50 px-4 py-3 rounded-2xl inline-block">No active listings</div>
             ) : (
                (listingsQuery.data?.items || []).filter((l: any) => l.status !== 'hidden' || targetUserId === user?.id).map((l: any) => (
-                 <div key={l.id} className="min-w-[140px] w-[140px] bg-gray-50 rounded-2xl overflow-hidden flex-shrink-0 border border-gray-100 cursor-pointer relative" onClick={() => setShowGrid(true)}>
-                   <div className="h-28 bg-gray-200 relative">
-                      {l.status === 'finalized' && <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full z-10">Swapped</div>}
-                      {l.status === 'hidden' && targetUserId === user?.id && <div className="absolute top-2 right-2 bg-gray-500 text-white text-xs font-bold px-2 py-0.5 rounded-full z-10">Hidden</div>}
+                 <div key={l.id} className="min-w-[140px] w-[140px] bg-white/80 backdrop-blur-xl rounded-[24px] overflow-hidden flex-shrink-0 border border-white shadow-sm cursor-pointer relative hover:-translate-y-1 transition-transform" onClick={() => setShowGrid(true)}>
+                   <div className="h-28 bg-slate-100 relative">
+                      {l.status === 'finalized' && <div className="absolute top-2 right-2 bg-emerald-500 text-white text-[10px] font-black tracking-wider uppercase px-2 py-1 rounded-full z-10 shadow-md">Swapped</div>}
+                      {l.status === 'hidden' && targetUserId === user?.id && <div className="absolute top-2 right-2 bg-slate-50 text-white text-[10px] font-black tracking-wider uppercase px-2 py-1 rounded-full z-10 shadow-md">Hidden</div>}
                       {l.images && l.images[0] ? (
                         <img src={l.images[0]} className={`w-full h-full object-cover ${l.status !== 'active' ? 'opacity-50 grayscale' : ''}`} />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400"><Package className="w-8 h-8" /></div>
+                        <div className="w-full h-full flex items-center justify-center text-slate-300"><Package className="w-8 h-8" /></div>
                       )}
                     </div>
                     <div className="p-3 text-center">
-                      <p className={`font-bold text-gray-900 text-xs truncate ${l.status !== 'active' ? 'opacity-50' : ''}`}>{l.title}</p>
+                      <p className={`font-bold text-slate-900 text-xs truncate ${l.status !== 'active' ? 'opacity-50' : ''}`}>{l.title}</p>
                     </div>
                   </div>
                 ))
@@ -366,21 +355,17 @@ function PublicProfileView({
         </div>
 
         {/* Swap Wishes */}
-        <div className="bg-white p-5 rounded-3xl shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
-          <h3 className="font-extrabold text-gray-900 text-lg mb-3 tracking-tight">Swishes</h3>
+        <div className="bg-white/60 backdrop-blur-3xl p-5 rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80">
+          <h3 className="font-extrabold text-slate-900 text-lg mb-3 tracking-tight">Swishes</h3>
           {wishesQuery.isLoading ? (
-             <div className="space-y-3">
-               {[1, 2].map((i) => (
-                 <div key={`sk-w-${i}`} className="h-[44px] w-full bg-gray-100 rounded-2xl animate-pulse"></div>
-               ))}
-             </div>
+             <div className="h-10 bg-white/50 rounded-2xl animate-pulse w-full border border-white/60"></div>
           ) : wishesQuery.data?.items?.length === 0 ? (
-             <div className="text-xs text-gray-400 font-medium">Nothing specific right now.</div>
+             <div className="text-xs text-slate-500 font-bold bg-white/50 px-4 py-3 rounded-2xl inline-block">No active swishes</div>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {(wishesQuery.data?.items || []).map((w: any) => (
-                <li key={w.id} className="flex items-center gap-3 text-sm text-gray-700 font-medium bg-gray-50 px-4 py-3 rounded-2xl">
-                  <CheckCircle2 className="w-5 h-5 text-green-500" /> {w.title}
+                <li key={w.id} className="flex items-center gap-3 text-sm text-slate-700 font-bold bg-white/80 border border-white shadow-sm px-4 py-3 rounded-[20px]">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500" /> {w.title}
                 </li>
               ))}
             </ul>
@@ -388,24 +373,27 @@ function PublicProfileView({
         </div>
 
         {/* Communities */}
-        <div className="bg-white p-5 rounded-3xl shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
-          <h3 className="font-extrabold text-gray-900 text-lg mb-3 tracking-tight">Communities</h3>
+        <div className="bg-white/60 backdrop-blur-3xl p-5 rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80">
+          <h3 className="font-extrabold text-slate-900 text-lg mb-3 tracking-tight">Communities</h3>
           {membershipsQuery.isLoading ? (
              <div className="space-y-3">
                {[1, 2].map((i) => (
-                 <div key={`sk-m-${i}`} className="h-[44px] w-full bg-gray-100 rounded-2xl animate-pulse"></div>
+                 <div key={`sk-m-${i}`} className="h-12 w-full bg-white/50 rounded-[20px] animate-pulse border border-white/60"></div>
                ))}
              </div>
           ) : (() => {
-            if (!myMembershipsQuery || !myMembershipsQuery.data?.items) return <div className="text-xs text-gray-400 font-medium">No mutual communities</div>;
+            if (!myMembershipsQuery || !myMembershipsQuery.data?.items) return <div className="text-xs text-slate-500 font-bold bg-white/50 px-4 py-3 rounded-2xl inline-block">No mutual communities</div>;
             const myCommIds = new Set(myMembershipsQuery.data.items.map((m: any) => m.communityId));
             const mutualComms = (membershipsQuery.data?.items || []).filter((m: any) => myCommIds.has(m.communityId));
-            if (mutualComms.length === 0) return <div className="text-xs text-gray-400 font-medium">No mutual communities</div>;
+            if (mutualComms.length === 0) return <div className="text-xs text-slate-500 font-bold bg-white/50 px-4 py-3 rounded-2xl inline-block">No mutual communities</div>;
             return (
               <div className="space-y-2 mt-2">
                 {mutualComms.map((m: any) => (
-                  <div key={`mutual-${m.id}`} className="flex items-center gap-3 text-sm font-bold text-gray-800 bg-blue-50 p-3 rounded-2xl">
-                    <Users className="w-5 h-5 text-blue-600" /> {m.communities?.name || "Community"}
+                  <div key={`mutual-${m.id}`} className="flex items-center gap-3 text-sm font-bold text-slate-800 bg-white/80 border border-white shadow-sm p-3 rounded-[20px]">
+                    <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center">
+                       <Users className="w-4 h-4 text-blue-600" />
+                    </div>
+                    {m.communities?.name || "Community"}
                   </div>
                 ))}
               </div>
@@ -414,25 +402,29 @@ function PublicProfileView({
         </div>
 
         {/* Safety Card */}
-        <div className="bg-white p-5 rounded-3xl shadow-[0_2px_15px_rgba(0,0,0,0.03)] mb-8">
-          <h3 className="font-extrabold text-gray-900 text-lg mb-4 tracking-tight flex items-center gap-2">
-            <Shield className="w-5 h-5 text-green-500" /> Safety
+        <div className="bg-white/60 backdrop-blur-3xl p-5 rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80 mb-8">
+          <h3 className="font-extrabold text-slate-900 text-lg mb-4 tracking-tight flex items-center gap-2">
+            <Shield className="w-5 h-5 text-emerald-500" /> Safety Checklist
           </h3>
-          <div className="space-y-3">
-             {uniVal === "Other / Not a student" ? null : isStudentVerified ? (
-               <p className="flex items-center gap-3 text-sm font-medium px-4 py-2.5 rounded-2xl text-gray-700 bg-green-50/50 border border-green-100/50">
-                 <CheckCircle className="w-5 h-5 text-green-500" /> Verified Student
+          <div className="space-y-2">
+             {(uniVal === "Other / Not a student" || institutionName === "Other / Not a student" || institutionName === "Other" || (uniVal === "University" && !institutionName)) ? (
+               <p className="flex items-center gap-3 text-sm font-bold px-4 py-3 rounded-[20px] text-slate-700 bg-slate-100 border border-slate-200">
+                 <User className="w-5 h-5 text-slate-500" /> Not a student
+               </p>
+             ) : isStudentVerified ? (
+               <p className="flex items-center gap-3 text-sm font-bold px-4 py-3 rounded-[20px] text-emerald-700 bg-emerald-50 border border-emerald-200">
+                 <CheckCircle className="w-5 h-5 text-emerald-500" /> Verified Student
                </p>
              ) : (
-               <p className="flex items-center gap-3 text-sm font-medium px-4 py-2.5 rounded-2xl text-orange-700 bg-orange-50/50 border border-orange-100/50">
-                 <AlertCircle className="w-5 h-5 text-orange-500" /> Student Not Verified
+               <p className="flex items-center gap-3 text-sm font-bold px-4 py-3 rounded-[20px] text-orange-700 bg-orange-50 border border-orange-200">
+                 <AlertCircle className="w-5 h-5 text-orange-500" /> Unverified Student
                </p>
              )}
-             <p className="flex items-center gap-3 text-sm font-medium text-gray-700 bg-green-50/50 border border-green-100/50 px-4 py-2.5 rounded-2xl">
-               <CheckCircle className="w-5 h-5 text-green-500" /> Email Verified
+             <p className="flex items-center gap-3 text-sm font-bold text-slate-700 bg-white/80 border border-white shadow-sm px-4 py-3 rounded-[20px]">
+               <CheckCircle className="w-5 h-5 text-emerald-500" /> Email Verified
              </p>
-             <p className="flex items-center gap-3 text-sm font-medium text-gray-700 bg-green-50/50 border border-green-100/50 px-4 py-2.5 rounded-2xl">
-               <CheckCircle className="w-5 h-5 text-green-500" /> Clean Record
+             <p className="flex items-center gap-3 text-sm font-bold text-slate-700 bg-white/80 border border-white shadow-sm px-4 py-3 rounded-[20px]">
+               <CheckCircle className="w-5 h-5 text-emerald-500" /> Clean Record
              </p>
           </div>
         </div>
@@ -441,21 +433,21 @@ function PublicProfileView({
       {/* Grid Modal */}
       <AnimatePresence>
         {showGrid && (
-          <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="fixed left-1/2 -translate-x-1/2 w-full max-w-md bottom-0 top-[10%] bg-white rounded-t-[32px] z-[300] overflow-y-auto shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
-            <div className="sticky top-0 bg-white/90 backdrop-blur-md px-6 py-5 flex items-center justify-between border-b border-gray-100 z-10">
-              <h2 className="text-xl font-extrabold text-gray-900 tracking-tight">{name}'s Listings</h2>
-              <button onClick={() => setShowGrid(false)} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full hover:bg-gray-100"><X className="w-5 h-5 text-gray-600" /></button>
+          <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="fixed left-1/2 -translate-x-1/2 w-full max-w-md bottom-0 top-[10%] bg-white/80 backdrop-blur-3xl rounded-t-[40px] z-[300] overflow-y-auto shadow-[0_-10px_40px_rgba(0,0,0,0.1)] border-t border-white">
+            <div className="sticky top-0 bg-white/60 backdrop-blur-3xl px-6 py-5 flex items-center justify-between border-b border-white/80 z-10">
+              <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">{name}'s Listings</h2>
+              <button onClick={() => setShowGrid(false)} className="w-10 h-10 flex items-center justify-center bg-white/80 border border-white shadow-sm rounded-full hover:bg-white"><X className="w-5 h-5 text-slate-600" /></button>
             </div>
             <div className="p-4 grid grid-cols-2 gap-4 pb-32">
               {(listingsQuery.data?.items || []).filter((l: any) => l.status !== 'hidden' || targetUserId === user?.id).map((l: any) => (
-                <div key={l.id} className="bg-white/70 backdrop-blur-md rounded-2xl overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] border border-gray-50 cursor-pointer flex flex-col relative" onClick={() => { setShowGrid(false); navigate("/swipes?item=" + l.id); }}>
-                   <div className="aspect-square bg-gray-100 relative">
-                     {l.status === 'finalized' && <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full z-10">Swapped</div>}
-                     {l.status === 'hidden' && targetUserId === user?.id && <div className="absolute top-2 right-2 bg-gray-500 text-white text-xs font-bold px-2 py-0.5 rounded-full z-10">Hidden</div>}
-                     {l.images && l.images[0] ? <img src={l.images[0]} className={`absolute inset-0 w-full h-full object-cover ${l.status !== 'active' ? 'opacity-50 grayscale' : ''}`} /> : <div className="absolute inset-0 flex items-center justify-center text-gray-300"><Package className="w-8 h-8" /></div>}
+                <div key={l.id} className="bg-white/80 backdrop-blur-xl rounded-[24px] overflow-hidden shadow-sm border border-white cursor-pointer flex flex-col relative hover:-translate-y-1 transition-transform" onClick={() => { setShowGrid(false); navigate("/swipes?item=" + l.id); }}>
+                   <div className="aspect-square bg-slate-100 relative">
+                     {l.status === 'finalized' && <div className="absolute top-2 right-2 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full z-10">Swapped</div>}
+                     {l.status === 'hidden' && targetUserId === user?.id && <div className="absolute top-2 right-2 bg-slate-50 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full z-10">Hidden</div>}
+                     {l.images && l.images[0] ? <img src={l.images[0]} className={`absolute inset-0 w-full h-full object-cover ${l.status !== 'active' ? 'opacity-50 grayscale' : ''}`} /> : <div className="absolute inset-0 flex items-center justify-center text-slate-300"><Package className="w-8 h-8" /></div>}
                    </div>
                    <div className="p-4">
-                     <p className={`font-bold text-gray-900 text-sm truncate ${l.status !== 'active' ? 'opacity-50' : ''}`}>{l.title}</p>
+                     <p className={`font-bold text-slate-900 text-sm truncate ${l.status !== 'active' ? 'opacity-50' : ''}`}>{l.title}</p>
                    </div>
                 </div>
               ))}
@@ -465,32 +457,32 @@ function PublicProfileView({
       </AnimatePresence>
 
       {/* Bottom Floating Actions */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] bg-white/90 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-2 flex justify-between z-50 border border-gray-100">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] bg-white/60 backdrop-blur-3xl rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-2 flex justify-between z-50 border border-white/80">
          <motion.button 
            onClick={handleMessage}
            whileTap={{ scale: 0.95 }} 
-           className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-white bg-green-500 rounded-2xl shadow-sm hover:opacity-90"
+           className="flex-1 flex flex-col items-center justify-center gap-1 py-3.5 text-white bg-emerald-500 rounded-[24px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] hover:opacity-90"
          >
            <MessageCircle className="w-5 h-5" />
-           <span className="text-xs font-bold tracking-wide">Message</span>
+           <span className="text-xs font-black tracking-widest uppercase mt-0.5">Message</span>
          </motion.button>
          
          <motion.button 
            onClick={() => setShowGrid(true)}
            whileTap={{ scale: 0.95 }} 
-           className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-gray-700 rounded-2xl hover:bg-gray-50"
+           className="flex-1 flex flex-col items-center justify-center gap-1 py-3.5 text-slate-700 rounded-[24px] hover:bg-white/50 transition-colors"
          >
            <Package className="w-5 h-5" />
-           <span className="text-xs font-bold tracking-wide">View Items</span>
+           <span className="text-[10px] font-black tracking-widest uppercase mt-0.5">View Items</span>
          </motion.button>
          
          <motion.button 
            onClick={() => targetUserId && toggleWatchedUser(targetUserId.toString())}
            whileTap={{ scale: 0.95 }} 
-           className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 rounded-2xl hover:bg-gray-50 ${targetUserId && watchedUserIds.includes(targetUserId.toString()) ? 'text-red-500' : 'text-gray-700'}`}
+           className={`flex-1 flex flex-col items-center justify-center gap-1 py-3.5 rounded-[24px] hover:bg-white/50 transition-colors ${targetUserId && watchedUserIds.includes(targetUserId.toString()) ? 'text-red-500' : 'text-slate-700'}`}
          >
            <Heart className={`w-5 h-5 ${targetUserId && watchedUserIds.includes(targetUserId.toString()) ? 'fill-current' : ''}`} />
-           <span className="text-xs font-bold tracking-wide">Save Trader</span>
+           <span className="text-[10px] font-black tracking-widest uppercase mt-0.5">Save Trader</span>
          </motion.button>
       </div>
       <ReportModal isOpen={isReporting} onClose={() => setIsReporting(false)} targetType="user" targetId={targetUserId} />
@@ -516,28 +508,60 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
   const profile = profileData?.items?.[0] || (Array.isArray(profileData) ? profileData[0] : profileData);
   console.log("PROFILE QUERY DEBUG:", { targetUserId, isLoading: profileQuery.isLoading, data: profileQuery.data, profile });
   let username = "User";
+  let fullName = "User";
   try {
      const uni = JSON.parse(profile?.university || "{}");
      const desc = JSON.parse(profile?.description || "{}");
+     if (desc.name) fullName = desc.name;
+     else if (profile?.name) fullName = profile.name;
+     else if (isMe && user?.metadata?.name) fullName = user.metadata.name;
+     
      if (uni.username) username = uni.username;
      else if (desc.username) username = desc.username;
      else if (isMe && user?.metadata?.username) username = user.metadata.username;
   } catch(e) {}
-  if (username === "User") {
-     const n = isMe ? (user?.metadata?.name || profile?.name) : profile?.name;
-     if (n && n !== "SwapSoko User" && n !== "User") username = n.split(" ").join("").toLowerCase();
+  if (fullName === "User" || !fullName) {
+     fullName = profile?.name || (isMe ? user?.metadata?.name : "") || "SwapSoko User";
   }
-  const displayName = "@" + username;
-  let isStudentVerified = false;
+  if (username === "User") {
+     if (fullName && fullName !== "SwapSoko User" && fullName !== "User") username = fullName.split(" ").join("").toLowerCase();
+  }
+  const displayName = fullName;
+  const displayUsername = "@" + username.replace(/^@+/, '');
+  let isStudentVerified = (isMe ? user?.metadata?.isStudentVerified : false) || profile?.isStudentVerified || false;
   let uniVal = "University";
   let extractedAvatar = "";
+  let institutionName = "";
+  
+  if (profile?.university) {
+      if (profile.university.startsWith("{")) {
+          try {
+              const u = JSON.parse(profile.university);
+              uniVal = u.val || profile.campus || "University";
+              institutionName = u.institution || "";
+              isStudentVerified = isStudentVerified || u.isStudentVerified;
+          } catch(e) {}
+      } else {
+          institutionName = profile.university;
+          uniVal = profile.campus || "University";
+      }
+  } else if (profile?.campus) {
+      uniVal = profile.campus;
+  }
+  
   try {
-     const u = JSON.parse(profile?.university || "{}");
      const d = JSON.parse(profile?.description || "{}");
-     isStudentVerified = (isMe ? user?.metadata?.isStudentVerified : false) || profile?.isStudentVerified || u.isStudentVerified || d.isStudentVerified;
-     uniVal = u.val || profile?.campus || "University";
-     extractedAvatar = u.avatarUrl || d.avatarUrl || "";
+     isStudentVerified = isStudentVerified || d.isStudentVerified;
+     extractedAvatar = d.avatarUrl || "";
   } catch(e) {}
+  
+  // Clean up corrupted JSON location strings that might have leaked into campus
+  if (uniVal.includes("lng\":") || uniVal.startsWith("-1.") || uniVal.startsWith("{")) {
+      uniVal = "University";
+  }
+  if (institutionName.includes("lng\":") || institutionName.startsWith("-1.") || institutionName.startsWith("{")) {
+      institutionName = "";
+  }
   
   let tempAvatar = isMe ? (user?.avatarUrl || profile?.avatarUrl || extractedAvatar) : (profile?.avatarUrl || extractedAvatar);
   const displayAvatar = (tempAvatar && tempAvatar !== "null" && tempAvatar !== "undefined") ? tempAvatar : "";
@@ -587,12 +611,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
           className="flex flex-col items-center"
         >
           <div className="relative mb-8">
-            <div className="absolute inset-0 bg-swap-green/20 blur-[32px] rounded-full scale-[2]"></div>
-            <div className="relative w-24 h-24 bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_32px_rgba(0,0,0,0.06)] rounded-[2rem] flex items-center justify-center rotate-3 transform-gpu">
-              <div className="w-12 h-12 rounded-xl overflow-hidden shadow-inner bg-white flex items-center justify-center -rotate-3">
-                 <img src="/logo.jpg" alt="SwapSoko" className="w-full h-full object-cover" />
-              </div>
-            </div>
+            <div className="relative w-24 h-24 flex items-center justify-center"><img src="/logo.png" alt="SwapSoko" className="w-20 h-20 object-contain drop-shadow-xl" /></div>
           </div>
           
           <h2 className="font-bold text-slate-900 text-[26px] tracking-tight mb-3">Access Profile</h2>
@@ -666,140 +685,49 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-[#F8FAFC] bottom-nav-safe"
+      className="min-h-screen relative overflow-y-auto bg-white bottom-nav-safe"
     >
-      {/* Header Profile Section */}
-      <div className="px-4 pt-4 pb-2">
-        <div className="bg-white rounded-[32px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-white">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3.5">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-full bg-[#5B21B6] flex items-center justify-center overflow-hidden shadow-sm">
-                  {(displayAvatar && displayAvatar !== "null" && displayAvatar !== "undefined") ? (
-                    <img src={displayAvatar} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<span class="text-white text-2xl font-bold">${(displayName || "U")[0]}</span>`; }} />
-                  ) : (
-                    <span className="text-white text-2xl font-bold">{(displayName || "U")[0]}</span>
-                  )}
-                </div>
-                <div className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 rounded-full border-[2.5px] border-white flex items-center justify-center">
-                  <CheckCircle className="w-2.5 h-2.5 text-white fill-white" />
-                </div>
-              </div>
-              <div>
-                <h2 className="font-extrabold text-slate-900 text-lg leading-tight tracking-tight">
-                  {displayName}
-                </h2>
-                <p className="text-slate-500 text-[13px] font-medium mb-1">
-                  @{displayName.toLowerCase().replace(/\s+/g, '')}
-                </p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  {uniVal === "Other / Not a student" ? (
-                    <span className="py-0.5 px-2.5 text-[10px] bg-slate-100 text-slate-500 border border-slate-200/60 rounded-full font-bold uppercase tracking-wider">
-                      Not a student
-                    </span>
-                  ) : isStudentVerified ? (
-                    <span className="py-0.5 px-2.5 text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1 rounded-full font-bold uppercase tracking-wider">
-                      <CheckCircle className="w-2.5 h-2.5" /> Verified Student
-                    </span>
-                  ) : (
-                    <span className="py-0.5 px-2.5 text-[10px] bg-orange-50 text-orange-600 border border-orange-100 flex items-center gap-1 rounded-full font-bold uppercase tracking-wider">
-                      <AlertCircle className="w-2.5 h-2.5" /> Student Not Verified
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+      
+      
+      
+            {/* Header Profile Section - Card Redesign */}
+      <div className="px-4 pt-6 z-10 relative">
+        <div className="bg-white rounded-[32px] overflow-hidden shadow-[0_8px_32px_rgba(15,23,42,0.08)] border border-slate-100 p-8 flex flex-col items-center text-center relative">
+          <div className="w-28 h-28 rounded-full bg-slate-100 overflow-hidden shadow-[0_8px_32px_rgba(15,23,42,0.08)] border border-slate-100 mb-5 relative flex items-center justify-center">
+            {(displayAvatar && displayAvatar !== "null" && displayAvatar !== "undefined") ? (
+              <img src={displayAvatar} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<span class="text-slate-400 text-4xl font-black">${(displayName || "U")[0]}</span>`; }} />
+            ) : (
+              <span className="text-slate-400 text-4xl font-black">{(displayName || "U")[0]}</span>
+            )}
+          </div>
+          
+          <h1 className="text-[24px] font-black text-slate-900 tracking-tight">{displayName}</h1>
+          <p className="text-slate-500 font-bold text-[15px] mt-0.5">{displayUsername}</p>
+          
+          <div className="flex items-center justify-center mt-5 gap-3">
+            {(uniVal === "Other / Not a student" || institutionName === "Other / Not a student" || institutionName === "Other" || (uniVal === "University" && !institutionName)) ? (
+              <span className="bg-slate-50 px-4 py-2 rounded-xl text-slate-500 text-[13px] font-bold border border-slate-100 flex items-center gap-1.5">
+                <User className="w-4 h-4" /> Not a student
+              </span>
+            ) : (
+              <span className="bg-slate-50 px-4 py-2 rounded-xl text-slate-700 text-[13px] font-bold border border-slate-100 flex items-center gap-1.5">
+                <User className="w-4 h-4" /> Student • {institutionName || uniVal}
+              </span>
+            )}
 
-            <div className="flex flex-col items-end gap-2">
-              <motion.button 
-                whileTap={{ scale: 0.95 }} 
-                onClick={() => navigate("/edit-profile")}
-                className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center hover:bg-slate-100 border border-slate-100 transition-colors shadow-sm"
-              >
-                <Settings className="w-5 h-5 text-slate-600" />
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate("/edit-profile")}
-                className="text-[11px] font-bold text-slate-600 bg-white border border-slate-200 px-3 py-1.5 rounded-full hover:bg-slate-50 transition-colors shadow-sm"
-              >
-                Edit Profile
-              </motion.button>
-            </div>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/edit-profile")}
+              className="text-[13px] font-bold text-slate-700 bg-white border border-slate-200 px-5 py-2 rounded-xl hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2"
+            >
+              <Edit className="w-3.5 h-3.5" /> Edit Profile
+            </motion.button>
           </div>
         </div>
       </div>
 
-      {isMe && (
-        <div className="px-4 mt-2">
-          {(() => {
-            let currentBio = "";
-            let currentCampus = profile?.campus;
-            let currentUniversity = "";
-            try {
-              const safeParse = (data: any) => {
-                if (!data) return {};
-                if (typeof data === 'object') return data;
-                if (typeof data === 'string') {
-                  try {
-                    const parsed = JSON.parse(data);
-                    if (typeof parsed === 'string') return JSON.parse(parsed);
-                    return parsed;
-                  } catch(e) { return {}; }
-                }
-                return {};
-              };
-              const uniJson = safeParse(profile?.university);
-              currentBio = uniJson.bio || "";
-              currentUniversity = uniJson.val || "";
-              if (!currentCampus) currentCampus = uniJson.val;
-            } catch(e) {}
-            
-            const completionItems = [
-              { label: "Add profile photo", done: !!displayAvatar, action: () => navigate("/edit-profile") },
-              { label: "Add a bio", done: !!currentBio, action: () => navigate("/edit-profile") },
-              { label: "Set your campus", done: !!currentCampus, action: () => navigate("/edit-profile") }
-            ];
-            
-            const completedCount = completionItems.filter(i => i.done).length;
-            const completionPercentage = Math.round((completedCount / completionItems.length) * 100);
-
-            if (completionPercentage === 100) return null;
-
-            return (
-              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-4 card-shadow border border-gray-100 mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-slate-900 text-sm flex items-center gap-1.5"><Award className="w-4 h-4 text-blue-500" /> Profile Completion</h3>
-                  <span className="font-black text-blue-600 text-sm">{completionPercentage}%</span>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
-                   <motion.div 
-                     initial={{ width: 0 }}
-                     animate={{ width: `${completionPercentage}%` }}
-                     transition={{ duration: 1 }}
-                     className="h-full bg-blue-500 rounded-full"
-                   />
-                </div>
-                <p className="text-xs font-semibold text-gray-500 mb-2">Missing:</p>
-                <ul className="space-y-2">
-                  {completionItems.filter(i => !i.done).map((item, idx) => (
-                    <li key={idx} className="flex items-center justify-between text-xs text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center"></div>
-                        {item.label}
-                      </div>
-                      <button onClick={item.action} className="text-blue-600 font-bold">Add</button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })()}
-        </div>
-      )}
-
       {/* Stats */}
-      <div className="px-4 mt-4 grid grid-cols-3 gap-2">
+      <div className="px-4 mt-8 grid grid-cols-3 gap-3 relative z-10 bg-white">
         <StatCard icon={<Repeat2 className="w-4 h-4" />} label={"Completed Swaps"} value={completedSwaps} color="#22C55E" />
         <StatCard icon={<TrendingUp className="w-4 h-4" />} label={"Acceptance Rate"} value={`${acceptanceRate}%`} color="#2563EB" />
         <StatCard icon={<Clock className="w-4 h-4" />} label={"Response Time"} value={avgResponseTime} color="#F59E0B" />
@@ -808,7 +736,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
       {/* Tabs */}
       {/* Tabs (Segmented Control) */}
       <div className="px-4 mt-6">
-        <div className="flex bg-muted/80 p-1 rounded-xl items-center relative">
+        <div className="flex bg-slate-50 p-1.5 rounded-[20px] items-center relative border border-slate-100 z-10">
           {[
             { id: "listings", label: "Listings", icon: <Package className="w-4 h-4" /> },
             { id: "swaps", label: "Swaps", icon: <Repeat2 className="w-4 h-4" /> },
@@ -818,9 +746,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 z-10 ${
-                activeTab === tab.id 
-                  ? "bg-background text-foreground shadow-sm" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-black/5"
+                activeTab === tab.id ? "bg-white text-slate-900 shadow-sm scale-100 border border-slate-200 font-bold" : "text-slate-500 hover:text-slate-900 hover:bg-white/40 scale-95 opacity-80"
               }`}
             >
               <span className="hidden sm:inline">{tab.icon}</span> {tab.label}
@@ -835,7 +761,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
           {activeTab === "listings" && (
             <motion.div key="listings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
               {(listingsQuery.data?.items || []).map((listing: any) => (
-                <div key={listing.id} className="bg-white rounded-3xl overflow-hidden card-shadow border border-gray-100 flex flex-col">
+                <div key={listing.id} className="bg-white rounded-[24px] overflow-hidden shadow-[0_8px_32px_rgba(15,23,42,0.08)] border border-slate-100 flex flex-col">
                   <div className="flex p-3 gap-3">
                     <div className="w-20 h-20 rounded-2xl bg-gray-100 overflow-hidden flex-shrink-0 relative">
                       {(() => {
@@ -873,7 +799,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                     </div>
                   </div>
                   {isMe && (
-                    <div className="bg-gray-50/50 p-2.5 border-t border-gray-50 flex items-center justify-between gap-2 px-4">
+                    <div className="bg-white/40 backdrop-blur-md p-3 border-t border-white/60 flex items-center justify-between gap-2 px-5">
                        <div className="flex items-center gap-2">
                          <div className={`text-xs border rounded-full px-2.5 py-1 font-extrabold flex items-center gap-1 uppercase tracking-wider ${listing.status === 'active' || !listing.status ? 'bg-[#F0FDF4] border-green-500/20 text-green-500' : listing.status === 'finalized' ? 'bg-green-50 border-green-500/20 text-green-600' : 'bg-gray-100 border-gray-500/20 text-gray-500'}`}>
                            {listing.status === 'active' || !listing.status ? <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> : null}
@@ -902,7 +828,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               ))}
               
               {(wishesQuery.data?.items || []).map((wish: any) => (
-                <div key={`wish-${wish.id}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3 border border-yellow-200">
+                <div key={`wish-${wish.id}`} className="shadow-[0_8px_32px_rgba(15,23,42,0.04)] border border-white/80 bg-white/60 backdrop-blur-xl relative z-10 overflow-hidden flex items-center gap-3 p-4 rounded-[28px]">
                   <div className="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center flex-shrink-0">
                     <Star className="w-6 h-6 text-yellow-500" />
                   </div>
@@ -1086,7 +1012,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
           {activeTab === "saved" && (
             <motion.div key="saved" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
               {savedItems.map((item: any) => (
-                <div key={item.id} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                <div key={item.id} className="shadow-[0_8px_32px_rgba(15,23,42,0.04)] border border-white/80 bg-white/60 backdrop-blur-xl relative z-10 overflow-hidden flex items-center gap-3 p-4 rounded-[28px]">
                   <div className="w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden flex-shrink-0">
                     {(() => {
                       const imgs = item.images as unknown as string[];
@@ -1108,7 +1034,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
                 </div>
               ))}
               {savedWishes.map((wish: any) => (
-                <div key={`wish-${wish.id}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                <div key={`wish-${wish.id}`} className="shadow-[0_8px_32px_rgba(15,23,42,0.04)] border border-white/80 bg-white/60 backdrop-blur-xl relative z-10 overflow-hidden flex items-center gap-3 p-4 rounded-[28px]">
                   <div className="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center flex-shrink-0">
                     <Star className="w-6 h-6 text-yellow-500" />
                   </div>
@@ -1121,7 +1047,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               ))}
               
               {watchedCommunities.map((comm: any) => (
-                <div key={`comm-${comm.id}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                <div key={`comm-${comm.id}`} className="shadow-[0_8px_32px_rgba(15,23,42,0.04)] border border-white/80 bg-white/60 backdrop-blur-xl relative z-10 overflow-hidden flex items-center gap-3 p-4 rounded-[28px]">
                   <div className="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center flex-shrink-0">
                     <Users className="w-6 h-6 text-purple-500" />
                   </div>
@@ -1134,7 +1060,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               ))}
 
               {useAppStore.getState().savedSearches.map((search) => (
-                <div key={`search-${search.id}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                <div key={`search-${search.id}`} className="shadow-[0_8px_32px_rgba(15,23,42,0.04)] border border-white/80 bg-white/60 backdrop-blur-xl relative z-10 overflow-hidden flex items-center gap-3 p-4 rounded-[28px]">
                   <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                     <Search className="w-6 h-6 text-blue-500" />
                   </div>
@@ -1149,7 +1075,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               ))}
 
               {watchedUserIds.map((userId: string) => (
-                <div key={`user-${userId}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                <div key={`user-${userId}`} className="shadow-[0_8px_32px_rgba(15,23,42,0.04)] border border-white/80 bg-white/60 backdrop-blur-xl relative z-10 overflow-hidden flex items-center gap-3 p-4 rounded-[28px]">
                   <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                     <User className="w-6 h-6 text-blue-500" />
                   </div>
@@ -1164,7 +1090,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               ))}
 
               {watchedCategoryIds.map((cat: string) => (
-                <div key={`cat-${cat}`} className="bg-white rounded-3xl p-3 card-shadow flex items-center gap-3">
+                <div key={`cat-${cat}`} className="shadow-[0_8px_32px_rgba(15,23,42,0.04)] border border-white/80 bg-white/60 backdrop-blur-xl relative z-10 overflow-hidden flex items-center gap-3 p-4 rounded-[28px]">
                   <div className="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center flex-shrink-0">
                     <Package className="w-6 h-6 text-green-500" />
                   </div>
@@ -1200,7 +1126,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
       {/* Settings list */}
       <div className="px-4 pb-28 space-y-2">
         {isMe && (
-          <div className="inset-grouped-list">
+          <div className="bg-white/60 backdrop-blur-3xl rounded-[32px] overflow-hidden shadow-[0_8px_32px_rgba(15,23,42,0.04)] border border-white/80 relative z-10 p-2 space-y-1">
             {[
               { icon: <UserPlus className="w-4 h-4 text-white" />, label: "Invite Friends", color: "#34C759", action: () => {
                 const inviteLink = `${window.location.origin}`;
@@ -1214,7 +1140,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               <button
                 key={i}
                 onClick={item.action}
-                className="inset-grouped-list-item w-full"
+                className="w-full flex items-center justify-between p-4 bg-transparent hover:bg-white/80 rounded-[24px] transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <div className="inset-grouped-list-item-icon" style={{ backgroundColor: item.color }}>
@@ -1305,11 +1231,22 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
   const [category, setCategory] = useState(listing.category || "Electronics");
   const [condition, setCondition] = useState(listing.condition || "Used - Good");
   const [preferredItems, setPreferredItems] = useState(listing.preferredItems?.join(", ") || (listing.wantItems && Array.isArray(listing.wantItems) ? listing.wantItems.join(", ") : ""));
+
   const [images, setImages] = useState<string[]>(() => {
     try {
       return typeof listing.images === 'string' ? JSON.parse(listing.images) : (listing.images || []);
     } catch(e) { return []; }
   });
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(() => {
+     if (listing.media && Array.isArray(listing.media)) {
+        const v = listing.media.find((m: any) => m.type === 'video');
+        return v ? v.url : null;
+     }
+     return null;
+  });
+  
+
   const [activeDropdown, setActiveDropdown] = useState<"category" | "condition" | null>(null);
 
   const utils = trpc.useUtils();
@@ -1321,8 +1258,36 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
     }
   });
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     const finalDesc = valueEngineStr ? `${description}\n\n${valueEngineStr}` : description;
+    
+    toast.loading("Saving changes...");
+    
+    // Check if video was removed
+    if (!videoUrl && listing.media && listing.media.some((m: any) => m.type === 'video')) {
+       await supabase.from('listing_media').delete().match({ listing_id: listing.id, type: 'video' });
+    }
+    
+    // Upload new video if provided
+    if (videoFile) {
+       const ext = videoFile.name.split('.').pop() || 'mp4';
+       const fileName = `video_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+       const { data: uploadData, error: uploadError } = await supabase.storage.from('listing-videos').upload(fileName, videoFile);
+       if (!uploadError && uploadData) {
+           const { data: publicUrlData } = supabase.storage.from('listing-videos').getPublicUrl(fileName);
+           // Delete old video record first
+           await supabase.from('listing_media').delete().match({ listing_id: listing.id, type: 'video' });
+           // Insert new
+           await supabase.from('listing_media').insert({
+               listing_id: listing.id,
+               type: 'video',
+               url: publicUrlData.publicUrl
+           });
+       }
+    }
+    
+    toast.dismiss();
+
     updateMutation.mutate({
       id: listing.id,
       title,
@@ -1368,7 +1333,7 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
         <div className="space-y-6 overflow-y-auto pr-2 scrollbar-hide flex-1 pb-20 sm:pb-4">
           {/* Images Section */}
           <div>
-            <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 block">Photos</label>
+            <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 block">Photos & Video</label>
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
               {images.map((img: string, i: number) => (
                 <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} key={i} className="relative w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 group shadow-sm">
@@ -1391,7 +1356,38 @@ function EditListingModal({ listing, onClose }: { listing: any; onClose: () => v
                     }} 
                   />
                   <Plus className="w-6 h-6 mb-1" />
-                  <span className="text-xs font-bold">Add</span>
+                  <span className="text-xs font-bold">Photo</span>
+                </label>
+              )}
+              {videoUrl ? (
+                <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="relative w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 group shadow-sm bg-black">
+                  <video src={videoUrl} className="w-full h-full object-cover opacity-70" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
+                      <div className="w-0 h-0 border-t-4 border-t-transparent border-l-6 border-l-white border-b-4 border-b-transparent ml-1" />
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => { setVideoUrl(null); setVideoFile(null); }}
+                    className="absolute top-1.5 right-1.5 bg-black/60 backdrop-blur-sm text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </motion.div>
+              ) : (
+                <label className="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 flex-shrink-0 hover:border-purple-500 hover:text-purple-500 hover:bg-purple-500/5 transition-all cursor-pointer">
+                  <input 
+                    type="file" accept="video/mp4,video/quicktime,video/webm" className="hidden" 
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setVideoFile(file);
+                        setVideoUrl(URL.createObjectURL(file));
+                      }
+                    }} 
+                  />
+                  <Plus className="w-6 h-6 mb-1" />
+                  <span className="text-xs font-bold">Video</span>
                 </label>
               )}
             </div>

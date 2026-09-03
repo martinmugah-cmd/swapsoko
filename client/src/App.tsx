@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
-import { Home, MessageCircle, Plus, Repeat2, User, Bell, Shield } from "lucide-react";
+import { Home, MessageCircle, Plus, Repeat2, User, Bell, Shield } from "@/lib/icons";
 import { Route, Switch, useLocation, Link } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -77,7 +77,7 @@ function BottomNav() {
   };
 
   // Hide bottom nav on certain pages
-  const hideNav = location === "/post" || location === "/edit-profile" || location === "/swap-guru" || location.startsWith('/communities/') || (location.startsWith("/profile/") && location.length > 9);
+  const hideNav = location === "/post" || location === "/edit-profile" || location === "/swap-guru" || location.startsWith('/communities/') || (location.startsWith("/profile/") && location.length > 9) || (location.startsWith("/chat/") && location.length > 6);
 
   if (hideNav) return null;
 
