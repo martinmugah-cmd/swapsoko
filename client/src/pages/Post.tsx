@@ -157,8 +157,8 @@ export default function PostPage() {
     }
     if (!title.trim()) { toast.error("Please add a title"); return; }
     if (images.length === 0 && !videoFile) { toast.error("Please add at least one photo or video"); return; }
-    const finalWantItems = type === "donation" ? ["FREE / DONATION"] : wantItems;
-    if (finalWantItems.length === 0) { toast.error("Please add at least one item you want"); return; }
+    const finalWantItems = type === "donation" ? ["FREE / DONATION"] : (lookingFor.trim() ? [lookingFor.trim()] : []);
+    if (finalWantItems.length === 0) { toast.error("Please describe what you are looking for"); return; }
 
     const searchParams = new URLSearchParams(window.location.search);
     const communityId = searchParams.get("communityId");
