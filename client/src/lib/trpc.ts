@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 
+
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || import.meta.env.VITE_SUPABASE_SERVICE_KEY || supabaseKey;
 
 // ─── SWAPGURU CORE ENGINES ────────────────────────────────────────────────
 export const ValueEngine = {
@@ -381,7 +381,7 @@ export const RecommendationEngine = {
 
 import { supabase } from './supabase';
 import { createClient } from '@supabase/supabase-js';
-export const adminSupabase = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+export const adminSupabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
 // Helper to convert object keys
 const camelToSnake = (obj: any): any => {
