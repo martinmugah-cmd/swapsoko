@@ -283,7 +283,7 @@ export default function OnboardingPage() {
               <label className="relative">
                 <input 
                   type="file" 
-                  accept="image/*" 
+                  accept="image/png, image/jpeg, image/webp" 
                   className="hidden" 
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
