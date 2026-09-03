@@ -301,7 +301,7 @@ function SwipeCard({
   if (Array.isArray(item.wantItems)) wantItems = item.wantItems;
   else if (typeof item.wantItems === 'string') { try { const parsed = JSON.parse(item.wantItems); wantItems = Array.isArray(parsed) ? parsed : [item.wantItems]; } catch(e) { wantItems = [item.wantItems]; } }
 
-  const img = (images[0] && !images[0].startsWith('blob:')) ? images[0] : "/logo.png";
+  const img = (images[0] && !images[0].startsWith('blob:')) ? images[0] : "/logo.jpg";
 
   const isDragging = useRef(false);
 

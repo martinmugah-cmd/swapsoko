@@ -637,7 +637,7 @@ export default function CommunityDetailPage() {
                       {(() => {
                         let images: string[] = [];
                         try { images = typeof item.images === 'string' ? JSON.parse(item.images) : (item.images || []); } catch(e) {}
-                        const img = (images[0] && !images[0].startsWith('blob:')) ? images[0] : "/logo.png";
+                        const img = (images[0] && !images[0].startsWith('blob:')) ? images[0] : "/logo.jpg";
                         return (
                           <div className="h-40 overflow-hidden">
                             <img

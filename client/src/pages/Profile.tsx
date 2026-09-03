@@ -101,7 +101,7 @@ function MatchSuggestionsModal({ listing, onClose }: { listing: any, onClose: ()
                  className="bg-white/70 backdrop-blur-md border border-gray-100 card-shadow rounded-2xl p-3 cursor-pointer hover:border-green-500/50 transition-colors"
               >
                 <div className="flex gap-3">
-                  <img src={(m.target.images && m.target.images[0]) || "/logo.png"} className="w-16 h-16 rounded-2xl object-cover" />
+                  <img src={(m.target.images && m.target.images[0]) || "/logo.jpg"} className="w-16 h-16 rounded-2xl object-cover" />
                   <div className="flex-1 min-w-0">
                     <h4 className="font-bold text-slate-900 text-sm truncate">{m.target.title}</h4>
                     <p className="text-xs text-gray-400">{m.target.campus}</p>
@@ -611,7 +611,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
           className="flex flex-col items-center"
         >
           <div className="relative mb-8">
-            <div className="relative w-24 h-24 flex items-center justify-center"><img src="/logo.png" alt="SwapSoko" className="w-20 h-20 object-contain drop-shadow-xl" /></div>
+            <div className="relative w-24 h-24 flex items-center justify-center"><img src="/logo.jpg" alt="SwapSoko" className="w-20 h-20 object-contain drop-shadow-xl" /></div>
           </div>
           
           <h2 className="font-bold text-slate-900 text-[26px] tracking-tight mb-3">Access Profile</h2>
