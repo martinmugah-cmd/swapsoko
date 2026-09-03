@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useAnimation } from 'framer-motion';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw } from '@/lib/icons';
 
 interface PullToRefreshProps {
   onRefresh: () => Promise<void>;

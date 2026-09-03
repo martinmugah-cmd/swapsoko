@@ -2,7 +2,7 @@ import React from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetClose } from "@/components/ui/sheet";
 import { useAppStore } from "@/store";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Check, X, Filter, ChevronRight } from "lucide-react";
+import { Check, X, Filter, ChevronRight } from "@/lib/icons";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function FilterSheet({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }) {

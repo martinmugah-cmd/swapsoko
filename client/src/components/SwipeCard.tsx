@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
-import { Heart, X, MapPin, ArrowRightLeft, GraduationCap } from "lucide-react";
+import { Heart, X, MapPin, ArrowRightLeft, GraduationCap } from "@/lib/icons";
 import { useState } from "react";
 
 interface SwipeCardProps {

@@ -13,7 +13,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         ...props.toastOptions,
         classNames: {
           toast:
-            "group toast !bg-white/80 !backdrop-blur-[30px] !border !border-white/60 !shadow-[0_12px_40px_rgba(0,0,0,0.12)] !rounded-full !px-5 !py-3.5 !font-semibold !text-[14px] !text-slate-900 flex items-center justify-between !w-auto !min-w-[300px]",
+            "group toast !bg-white/80 !backdrop-blur-[30px] !border !border-white/60 !shadow-[0_12px_40px_rgba(0,0,0,0.12)] !rounded-full !px-5 !py-3.5 !font-semibold !text-[14px] !text-slate-900 flex items-center gap-3 !w-auto !max-w-[calc(100vw-32px)]",
           description: "!text-slate-500 !font-medium",
           actionButton:
             "!bg-slate-900 !text-white !rounded-full !px-5 !py-2 !font-semibold !text-[13px] hover:!bg-black transition-all !shadow-sm !ml-auto",
