@@ -176,6 +176,16 @@ export default function PostPage() {
 
     if (communityId) finalDesc = `${finalDesc}\n\n<!--soko:${communityId}-->`;
 
+    // Embed extra metadata into the description to prevent schema cache errors on insert
+    const listingMeta = {
+      cashTopUpAllowed: type === "donation" ? false : cashTopUpAllowed,
+      cashTopUpAmount,
+      campus,
+      lat: coords?.lat,
+      lng: coords?.lng,
+    };
+    finalDesc = `${finalDesc}\n\n<!--meta:${JSON.stringify(listingMeta)}-->`;
+
     createMutation.mutate({
       userId: user?.id,
       title,
@@ -184,11 +194,6 @@ export default function PostPage() {
       condition: condition as any,
       images,
       wantItems: finalWantItems,
-      cashTopUpAllowed: type === "donation" ? false : cashTopUpAllowed,
-      cashTopUpAmount,
-      campus,
-      lat: coords?.lat,
-      lng: coords?.lng,
     }, {
       onSuccess: async (data: any) => {
         
