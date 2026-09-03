@@ -183,7 +183,7 @@ export default function SwapGuruPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#F8FAFC] flex flex-col font-sans selection:bg-emerald-500/30 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-white flex flex-col font-sans selection:bg-emerald-500/30 relative overflow-hidden">
       
       {/* Dynamic Floating Header */}
       <div className="sticky top-0 z-40 px-4 pt-4 pb-2">
@@ -222,18 +222,9 @@ export default function SwapGuruPage() {
       </div>
 
       {/* Glassmorphic Input Bar */}
-      <div className="fixed bottom-6 left-4 right-4 z-40 max-w-[800px] md:mx-auto">
-        <motion.div 
-          animate={isLoading ? {
-            boxShadow: ["0px 12px 40px rgba(0,0,0,0.06)", "0px 12px 50px rgba(16,185,129,0.2)", "0px 12px 40px rgba(0,0,0,0.06)"],
-            borderColor: ["rgba(255,255,255,0.4)", "rgba(16,185,129,0.5)", "rgba(255,255,255,0.4)"]
-          } : {
-            boxShadow: "0px 12px 40px rgba(0,0,0,0.08)",
-            borderColor: "rgba(255,255,255,0.6)"
-          }}
-          transition={{ duration: 2, repeat: isLoading ? Infinity : 0, ease: "easeInOut" }}
-          className="bg-white/70 backdrop-blur-2xl rounded-[2rem] p-2 flex items-center gap-2 border shadow-sm relative overflow-hidden"
-        >
+
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[468px] z-40">
+        <div className="bg-white/70 backdrop-blur-2xl rounded-[2rem] p-2 flex items-center gap-2 border shadow-sm relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay pointer-events-none" />
           
           <div className="flex-1 bg-white/70 rounded-full flex items-center px-5 py-2.5 border border-white/80 shadow-inner relative z-10">
@@ -259,7 +250,7 @@ export default function SwapGuruPage() {
           >
             <Send className={`w-[18px] h-[18px] ml-0.5`} strokeWidth={2.5} />
           </motion.button>
-        </motion.div>
+        </div>
       </div>
 
       <AnimatePresence>

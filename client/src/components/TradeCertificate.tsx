@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CheckCircle2, QrCode } from 'lucide-react';
+import { X, CheckCircle2, QrCode } from '@/lib/icons';
 import { trpc } from '../lib/trpc';
 
 function PreviewUser({ uid }: { uid: string }) {

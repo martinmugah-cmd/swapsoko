@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, useMotionValue, useTransform, useAnimation, AnimatePresence } from "framer-motion";
 import React, { useState, useRef, useEffect } from "react";
-import { Sparkles, MapPin, Navigation, Compass, ChevronLeft, Search, Filter, MessageCircle, RefreshCw, Layers, Zap, Info, Shield, Plus, Heart, X, CheckCircle, Star, Clock, Gift, Flame, Tag, Repeat2, GraduationCap, AlertTriangle, Coins } from "lucide-react";
+import { Sparkles, MapPin, Navigation, Compass, ChevronLeft, Search, Filter, MessageCircle, RefreshCw, Layers, Zap, Info, Shield, Plus, Heart, X, CheckCircle, Star, Clock, Gift, Flame, Tag, Repeat2, GraduationCap, AlertTriangle, Coins } from "@/lib/icons";
 import { FilterSheet } from "@/components/FilterSheet";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
@@ -201,29 +201,8 @@ function ChameleonScore({ item }: { item: any }) {
       : "Our algorithm found some similarities based on your preferences.";
     
     toast.custom((t) => (
-      <div className="flex items-center gap-3 w-full">
-        <div className="w-10 h-10 rounded-full bg-white/50 shadow-sm flex items-center justify-center shrink-0 border border-slate-200/50">
-          <div 
-            className="w-[22px] h-[22px]"
-            style={{
-              backgroundColor: color,
-              WebkitMaskImage: `url('/cham.png')`,
-              WebkitMaskSize: 'contain',
-              WebkitMaskPosition: 'center',
-              WebkitMaskRepeat: 'no-repeat',
-              maskImage: `url('/cham.png')`,
-              maskSize: 'contain',
-              maskPosition: 'center',
-              maskRepeat: 'no-repeat',
-            }}
-          />
-        </div>
-        <div className="flex flex-col justify-center flex-1">
-          <h3 className="font-bold text-slate-900 text-[14px] tracking-tight leading-none mb-1">{label} ({Math.round(score)}%)</h3>
-          <p className="text-[12px] text-slate-500 font-medium leading-tight max-w-[220px] truncate">{reasons}</p>
-        </div>
-      </div>
-    ), { duration: 4000 });
+      <ExpandableMatchToast t={t} color={color} label={label} score={score} reasons={reasons} />
+    ), { duration: 8000 });
   };
 
   return (
@@ -322,7 +301,7 @@ function SwipeCard({
   if (Array.isArray(item.wantItems)) wantItems = item.wantItems;
   else if (typeof item.wantItems === 'string') { try { const parsed = JSON.parse(item.wantItems); wantItems = Array.isArray(parsed) ? parsed : [item.wantItems]; } catch(e) { wantItems = [item.wantItems]; } }
 
-  const img = (images[0] && !images[0].startsWith('blob:')) ? images[0] : "/logo.jpg";
+  const img = (images[0] && !images[0].startsWith('blob:')) ? images[0] : "/logo.png";
 
   const isDragging = useRef(false);
 
@@ -650,6 +629,39 @@ const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
 };
+
+
+function ExpandableMatchToast({ t, color, label, score, reasons }: { t: any; color: string; label: string; score: number; reasons: string }) {
+  const [expanded, setExpanded] = useState(false);
+  
+  return (
+    <div onClick={() => setExpanded(!expanded)} className="flex items-start gap-3 w-full cursor-pointer group">
+      <div className="w-10 h-10 rounded-full bg-white/50 shadow-sm flex items-center justify-center shrink-0 border border-slate-200/50 mt-0.5">
+        <div 
+          className="w-[22px] h-[22px]"
+          style={{
+            backgroundColor: color,
+            WebkitMaskImage: `url('/cham.png')`,
+            WebkitMaskSize: 'contain',
+            WebkitMaskPosition: 'center',
+            WebkitMaskRepeat: 'no-repeat',
+            maskImage: `url('/cham.png')`,
+            maskSize: 'contain',
+            maskPosition: 'center',
+            maskRepeat: 'no-repeat',
+          }}
+        />
+      </div>
+      <div className="flex flex-col justify-center flex-1 min-w-0">
+        <h3 className="font-bold text-slate-900 text-[14px] tracking-tight leading-none mb-1.5">{label} ({Math.round(score)}%)</h3>
+        <p className={`text-[13px] text-slate-600 font-medium leading-snug transition-all ${expanded ? 'line-clamp-none' : 'line-clamp-1 group-hover:text-slate-800'}`}>
+          {reasons}
+        </p>
+        {!expanded && <p className="text-[10px] text-slate-400 mt-1 font-semibold uppercase tracking-wider">Tap to expand</p>}
+      </div>
+    </div>
+  );
+}
 
 export default function SwipesPage() {
   const [, setLocation] = useLocation();

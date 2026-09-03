@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, MapPin, CheckCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, CheckCircle } from '@/lib/icons';
 
 export function MeetingSchedulerModal({
   onClose,

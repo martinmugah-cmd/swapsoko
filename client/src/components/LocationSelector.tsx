@@ -1,7 +1,7 @@
 import { useAppStore } from "@/store";
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Navigation, Search, X, ChevronDown, Check, Crosshair, ChevronRight } from "lucide-react";
+import { MapPin, Navigation, Search, X, ChevronDown, Check, Crosshair, ChevronRight } from "@/lib/icons";
 import { createPortal } from "react-dom";
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -158,7 +158,7 @@ export function LocationSelector({ onLocationSelect, currentCampus, compact = fa
           >
             <MapPin size={14} className="text-swap-green" />
             <span className="max-w-[100px] truncate">{selectedCampus?.name.split(" ")[0] || "Location"}</span>
-            <ChevronDown size={12} className="text-gray-400" />
+            <ChevronDown size={12} className="text-slate-400" />
           </button>
         )}
         {/* Render portal for modal to avoid z-index issues */}
@@ -197,14 +197,14 @@ export function LocationSelector({ onLocationSelect, currentCampus, compact = fa
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-full flex items-center gap-2 px-4 py-3 rounded-2xl border border-gray-200 bg-white/70 backdrop-blur-md text-left hover:border-swap-green transition-colors"
+          className="w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] border border-white/60 bg-white/50 backdrop-blur-md text-left hover:bg-white shadow-inner transition-all focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
         >
-          <MapPin size={18} className="text-swap-green shrink-0" />
+          <MapPin size={18} className="text-emerald-500 shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-dark truncate">{selectedCampus?.name || "Select campus"}</p>
-            <p className="text-xs text-gray-500">Within {radius} km</p>
+            <p className="text-[15px] font-medium text-slate-900 truncate">{selectedCampus?.name || "Select campus"}</p>
+            <p className="text-xs text-slate-500">Within {radius} km</p>
           </div>
-          <ChevronDown size={16} className="text-gray-400 shrink-0" />
+          <ChevronDown size={16} className="text-slate-400 shrink-0" />
         </button>
       )}
       {typeof document !== 'undefined' && document.body && createPortal(
