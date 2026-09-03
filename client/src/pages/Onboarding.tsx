@@ -60,7 +60,46 @@ const FloatingInput = ({ label, value, onChange, placeholder, type = "text" }: a
     </div>
   );
 
+
+async function uploadFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 400;
+        const MAX_HEIGHT = 400;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", 0.7));
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function OnboardingPage() {
+
   const [, navigate] = useLocation();
   const { user, refresh } = useAuth();
   const [step, setStep] = useState(1);
@@ -118,6 +157,7 @@ export default function OnboardingPage() {
   
   const [fullName, setFullName] = useState(user?.name || "");
   const [username, setUsername] = useState(user?.email?.split('@')[0] || "");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [locationAllowed, setLocationAllowed] = useState<boolean | null>(null);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
@@ -167,6 +207,7 @@ export default function OnboardingPage() {
         id: user?.id,
         name: fullName,
         username,
+        avatar_url: avatarUrl || user?.user_metadata?.avatar_url || null,
         university: universityData.val,
         course: universityData.course,
         year_of_study: universityData.yearOfStudy,
@@ -239,14 +280,41 @@ export default function OnboardingPage() {
             </div>
             
             <div className="flex justify-center mb-8">
-              <motion.div 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-28 h-28 rounded-[32px] bg-white border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 cursor-pointer shadow-sm hover:border-emerald-400 hover:text-emerald-500 hover:bg-emerald-50/50 transition-all relative overflow-hidden group"
-              >
-                <CameraIcon className="w-8 h-8 mb-1 group-hover:scale-110 transition-transform" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Upload</span>
-              </motion.div>
+              <label className="relative">
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      toast.loading("Compressing image...");
+                      try {
+                        const base64 = await uploadFile(file);
+                        setAvatarUrl(base64);
+                        toast.dismiss();
+                      } catch (err) {
+                        toast.dismiss();
+                        toast.error("Failed to process image");
+                      }
+                    }
+                  }}
+                />
+                <motion.div 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-28 h-28 rounded-[32px] bg-white border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 cursor-pointer shadow-sm hover:border-emerald-400 hover:text-emerald-500 hover:bg-emerald-50/50 transition-all relative overflow-hidden group"
+                >
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <>
+                      <CameraIcon className="w-8 h-8 mb-1 group-hover:scale-110 transition-transform" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider">Upload</span>
+                    </>
+                  )}
+                </motion.div>
+              </label>
             </div>
 
             <div className="space-y-5 px-1">
