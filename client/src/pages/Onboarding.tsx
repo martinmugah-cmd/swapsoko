@@ -201,22 +201,24 @@ export default function OnboardingPage() {
         graduationYear,
         studentEmail,
         isStudentVerified: emailVerified,
-        avatarUrl: avatarUrl || undefined
-      } : { val: "Other / Not a student", isStudentVerified: false, avatarUrl: avatarUrl || undefined };
+        avatarUrl: avatarUrl || undefined,
+        location: locationStr,
+        interests: selectedInterests,
+        username
+      } : { 
+        val: "Other / Not a student", 
+        isStudentVerified: false, 
+        avatarUrl: avatarUrl || undefined,
+        location: locationStr,
+        interests: selectedInterests,
+        username
+      };
 
       const updates = {
         id: user?.id,
+        user_id: user?.id,
         name: fullName,
-        username,
         university: JSON.stringify(universityData),
-        course: universityData.course,
-        year_of_study: universityData.yearOfStudy,
-        graduation_year: universityData.graduationYear,
-        student_email: universityData.studentEmail,
-        is_student_verified: universityData.isStudentVerified,
-        location: locationStr,
-        interests: selectedInterests,
-        is_onboarded: true,
         updated_at: new Date().toISOString(),
       };
 
