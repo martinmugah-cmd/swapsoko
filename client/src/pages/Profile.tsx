@@ -564,7 +564,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
       institutionName = "";
   }
   
-  let tempAvatar = isMe ? (user?.avatarUrl || profile?.avatarUrl || extractedAvatar) : (profile?.avatarUrl || extractedAvatar);
+  let tempAvatar = extractedAvatar || profile?.avatarUrl || (isMe ? user?.avatarUrl : null);
   const displayAvatar = (tempAvatar && tempAvatar !== "null" && tempAvatar !== "undefined") ? tempAvatar : "";
   const listingsQuery = trpc.listings.myListings.useQuery({ userId: targetUserId }, { enabled: !!targetUserId });
   const wishesQuery = trpc.wishes.myWishes.useQuery({ userId: targetUserId }, { enabled: !!targetUserId });

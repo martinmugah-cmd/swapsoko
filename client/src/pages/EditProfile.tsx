@@ -146,7 +146,7 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
   
   const nameParts = (user.metadata?.name || prof.name || "").split(" ");
   
-  const initAvatarUrl = user.avatarUrl || prof.avatarUrl || existingUniData.avatarUrl || "";
+  const initAvatarUrl = existingUniData.avatarUrl || prof.avatarUrl || user.avatarUrl || "";
   const initFirstName = nameParts[0] || "";
   const initLastName = nameParts.slice(1).join(" ") || "";
   const initUsername = existingUniData.username || user.metadata?.username || nameParts.join("").toLowerCase() || "";
