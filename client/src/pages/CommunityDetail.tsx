@@ -3,7 +3,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useAppStore } from "@/store";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef } from "react";
-import { ChevronLeft, MoreVertical, MapPin, Users, Package, Settings, Share2, Bell, Shield, ShieldCheck, ShieldOff, LogOut, ArrowRight, X, UserMinus, Plus, Trash2, Edit2, Lock, GraduationCap, Cpu, BookOpen, Gamepad2, Stethoscope, Camera, Home, BellOff, Star, Check, Image as ImageIcon, Loader2, Flag } from "lucide-react";
+import { ChevronLeft, MoreVertical, MapPin, Users, Package, Settings, Share2, Bell, Shield, ShieldCheck, ShieldOff, LogOut, ArrowRight, X, UserMinus, Plus, Trash2, Edit2, Lock, GraduationCap, Cpu, BookOpen, Gamepad2, Stethoscope, Camera, Home, BellOff, Star, Check, Image as ImageIcon, Loader2, Flag } from "@/lib/icons";
 import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
 import { ProposeSwapModal } from "./Swipes";
@@ -637,7 +637,7 @@ export default function CommunityDetailPage() {
                       {(() => {
                         let images: string[] = [];
                         try { images = typeof item.images === 'string' ? JSON.parse(item.images) : (item.images || []); } catch(e) {}
-                        const img = (images[0] && !images[0].startsWith('blob:')) ? images[0] : "/logo.jpg";
+                        const img = (images[0] && !images[0].startsWith('blob:')) ? images[0] : "/logo.png";
                         return (
                           <div className="h-40 overflow-hidden">
                             <img

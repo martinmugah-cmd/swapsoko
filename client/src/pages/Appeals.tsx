@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Clock, CheckCircle, XCircle, ChevronRight, MessageSquare, AlertTriangle, FileText, ArrowLeft, Send } from 'lucide-react';
+import { Shield, Clock, CheckCircle, XCircle, ChevronRight, MessageSquare, AlertTriangle, FileText, ArrowLeft, Send } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { trpc } from '@/lib/trpc';

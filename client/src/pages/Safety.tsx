@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-import { ChevronLeft, ShieldCheck, RefreshCw, Zap } from "lucide-react";
+import { ChevronLeft, ShieldCheck, RefreshCw, Zap } from "@/lib/icons";
 import { useLocation } from "wouter";
 import { Liquid } from "liquid-gooey";
 import { motion, AnimatePresence } from "framer-motion";

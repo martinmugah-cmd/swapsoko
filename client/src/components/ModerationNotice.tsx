@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldAlert, AlertTriangle, Gavel, FileText, Trash2, ArrowRight } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, Gavel, FileText, Trash2, ArrowRight } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

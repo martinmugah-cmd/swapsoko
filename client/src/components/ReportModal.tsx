@@ -1,6 +1,7 @@
+import React from "react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, AlertTriangle, CheckCircle, Loader2 } from "lucide-react";
+import { X, AlertTriangle, CheckCircle, Loader2 } from "@/lib/icons";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 
@@ -20,6 +21,20 @@ const REASONS = {
   voice_note: ["Threats", "Harassment", "Spam", "Scam", "Offensive content", "Other"],
   profile_photo: ["Inappropriate image", "Fake identity", "Copyright violation", "Offensive content", "Other"]
 };
+
+function ModalBodyLock() {
+  React.useEffect(() => {
+    (window as any).__hideNavCount = ((window as any).__hideNavCount || 0) + 1;
+    document.body.classList.add('hide-bottom-nav');
+    return () => {
+      (window as any).__hideNavCount -= 1;
+      if ((window as any).__hideNavCount <= 0) {
+        document.body.classList.remove('hide-bottom-nav');
+      }
+    };
+  }, []);
+  return null;
+}
 
 export function ReportModal({ isOpen, onClose, targetType, targetId }: ReportModalProps) {
   const { user } = useAuth();
@@ -49,6 +64,7 @@ export function ReportModal({ isOpen, onClose, targetType, targetId }: ReportMod
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
+          <ModalBodyLock />
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

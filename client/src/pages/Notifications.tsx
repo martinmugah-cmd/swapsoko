@@ -1,14 +1,15 @@
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import { ChevronLeft, Bell, Check, ArrowRightLeft, MessageCircle, Star, Shield, CheckCircle2, Users } from "lucide-react";
+import { useState, useRef } from "react";
+import { ChevronLeft, Bell, Check, ArrowRightLeft, MessageCircle, Star, Shield, CheckCircle2, Users } from "@/lib/icons";
 import { useLocation } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 
 function NotificationItem({ notif, index, onMarkRead, onAccept, onDecline, navigate }: any) {
   const [swiped, setSwiped] = useState(false);
+  const isDraggingRef = useRef(false);
   const swipeThreshold = -60;
 
   const isUnread = !notif.isRead;
@@ -39,9 +40,9 @@ function NotificationItem({ notif, index, onMarkRead, onAccept, onDecline, navig
   };
 
   return (
-    <div className="relative rounded-[20px] mb-3 bg-red-500 overflow-hidden group">
+    <div className="relative mb-3 group rounded-[24px] overflow-hidden" style={{ transform: 'translateZ(0)' }}>
       {/* Background Action: Delete */}
-      <div className="absolute inset-0 flex items-center justify-end px-6">
+      <div className="absolute inset-0 flex items-center justify-end px-6 bg-red-500">
         <span className="text-white font-extrabold text-sm tracking-wide">Delete</span>
       </div>
 
@@ -49,7 +50,9 @@ function NotificationItem({ notif, index, onMarkRead, onAccept, onDecline, navig
         drag="x"
         dragConstraints={{ left: -100, right: 0 }}
         dragElastic={{ left: 0.5, right: 0 }}
+        onDragStart={() => isDraggingRef.current = true}
         onDragEnd={(e, info) => {
+          setTimeout(() => isDraggingRef.current = false, 150);
           if (info.offset.x < swipeThreshold) {
             onMarkRead(notif.id);
             toast("Notification deleted", { icon: "🗑️" });
@@ -59,7 +62,12 @@ function NotificationItem({ notif, index, onMarkRead, onAccept, onDecline, navig
         animate={{ opacity: 1, y: 0, x: 0 }}
         exit={{ opacity: 0, x: -50 }}
         transition={{ delay: index * 0.04 }}
-        onClick={() => {
+        onClick={(e) => {
+          if (isDraggingRef.current) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
           onMarkRead(notif.id);
           if (notif.type === 'proposal' || notif.type === 'proposal_received') {
             navigate(`/chat`);
@@ -75,9 +83,7 @@ function NotificationItem({ notif, index, onMarkRead, onAccept, onDecline, navig
             navigate(notif.link);
           }
         }}
-        className={`relative z-10 w-full p-4 pl-5 rounded-[20px] flex items-start gap-4 cursor-pointer transition-colors shadow-sm bg-white ${
-          isUnread ? "hover:bg-slate-50" : "hover:bg-slate-50 opacity-80"
-        }`}
+        className={`relative z-10 w-full p-4 pl-5 rounded-[24px] flex items-start gap-4 cursor-pointer transition-all border border-slate-100 bg-white shadow-[0_8px_32px_rgba(15,23,42,0.08)] ${isUnread ? "hover:shadow-md" : ""}`}
       >
         {/* Unread Indicator */}
         {isUnread && (
@@ -225,7 +231,7 @@ export default function NotificationsPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-[#F8FAFC] bottom-nav-safe"
+      className="min-h-screen bg-white flex flex-col relative overflow-hidden"
     >
       {/* Dynamic Floating Header */}
       <div className="sticky top-0 z-40 px-4 pt-4 pb-2">
@@ -233,10 +239,10 @@ export default function NotificationsPage() {
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="flex flex-col gap-3 bg-white/70 backdrop-blur-3xl border border-white/50 shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-[24px] px-4 py-3 max-w-[800px] mx-auto w-full"
+          className="flex flex-col gap-3 bg-white/60 backdrop-blur-[40px] saturate-[1.1] border border-white/60 shadow-[0_8px_32px_0_rgba(15,23,42,0.06)] rounded-[32px] px-4 py-3 max-w-[800px] mx-auto w-full"
         >
           <div className="flex items-center justify-between relative">
-            <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100/50 hover:bg-slate-200/80 transition-colors text-slate-900 relative z-10">
+            <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/60 hover:bg-white/80 shadow-sm border border-white/60 transition-colors text-slate-900 relative z-10">
               <ChevronLeft className="w-5 h-5 -ml-0.5" />
             </button>
             
@@ -270,7 +276,7 @@ export default function NotificationsPage() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setFilter(f)}
                 className={`flex-1 py-2 rounded-[16px] text-[13px] font-bold capitalize transition-all ${
-                  filter === f ? "bg-slate-900 text-white shadow-md" : "bg-slate-100/50 text-slate-600 hover:bg-slate-200/50"
+                  filter === f ? "bg-slate-900 text-white shadow-md" : "bg-white/60 text-slate-600 hover:bg-white/80 shadow-sm border border-white/60"
                 }`}
               >
                 {f === "all" ? "All" : `Unread (${unreadCount})`}

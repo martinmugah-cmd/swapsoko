@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef } from "react";
-import { ChevronLeft, Search, Users, Cpu, BookOpen, Gamepad2, Camera, Home, Stethoscope, GraduationCap, Plus, Check, Loader2, Image as ImageIcon, Heart, Lock } from "lucide-react";
+import { ChevronLeft, Search, Users, Cpu, BookOpen, Gamepad2, Camera, Home, Stethoscope, GraduationCap, Plus, Check, Loader2, Image as ImageIcon, Heart, Lock } from "@/lib/icons";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -482,26 +482,6 @@ export default function CommunitiesPage() {
           className="relative overflow-hidden rounded-[32px] p-7 shadow-[0_20px_40px_rgba(0,0,0,0.06)] border border-white/60 bg-white group cursor-pointer"
         >
           <div className="absolute inset-0 bg-[linear-gradient(120deg,#fdfbfb_0%,#ebedee_100%)] opacity-50" />
-          
-          {/* Animated blobs */}
-          <motion.div 
-            animate={{ 
-              scale: [1, 1.2, 1],
-              x: [0, 20, 0],
-              y: [0, -20, 0]
-            }} 
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-10 -right-10 w-48 h-48 bg-emerald-200/50 rounded-full blur-[40px] pointer-events-none" 
-          />
-          <motion.div 
-            animate={{ 
-              scale: [1, 1.3, 1],
-              x: [0, -30, 0],
-              y: [0, 20, 0]
-            }} 
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute -bottom-10 -left-10 w-56 h-56 bg-blue-100/50 rounded-full blur-[50px] pointer-events-none" 
-          />
           
           <div className="flex items-center justify-between relative z-10">
             <div className="pr-4">

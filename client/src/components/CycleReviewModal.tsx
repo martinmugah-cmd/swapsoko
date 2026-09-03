@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, CheckSquare, Square } from 'lucide-react';
+import { ShieldCheck, CheckSquare, Square } from '@/lib/icons';
 import { trpc } from '../lib/trpc';
 
 function PreviewUser({ uid }: { uid: string }) {

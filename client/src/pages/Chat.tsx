@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import {
   ChevronLeft, ShieldCheck, Send, Mic, Image, Check, CheckCheck,
   Phone, MoreVertical, MessageCircle, Plus, X, Smile, Star, Square, MapPin, Handshake, Repeat2, CheckCircle, XCircle, GraduationCap
-} from "lucide-react";
+} from "@/lib/icons";
 import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -200,7 +200,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
       className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4`}
     >
       {!isOwn && (
-        <div className="w-8 h-8 rounded-[12px] bg-slate-900/80 backdrop-blur-xl flex items-center justify-center mr-3 flex-shrink-0 self-end mb-1 cursor-pointer overflow-hidden border border-white/10 shadow-sm" onClick={() => onViewProfile ? onViewProfile(msg.senderId) : navigate(`/profile/${msg.senderId}`)}>
+        <div className="w-8 h-8 rounded-[12px] bg-white flex items-center justify-center mr-3 flex-shrink-0 self-end mb-1 cursor-pointer overflow-hidden border border-gray-100 shadow-sm" onClick={() => onViewProfile ? onViewProfile(msg.senderId) : navigate(`/profile/${msg.senderId}`)}>
            {(() => {
               const ProfileAvatar = ({ uid }: { uid: string }) => {
                  const query = trpc.profile.get.useQuery({ id: uid }, { enabled: !!uid });
@@ -225,8 +225,8 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
         {isVoice ? (
           <div className={`flex items-center gap-2 px-4 py-2 rounded-[24px] relative overflow-hidden shadow-sm ${
             isOwn 
-               ? "bg-gradient-to-br from-green-400 to-emerald-600 text-white rounded-br-[4px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] border border-white/10" 
-               : "bg-slate-900/80 backdrop-blur-xl text-white rounded-bl-[4px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/10"
+               ? "bg-emerald-500/90 backdrop-blur-3xl text-white rounded-br-[4px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] border border-emerald-400/50" 
+               : "bg-white/70 backdrop-blur-3xl text-slate-900 rounded-bl-[4px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80"
           }`}>
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none rounded-[24px]" />
             <div className="relative z-10 w-full">
@@ -242,7 +242,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
             <img src={msg.imageUrl || msg.content} alt="shared" className="w-48 h-auto max-h-64 object-cover relative z-10" />
           </div>
         ) : isQuickReply ? (
-          <div className={`px-5 py-2.5 rounded-[20px] shadow-sm relative overflow-hidden border ${isOwn ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500 shadow-[0_4px_12px_rgba(16,185,129,0.1)]" : "bg-slate-900/10 border-white/10 text-slate-800 shadow-sm backdrop-blur-md"}`}>
+          <div className={`px-5 py-2.5 rounded-[20px] shadow-sm relative overflow-hidden border ${isOwn ? "bg-emerald-500 text-white border-emerald-400/50 shadow-[0_8px_20px_rgba(16,185,129,0.25)]" : "bg-white/70 backdrop-blur-3xl text-slate-900 border-white/80 shadow-[0_8px_30px_rgba(0,0,0,0.04)]"}`}>
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
             <span className="text-[14px] font-bold relative z-10">{msg.content}</span>
           </div>
@@ -284,7 +284,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
             }
             
             return (
-              <div className={`w-64 rounded-[24px] p-5 shadow-sm relative overflow-hidden ${isOwn ? "bg-gradient-to-br from-green-400 to-emerald-600 text-white border border-white/10 shadow-[0_8px_20px_rgba(16,185,129,0.25)]" : "bg-slate-900/80 backdrop-blur-xl text-white border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)]"}`}>
+              <div className={`w-64 rounded-[32px] p-5 shadow-sm relative overflow-hidden ${isOwn ? "bg-emerald-500/90 backdrop-blur-3xl text-white border border-emerald-400/50 shadow-[0_8px_20px_rgba(16,185,129,0.25)]" : "bg-white/70 backdrop-blur-3xl text-slate-900 border border-white/80 shadow-[0_8px_30px_rgba(0,0,0,0.04)]"}`}>
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
                 
                 <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/10 relative z-10">
@@ -294,7 +294,7 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                   <h4 className="font-extrabold text-[15px] drop-shadow-sm">{pData.wishId ? "Swish Offer" : "Swap Offer"}</h4>
                 </div>
                 {pData.listingTitle && (
-                  <div className="flex items-center gap-3 mb-3 bg-white/10 p-2.5 rounded-2xl border border-white/5 relative z-10">
+                  <div className="flex items-center gap-3 mb-3 ${isOwn ? 'bg-white/10 border-white/10 text-white' : 'bg-white/50 border-white/80 shadow-sm text-slate-900'} p-2.5 rounded-2xl border relative z-10">
                      {!pData.wishId && (
                        pData.listingImage ? (
                           <img src={pData.listingImage} alt="Listing" className="w-10 h-10 rounded-lg object-cover shrink-0 shadow-sm" />
@@ -309,10 +309,10 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                      </p>
                   </div>
                 )}
-                <p className="text-xs font-medium text-white/80 mb-2 relative z-10">{pData.message || "No message attached"}</p>
+                <p className={`text-xs font-medium mb-2 relative z-10 ${isOwn ? 'text-white/80' : 'text-slate-600'}`}>{pData.message || "No message attached"}</p>
                 {pData.offerItems && (
-                  <div className="mb-2 p-2 bg-black/20 rounded-lg border border-white/5 relative z-10">
-                    <span className="text-[9px] font-black text-white/50 uppercase tracking-widest block mb-1">Offered Items</span>
+                  <div className={`mb-2 p-3 rounded-[16px] border relative z-10 ${isOwn ? 'bg-black/20 border-white/10 text-white' : 'bg-white/60 border-white/80 shadow-sm text-slate-900'}`}>
+                    <span className={`text-[9px] font-black uppercase tracking-widest block mb-1 ${isOwn ? 'text-white/50' : 'text-slate-400'}`}>Offered Items</span>
                     <p className="text-xs font-bold">{pData.offerItems}</p>
                   </div>
                 )}
@@ -325,10 +325,10 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                       Accept Offer
                     </button>
                     <div className="flex gap-2">
-                      <button onClick={() => onCounterProposal?.(pData, msg.id)} className="flex-1 bg-white/10 border border-white/20 text-white text-xs font-bold py-2.5 rounded-full hover:bg-white/20 transition-all">
+                      <button onClick={() => onCounterProposal?.(pData, msg.id)} className={`flex-1 border text-xs font-bold py-2.5 rounded-full transition-all ${isOwn ? 'bg-white/10 border-white/20 text-white hover:bg-white/20' : 'bg-white/50 border-white/80 text-slate-900 shadow-sm hover:bg-white/80'}`}>
                         Counter
                       </button>
-                      <button onClick={() => onRejectProposal?.(pData, msg.id)} className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold py-2.5 rounded-full hover:bg-red-500/20 transition-all">
+                      <button onClick={() => onRejectProposal?.(pData, msg.id)} className={`flex-1 border text-xs font-bold py-2.5 rounded-full transition-all ${isOwn ? 'bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20' : 'bg-red-50 border-red-200 text-red-600 shadow-sm hover:bg-red-100'}`}>
                         Reject
                       </button>
                     </div>
@@ -735,8 +735,8 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
               ) : (
                 <div className={`px-5 py-3.5 rounded-[24px] text-[15px] leading-[22px] whitespace-pre-wrap shadow-sm relative overflow-hidden ${
                   isOwn 
-                    ? "bg-gradient-to-br from-green-400 to-emerald-600 text-white rounded-br-[4px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] border border-white/10" 
-                    : "bg-slate-900/80 backdrop-blur-xl text-white rounded-bl-[4px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/10"
+                    ? "bg-emerald-500/90 backdrop-blur-3xl text-white rounded-br-[4px] shadow-[0_8px_20px_rgba(16,185,129,0.25)] border border-emerald-400/50" 
+                    : "bg-white/70 backdrop-blur-3xl text-slate-900 rounded-bl-[4px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80"
                 }`}>
                   <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none rounded-[24px]" />
                   <div className="relative z-10 font-medium">
@@ -785,6 +785,14 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
   );
 }
 
+function ModalBodyLock() {
+  useEffect(() => {
+    document.body.classList.add('hide-bottom-nav');
+    return () => document.body.classList.remove('hide-bottom-nav');
+  }, []);
+  return null;
+}
+
 function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
   const { user } = useAuth();
   const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
@@ -794,7 +802,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
   const [mentionState, setMentionState] = useState({ active: false, query: "" });
   const [showQuickReplies, setShowQuickReplies] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [viewingProfile, setViewingProfile] = useState<string | null>(null);
+  
   const [agreementState, setAgreementState] = useState<{isOpen: boolean; listingId?: number; isReview?: boolean; data?: any; msgId?: number}>({isOpen: false});
   const [counterState, setCounterState] = useState<{isOpen: boolean; proposalData?: any; msgId?: number; isCycle?: boolean; rawContent?: string}>({isOpen: false});
   const [rejectState, setRejectState] = useState<{isOpen: boolean; proposalData?: any; msgId?: number; isCycle?: boolean; rawContent?: string}>({isOpen: false});
@@ -1198,22 +1206,16 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
     lm => !allMessages.find((m: any) => m.content === lm.content && String(m.senderId) === String(lm.senderId))
   )];
 
-  if (viewingProfile) {
-    return (
-      <div className="absolute inset-0 z-[9999] bg-white h-full overflow-y-auto w-full">
-        <ProfilePage uid={viewingProfile} onBack={() => setViewingProfile(null)} />
-      </div>
-    );
-  }
 
   return (
-    <div className="flex flex-col fixed top-0 bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-[250] bg-[#F8FAFC] h-[100dvh]">
+    <div className="flex flex-col absolute inset-0 z-[250] bg-[#F8FAFC] h-[100dvh]">
+      <ModalBodyLock />
       {/* Header */}
       <div className="page-header px-4 py-3 flex items-center gap-3 z-50">
         <button onClick={onBack} className="p-1 -ml-1">
           <ChevronLeft className="w-6 h-6 text-slate-900" />
         </button>
-        <button onClick={() => { if (room?.user2Id === null) setShowMenu(true); else setViewingProfile(partnerId); }} className="flex items-center gap-2 flex-1 min-w-0 text-left">
+        <button onClick={() => { if (room?.user2Id === null) setShowMenu(true); else navigate(`/profile/${partnerId}`); }} className="flex items-center gap-2 flex-1 min-w-0 text-left">
           <div className="w-10 h-10 rounded-full gradient-green flex items-center justify-center overflow-hidden flex-shrink-0">
             {partnerAvatar ? (
               <img src={partnerAvatar} alt={partnerName} className="w-full h-full object-cover" />
@@ -1230,7 +1232,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
           </div>
         </button>
         <div className="flex items-center gap-2 relative">
-          <button onClick={() => navigate('/verify')} className="p-2 bg-green-50 rounded-full hover:bg-green-100 transition-colors" title="In-Person Verification">
+          <button onClick={() => navigate('/verification')} className="p-2 bg-green-50 rounded-full hover:bg-green-100 transition-colors" title="In-Person Verification">
             <ShieldCheck className="w-5 h-5 text-green-600" />
           </button>
           <button onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }} className="p-1">
@@ -1255,7 +1257,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
 
       <AnimatePresence>
         {previewLeg && (
-           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+           <div className="absolute inset-0 z-[9999] flex items-center justify-center p-4">
              <motion.div 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
@@ -1552,7 +1554,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+            className="absolute inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setRejectState({isOpen: false})}
           >
             <motion.div 
@@ -1560,9 +1562,10 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
               animate={{ scale: 1 }}
               exit={{ scale: 0.95 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl p-6 w-full max-w-sm"
+              className="bg-white/70 backdrop-blur-3xl rounded-[32px] p-6 w-full max-w-sm shadow-[0_16px_40px_rgba(15,23,42,0.1)] border border-white/80 relative overflow-hidden"
             >
               <div className="flex justify-between items-center mb-6">
+                <ModalBodyLock />
                 <h3 className="font-bold text-xl text-slate-900">Reject Offer</h3>
                 <button onClick={() => { setRejectState({isOpen: false}); setCustomRejectMsg(""); }} className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200">
                   <X className="w-5 h-5" />
@@ -1576,14 +1579,14 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                   placeholder="Type a custom reply..." 
                   value={customRejectMsg}
                   onChange={e => setCustomRejectMsg(e.target.value)}
-                  className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-500"
+                  className="flex-1 bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[20px] px-4 py-3 text-sm font-semibold outline-none focus:border-emerald-400 focus:bg-white transition-all"
                 />
                 <button 
                   onClick={() => {
                     if (customRejectMsg.trim()) handleRejectSubmit(customRejectMsg);
                   }}
                   disabled={!customRejectMsg.trim()}
-                  className="bg-green-500 text-white px-4 py-3 rounded-xl font-bold disabled:opacity-50"
+                  className="bg-emerald-500 text-white px-5 py-3 rounded-[20px] font-bold shadow-[0_4px_12px_rgba(16,185,129,0.2)] hover:-translate-y-0.5 transition-transform disabled:opacity-50 disabled:shadow-none"
                 >
                   Send
                 </button>
@@ -1594,7 +1597,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                   <button 
                     key={reply}
                     onClick={() => handleRejectSubmit(reply)}
-                    className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-red-50 hover:text-red-600 text-gray-700 text-sm font-medium rounded-xl transition-colors"
+                    className="w-full text-left px-4 py-3.5 bg-white/40 backdrop-blur-md border border-white/40 shadow-sm hover:bg-white hover:text-red-600 text-slate-700 text-[14px] font-bold rounded-[20px] transition-all hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
                   >
                     "{reply}"
                   </button>
@@ -1634,7 +1637,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                 currentUserId={user?.id}
                 partnerFullName={partnerFullName}
                 onConfirmReceipt={handleConfirmReceipt}
-                onViewProfile={(uid) => setViewingProfile(uid)} 
+                onViewProfile={(uid) => navigate(`/profile/${uid}`)} 
                 onImageClick={setFullscreenImage} 
                 onOpenAgreement={(listingId, msgId, isReview, data) => setAgreementState({isOpen: true, listingId, isReview, data, msgId})}
                 onPreviewClick={(leg) => setPreviewLeg(leg)}
@@ -1670,7 +1673,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setFullscreenImage(null)}
-            className="fixed inset-0 z-[120] bg-black/90 flex items-center justify-center p-4 cursor-pointer"
+            className="absolute inset-0 z-[120] bg-black/90 flex items-center justify-center p-4 cursor-pointer"
           >
             <img src={fullscreenImage} className="max-w-full max-h-full object-contain" />
           </motion.div>
@@ -1681,7 +1684,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setFullscreenReceipt(null)}
-            className="fixed inset-0 z-[120] bg-black/90 flex items-center justify-center p-4 cursor-pointer backdrop-blur-sm"
+            className="absolute inset-0 z-[120] bg-black/90 flex items-center justify-center p-4 cursor-pointer backdrop-blur-sm"
           >
             <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-gray-100 overflow-hidden relative" onClick={(e) => e.stopPropagation()}>
               <div className="bg-gradient-to-r from-[#22C55E] to-[#3B82F6] p-6 text-center">
@@ -1692,7 +1695,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                 <div className="absolute -top-4 left-6 w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100"></div>
                 <div className="absolute -top-4 right-6 w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100"></div>
                 
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div className="flex justify-between items-center pb-4 border-b border-gray-200 border-dashed">
                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Date & Time</span>
                      <div className="text-right">
@@ -1841,7 +1844,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                 <X className="w-5 h-5 text-red-500" />
               </button>
               <div className="flex-1 bg-[#F8FAFC]/50 rounded-2xl px-3 py-1 border border-gray-100/50 overflow-hidden">
-                 <VoicePlayer url={previewAudioUrl} />
+                 <VoicePlayer url={previewAudioUrl} isOwn={false} />
               </div>
               <motion.button
                 whileTap={{ scale: 0.85 }}
@@ -1853,26 +1856,33 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
             </>
           ) : isRecording ? (
             <>
-               <div className="flex-1 flex items-center gap-3 px-3">
-                 <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-                 <span className="text-red-500 font-bold text-sm">
-                   {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
-                 </span>
-                 <span className="text-gray-400 text-xs ml-auto flex items-center gap-1 font-medium">
-                   ← Cancel
-                 </span>
+               <div className="flex-1 flex items-center justify-between px-3 h-11 bg-red-50/50 rounded-full border border-red-100/50">
+                 <div className="flex items-center gap-2.5">
+                   <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)] animate-pulse" />
+                   <span className="text-red-600 font-bold text-[15px] tabular-nums tracking-tight">
+                     {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
+                   </span>
+                 </div>
+                 <div className="flex items-center gap-1 h-5">
+                   <div className="w-1 bg-red-400 rounded-full animate-sound-wave" style={{ animationDelay: '0.0s' }} />
+                   <div className="w-1 bg-red-400 rounded-full animate-sound-wave" style={{ animationDelay: '0.2s' }} />
+                   <div className="w-1 bg-red-400 rounded-full animate-sound-wave" style={{ animationDelay: '0.4s' }} />
+                   <div className="w-1 bg-red-400 rounded-full animate-sound-wave" style={{ animationDelay: '0.1s' }} />
+                   <div className="w-1 bg-red-400 rounded-full animate-sound-wave" style={{ animationDelay: '0.3s' }} />
+                   <div className="w-1 bg-red-400 rounded-full animate-sound-wave" style={{ animationDelay: '0.5s' }} />
+                 </div>
                </div>
                <motion.button
                   whileTap={{ scale: 0.85 }}
                   onClick={cancelRecording}
-                  className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-gray-100"
+                  className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-white border border-gray-200 text-gray-400 hover:text-red-500 shadow-sm ml-2"
                >
-                 <X className="w-5 h-5 text-gray-500" />
+                 <X className="w-5 h-5" />
                </motion.button>
                <motion.button
                   whileTap={{ scale: 0.85 }}
                   onClick={stopRecording}
-                  className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-green-500"
+                  className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all bg-green-500 shadow-md shadow-green-500/20 ml-2"
                >
                  <Check className="w-5 h-5 text-white" />
                </motion.button>
@@ -1976,7 +1986,7 @@ function ChatRoomItem({ room, user, onSelectRoom }: { room: any; user: any; onSe
       animate={{ opacity: 1, y: 0 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onSelectRoom(room.id)}
-      className="w-[calc(100%-2rem)] mx-auto flex items-center gap-3.5 px-4 py-4 bg-white border border-white rounded-[24px] mb-3 shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] transition-all"
+      className="w-[calc(100%-2rem)] mx-auto flex items-center gap-3.5 px-4 py-4 bg-white/60 backdrop-blur-3xl border border-white/80 rounded-[32px] mb-3 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all relative z-10 overflow-hidden"
     >
       <div className="relative flex-shrink-0">
         <div className={`w-12 h-12 rounded-full ${avatarColor} flex items-center justify-center overflow-hidden`}>
@@ -2022,7 +2032,7 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] flex items-end"
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm z-[110] flex items-end"
       onClick={onClose}
     >
       <motion.div
@@ -2038,15 +2048,16 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
           <div className="w-10 h-10 rounded-xl bg-[#F0FDF4] flex items-center justify-center">
             <Handshake className="w-5 h-5 text-green-500" />
           </div>
+          <ModalBodyLock />
           <h3 className="font-extrabold text-slate-900 text-xl tracking-tight">Swap Agreement</h3>
         </div>
         <p className="text-gray-500 text-sm font-medium mb-6">Lock in terms with <span className="font-bold text-slate-900">{partnerName.startsWith('@') ? partnerName : '@' + partnerName}</span> before meeting.</p>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Item in Transaction</label>
-            <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-2xl border border-gray-100">
-               <div className="w-16 h-16 rounded-xl bg-gray-200 overflow-hidden flex-shrink-0">
+            <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Item in Transaction</label>
+            <div className="flex items-center gap-4 p-3 bg-white/50 backdrop-blur-md rounded-[24px] border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+               <div className="w-16 h-16 rounded-xl bg-white/60 overflow-hidden shadow-inner flex-shrink-0">
                   {listingQuery.data?.images ? (
                      <img src={(typeof listingQuery.data.images === 'string' ? JSON.parse(listingQuery.data.images || '[]') : listingQuery.data.images)[0]} className="w-full h-full object-cover" />
                   ) : (
@@ -2065,54 +2076,54 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
             </div>
             
           <div>
-             <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Full Agreement Details</label>
-             <div className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900">
+             <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Full Agreement Details</label>
+             <div className="bg-white/50 backdrop-blur-md border border-white/60 rounded-[20px] px-5 py-4 text-[15px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] font-semibold text-slate-900">
                 {initialData?.itemsExchanged || (initialData?.offerItems ? `${initialData.offerItems} for ${listingQuery.data?.title || autoItemsExchanged}` : autoItemsExchanged)}
              </div>
           </div>
 
           </div>
           <div>
-            <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Cash Difference (KES)</label>
+            <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Cash Difference (KES)</label>
             <input
               value={cashTopUp}
               onChange={e => setCashTopUp(e.target.value)}
               placeholder="e.g. 0 or 500 via M-Pesa"
-              className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+              className="w-full bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[20px] px-5 py-4 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Meetup Place</label>
+              <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Meetup Place</label>
               <input
                 value={meetupPlace}
                 onChange={e => setMeetupPlace(e.target.value)}
                 placeholder="e.g. JKUAT Gate A"
-                className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+                className="w-full bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[20px] px-5 py-4 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
               />
             </div>
             <div>
-              <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Time Window</label>
+              <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Time Window</label>
               <input
                 value={timeWindow}
                 onChange={e => setTimeWindow(e.target.value)}
                 placeholder="e.g. Tomorrow 2PM-3PM"
-                className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+                className="w-full bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[20px] px-5 py-4 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
               />
             </div>
           </div>
           <div>
-            <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Condition Notes</label>
+            <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Condition Notes</label>
             <input
               value={conditionNotes}
               onChange={e => setConditionNotes(e.target.value)}
               placeholder="e.g. Minor scratch on screen, fully functional"
-              className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+              className="w-full bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[20px] px-5 py-4 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
             />
           </div>
           
           {isReview && (
-            <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4 mt-2">
+            <div className="bg-orange-50/50 backdrop-blur-md border border-orange-200/50 rounded-[24px] p-5 mt-2">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input 
                   type="checkbox" 
@@ -2137,7 +2148,7 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
               toast.success("Swap Agreement signed & finalized!");
               onClose();
             }}
-            className={`w-full mt-6 font-extrabold py-4 rounded-2xl text-[15px] transition-colors shadow-sm ${accepted ? "gradient-green text-white shadow-[0_8px_20px_rgba(34,197,94,0.3)] hover:scale-[1.02]" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
+            className={`w-full mt-8 font-extrabold py-4.5 rounded-[24px] text-[16px] transition-all ${accepted ? "bg-emerald-500 text-white shadow-[0_8px_24px_rgba(16,185,129,0.25)] hover:shadow-[0_12px_32px_rgba(16,185,129,0.35)] hover:-translate-y-1 active:translate-y-0 active:scale-95" : "bg-white/40 border border-white/60 text-slate-400 cursor-not-allowed backdrop-blur-md shadow-sm"}`}
           >
             Sign & Finalize Swap
           </motion.button>
@@ -2157,7 +2168,7 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
               toast.success("Agreement sent for review!");
               onClose();
             }}
-            className="w-full mt-6 font-extrabold py-4 rounded-2xl text-[15px] transition-colors gradient-green text-white shadow-[0_8px_20px_rgba(34,197,94,0.3)] hover:scale-[1.02]"
+            className="w-full mt-8 font-extrabold py-4.5 rounded-[24px] text-[16px] transition-all bg-emerald-500 text-white shadow-[0_8px_24px_rgba(16,185,129,0.25)] hover:shadow-[0_12px_32px_rgba(16,185,129,0.35)] hover:-translate-y-1 active:translate-y-0 active:scale-95"
           >
             Send Agreement Form
           </motion.button>
@@ -2199,7 +2210,7 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] flex items-end"
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm z-[110] flex items-end"
       onClick={onClose}
     >
       <motion.div
@@ -2212,40 +2223,41 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
       >
         <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
         <div className="flex items-center gap-2 mb-2">
+          <ModalBodyLock />
           <h3 className="font-extrabold text-slate-900 text-xl tracking-tight">Counter Offer</h3>
         </div>
         <p className="text-gray-500 text-sm font-medium mb-6">Propose new terms to <span className="font-bold text-slate-900">{isCycle && cyclePartnerId ? <PreviewUser uid={cyclePartnerId} /> : `@${partnerName}`}</span>.</p>
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Message</label>
+            <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Message</label>
             <textarea
               value={message}
               onChange={e => setMessage(e.target.value)}
               placeholder="e.g. I can accept if you add KES 500"
               rows={2}
-              className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all resize-none placeholder:font-medium placeholder:text-gray-400"
+              className="w-full bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[20px] px-5 py-4 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all resize-none placeholder:font-medium placeholder:text-gray-400"
             />
           </div>
           {!isCycle && (
             <div>
-              <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Offered Items</label>
+              <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Offered Items</label>
               <input
                 type="text"
                 value={offeredItems}
                 onChange={e => setOfferedItems(e.target.value)}
                 placeholder="e.g. My iPhone 12 + 2 Games"
-                className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+                className="w-full bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[20px] px-5 py-4 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
               />
             </div>
           )}
           <div>
-            <label className="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 block">Cash Top-up (KES)</label>
+            <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Cash Top-up (KES)</label>
             <input
               type="number"
               value={cashTopUp}
               onChange={e => setCashTopUp(e.target.value)}
               placeholder="e.g. 500"
-              className="w-full bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+              className="w-full bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[20px] px-5 py-4 text-[14px] font-semibold text-slate-900 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-[#22C55E]/10 transition-all placeholder:font-medium placeholder:text-gray-400"
             />
           </div>
           
@@ -2260,7 +2272,7 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
                    type="date"
                    value={meetingDate}
                    onChange={e => setMeetingDate(e.target.value)}
-                   className="w-full bg-gray-50 border border-transparent rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:bg-white focus:border-blue-500 transition-all"
+                   className="w-full bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[16px] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:bg-white focus:border-blue-500 transition-all"
                  />
                </div>
                <div>
@@ -2269,7 +2281,7 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
                    type="time"
                    value={meetingTime}
                    onChange={e => setMeetingTime(e.target.value)}
-                   className="w-full bg-gray-50 border border-transparent rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:bg-white focus:border-blue-500 transition-all"
+                   className="w-full bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[16px] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:bg-white focus:border-blue-500 transition-all"
                  />
                </div>
              </div>
@@ -2280,7 +2292,7 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
                  value={meetingLocation}
                  onChange={e => setMeetingLocation(e.target.value)}
                  placeholder="Type specific location..."
-                 className="w-full bg-gray-50 border border-transparent rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:bg-white focus:border-blue-500 transition-all placeholder:font-medium placeholder:text-gray-400"
+                 className="w-full bg-white/50 backdrop-blur-md border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-[16px] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:bg-white focus:border-blue-500 transition-all placeholder:font-medium placeholder:text-gray-400"
                />
              </div>
              <div className="mt-4 bg-blue-50 border border-blue-100 rounded-xl p-3 flex gap-3 items-start">
@@ -2313,7 +2325,7 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
             });
             onClose();
           }}
-          className="w-full mt-6 font-extrabold py-4 rounded-2xl text-[15px] transition-colors gradient-green text-white shadow-[0_8px_20px_rgba(34,197,94,0.3)] hover:scale-[1.02]"
+          className="w-full mt-8 font-extrabold py-4.5 rounded-[24px] text-[16px] transition-all bg-emerald-500 text-white shadow-[0_8px_24px_rgba(16,185,129,0.25)] hover:shadow-[0_12px_32px_rgba(16,185,129,0.35)] hover:-translate-y-1 active:translate-y-0 active:scale-95"
         >
           Send Counter Offer
         </motion.button>
@@ -2344,12 +2356,7 @@ function ChatList({ onSelectRoom }: { onSelectRoom: (id: number) => void }) {
           className="flex flex-col items-center"
         >
           <div className="relative mb-8">
-            <div className="absolute inset-0 bg-swap-green/20 blur-[32px] rounded-full scale-[2]"></div>
-            <div className="relative w-24 h-24 bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_32px_rgba(0,0,0,0.06)] rounded-[2rem] flex items-center justify-center rotate-3 transform-gpu">
-              <div className="w-12 h-12 rounded-xl overflow-hidden shadow-inner bg-white flex items-center justify-center -rotate-3">
-                 <img src="/logo.jpg" alt="SwapSoko" className="w-full h-full object-cover" />
-              </div>
-            </div>
+            <div className="relative w-24 h-24 flex items-center justify-center"><img src="/logo.png" alt="SwapSoko" className="w-20 h-20 object-contain drop-shadow-xl" /></div>
           </div>
           
           <h2 className="font-bold text-slate-900 text-[26px] tracking-tight mb-3">Access Messages</h2>
@@ -2373,16 +2380,14 @@ function ChatList({ onSelectRoom }: { onSelectRoom: (id: number) => void }) {
 
   return (
     <div className="flex flex-col h-screen pb-20">
-      <div className="page-header px-4 pt-4 pb-2">
-        <div className="bg-white rounded-[24px] px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-white flex items-center justify-between">
-          <h1 className="font-extrabold text-slate-900 text-[17px] tracking-tight">Chat</h1>
-        </div>
+      <div className="page-header px-6 py-4 flex items-center justify-between">
+        <h1 className="font-extrabold text-slate-900 text-[17px] tracking-tight">Chat</h1>
       </div>
 
       {roomsQuery.isLoading ? (
         <div className="px-4 py-2 space-y-3">
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={`sk-room-${i}`} className="w-full flex items-center gap-3 px-4 py-3.5 bg-white/70 backdrop-blur-md border border-gray-100 rounded-2xl animate-pulse">
+            <div key={`sk-room-${i}`} className="w-full flex items-center gap-3 px-4 py-3.5 bg-white/60 backdrop-blur-3xl border border-white/80 rounded-[32px] animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0"></div>
               <div className="flex-1 space-y-2">
                 <div className="flex justify-between">
@@ -2471,18 +2476,21 @@ const SAFETY_TIPS = [
   "Stay in public view during the entire transaction."
 ];
 
+function AnimatedBackground() { return null; }
+
 export default function ChatPage() {
   const params = useParams<{ id?: string }>();
-  const [activeRoomId, setActiveRoomId] = useState<number | null>(
-    params.id ? parseInt(params.id) : null
-  );
+  const [, setLocation] = useLocation();
+  const activeRoomId = params.id ? parseInt(params.id) : null;
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-[#F8FAFC]"
+      className="min-h-screen bg-slate-50"
     >
+      <AnimatedBackground />
+      <div className="relative z-10 h-full">
       <AnimatePresence>
         {activeRoomId ? (
           <motion.div
@@ -2492,7 +2500,7 @@ export default function ChatPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.05 }}
           >
-            <ChatRoom roomId={activeRoomId} onBack={() => setActiveRoomId(null)} />
+            <ChatRoom roomId={activeRoomId} onBack={() => setLocation("/chat")} />
           </motion.div>
         ) : (
           <motion.div
@@ -2502,10 +2510,11 @@ export default function ChatPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.05 }}
           >
-            <ChatList onSelectRoom={setActiveRoomId} />
+            <ChatList onSelectRoom={(id) => setLocation("/chat/" + id)} />
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </motion.div>
   );
 }

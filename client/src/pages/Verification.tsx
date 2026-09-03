@@ -1,201 +1,240 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { QrCode, Camera, CheckCircle, ShieldCheck, ArrowLeft, Download, ExternalLink, Loader2 } from 'lucide-react';
+import { Camera, CheckCircle, ArrowLeft, Download, Loader2, RefreshCw, X, FileText, Smartphone } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
+import QRCode from 'react-qr-code';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 
 export default function VerificationPage() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { user } = useAuth();
   
-  const [activeTab, setActiveTab] = useState<'show' | 'scan' | 'certificate'>('show');
+  const proposalIdStr = new URLSearchParams(window.location.search).get("proposal");
+  const proposalId = proposalIdStr ? parseInt(proposalIdStr, 10) : null;
+
+  const proposalQuery = trpc.proposals.myProposals.useQuery({ userId: user?.id }, { enabled: !!user?.id });
+  const proposal = proposalQuery.data?.items?.find((p: any) => p.id === proposalId);
+  const updateProposalMutation = trpc.proposals.update.useMutation({
+     onSuccess: () => {
+         proposalQuery.refetch();
+         toast.success("Trade Verified Successfully!");
+     }
+  });
+
+  const [activeTab, setActiveTab] = useState<'show' | 'scan'>('show');
   const [isScanning, setIsScanning] = useState(false);
-  const [verifiedTrade, setVerifiedTrade] = useState<any | null>(null);
 
-  // Mock a unique trade code for the user
-  const myCode = `SWAP-${user?.id?.substring(0, 4)?.toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+  // Secure randomized payload
+  const myCodePayload = JSON.stringify({
+      type: "SWAPSOKO_VERIFY",
+      proposalId: proposalId,
+      signer: user?.id,
+      nonce: Math.random().toString(36).substring(2, 10)
+  });
 
-  const handleSimulateScan = () => {
-    setIsScanning(true);
-    setTimeout(() => {
-      setIsScanning(false);
-      setVerifiedTrade({
-        id: `TRD-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-        date: new Date().toLocaleString(),
-        item1: "iPhone 13 Pro",
-        item2: "Samsung Galaxy S22",
-        partner: "Alex",
-        status: "VERIFIED"
-      });
-      setActiveTab('certificate');
-      toast.success("Trade verified successfully!");
-    }, 2000);
-  };
+  useEffect(() => {
+    let scanner: Html5QrcodeScanner | null = null;
+    
+    if (activeTab === 'scan' && proposal?.status === 'accepted') {
+       scanner = new Html5QrcodeScanner(
+         "reader",
+         { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
+         false
+       );
+       scanner.render(
+         (decodedText) => {
+            try {
+               const data = JSON.parse(decodedText);
+               if (data.type === "SWAPSOKO_VERIFY" && data.proposalId === proposalId) {
+                  if (data.signer !== user?.id) {
+                     scanner?.clear();
+                     updateProposalMutation.mutate({ id: proposalId, status: 'completed' });
+                  }
+               }
+            } catch(e) {
+               console.error("Invalid QR code");
+            }
+         },
+         (error) => {}
+       );
+    }
+    
+    return () => {
+       if (scanner) {
+          scanner.clear().catch(e => console.error(e));
+       }
+    };
+  }, [activeTab, proposal]);
 
+  if (proposalQuery.isLoading) {
+      return (
+         <div className="flex flex-col h-[100dvh] bg-[#F8FAFC] items-center justify-center">
+            <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+         </div>
+      );
+  }
+
+  if (!proposal) {
+      return (
+         <div className="flex flex-col h-[100dvh] bg-[#F8FAFC] items-center justify-center p-6 text-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            </div>
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-white/80 backdrop-blur-3xl p-10 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white max-w-md w-full relative z-10 flex flex-col items-center">
+               <div className="w-24 h-24 bg-red-500/10 rounded-[32px] flex items-center justify-center mb-6 shadow-inner">
+                  <X className="w-10 h-10 text-red-500" />
+               </div>
+               <h2 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Proposal Not Found</h2>
+               <p className="text-slate-500 mb-8 font-medium leading-relaxed">We could not locate the trade proposal for verification. It may have been canceled or removed.</p>
+               <Button onClick={() => setLocation("/chat")} className="w-full bg-slate-900 text-white rounded-[24px] py-6 shadow-[0_8px_20px_rgba(15,23,42,0.2)] font-extrabold text-[15px] hover:scale-[1.02] transition-transform">Return to Chat</Button>
+            </motion.div>
+         </div>
+      );
+  }
+
+  const isCompleted = proposal.status === 'completed';
+  const isAccepted = proposal.status === 'accepted';
+  
   return (
-    <div className="flex flex-col h-[100dvh] bg-gray-50 overflow-hidden relative">
-      <div className="bg-white px-4 py-4 border-b border-gray-100 flex items-center shadow-sm z-10 sticky top-0">
-        <button onClick={() => setLocation('/chat')} className="p-2 -ml-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
+    <div className="flex flex-col h-[100dvh] bg-[#F8FAFC] overflow-hidden relative">
+      {/* Liquid Glass Background */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+      </div>
+
+      <div className="bg-white/70 backdrop-blur-3xl px-4 py-4 border-b border-white shadow-sm z-10 sticky top-0 flex items-center">
+        <button onClick={() => setLocation(`/chat/${proposal.id}`)} className="p-2 -ml-2 rounded-full hover:bg-white/50 text-slate-700 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="ml-2 flex-1">
-          <h1 className="text-lg font-bold text-gray-900 tracking-tight">In-Person Verification</h1>
+          <h1 className="text-lg font-black text-slate-900 tracking-tight">Trade Verification</h1>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 pb-32">
-        <div className="max-w-md mx-auto space-y-6">
-          
-          <div className="bg-green-50 border border-green-100 rounded-xl p-4 flex gap-3">
-            <ShieldCheck className="w-6 h-6 text-green-600 shrink-0" />
-            <div>
-              <h3 className="text-sm font-bold text-green-900">Safe Trade Guarantee</h3>
-              <p className="text-xs text-green-700 mt-1 leading-relaxed">
-                Scan your partner's code when you meet in person to confirm the exchange. This generates an official Trade Certificate and finalizes the transaction.
-              </p>
+      <div className="flex-1 overflow-y-auto p-4 pb-32 relative z-10 flex flex-col items-center">
+        
+        {!isAccepted && !isCompleted ? (
+           <div className="bg-white/80 backdrop-blur-3xl p-8 rounded-[32px] shadow-sm border border-white mt-12 w-full max-w-md text-center">
+              <div className="w-20 h-20 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                 <RefreshCw className="w-8 h-8 text-orange-500" />
+              </div>
+              <h2 className="text-xl font-black text-slate-900 mb-2">Trade Not Accepted Yet</h2>
+              <p className="text-slate-500 font-medium text-sm leading-relaxed mb-6">Both parties must accept the trade proposal in the chat before verification codes are generated.</p>
+              <Button onClick={() => setLocation(`/chat/${proposal.id}`)} className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-[20px] py-6 font-bold shadow-xl">Return to Proposal</Button>
+           </div>
+        ) : isCompleted ? (
+           <motion.div 
+             initial={{ opacity: 0, scale: 0.95, y: 20 }}
+             animate={{ opacity: 1, scale: 1, y: 0 }}
+             className="bg-white/80 backdrop-blur-3xl rounded-[32px] p-6 shadow-sm border border-white w-full max-w-md mt-6"
+           >
+             <div className="flex flex-col items-center text-center border-b border-dashed border-slate-200 pb-6 mb-6">
+               <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-4">
+                 <CheckCircle className="w-10 h-10 text-emerald-500" />
+               </div>
+               <h2 className="text-2xl font-black text-slate-900 tracking-tight">Trade Verified</h2>
+               <p className="text-slate-500 mt-1 font-bold text-sm">Official SwapSoko Certificate</p>
+             </div>
+             
+             <div className="space-y-4 mb-8">
+               <div className="flex justify-between items-center py-2 border-b border-white/50">
+                 <span className="text-sm text-slate-500 font-bold">Transaction ID</span>
+                 <span className="text-sm font-black text-slate-900 font-mono">TRD-{proposal.id.toString().padStart(6, '0')}</span>
+               </div>
+               <div className="flex justify-between items-center py-2 border-b border-white/50">
+                 <span className="text-sm text-slate-500 font-bold">Date & Time</span>
+                 <span className="text-sm font-black text-slate-900">{new Date(proposal.updatedAt || Date.now()).toLocaleDateString()}</span>
+               </div>
+               
+               <div className="bg-white/50 rounded-[24px] p-5 mt-6 border border-white">
+                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-4 text-center">Exchanged Value</span>
+                 <div className="flex items-center justify-between">
+                   <div className="flex-1 font-bold text-sm text-slate-900 text-center bg-white p-3 rounded-[16px] shadow-sm">{proposal.listings?.title || "Cash"}</div>
+                   <div className="px-3 text-slate-300">
+                      <RefreshCw className="w-5 h-5 text-emerald-500" />
+                   </div>
+                   <div className="flex-1 font-bold text-sm text-slate-900 text-center bg-white p-3 rounded-[16px] shadow-sm">{proposal.offeredListings?.title || `Ksh ${proposal.cashOffered}`}</div>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="flex gap-3">
+               <Button variant="outline" className="flex-1 rounded-[20px] py-6 font-bold text-slate-700 bg-white border-white shadow-sm hover:bg-white">
+                 <Download className="w-4 h-4 mr-2" /> Save PDF
+               </Button>
+               <Button onClick={() => setLocation('/chat')} className="flex-1 rounded-[20px] py-6 font-bold bg-emerald-500 hover:bg-emerald-600 shadow-[0_8px_20px_rgba(16,185,129,0.25)] text-white border-none">
+                 Done
+               </Button>
+             </div>
+           </motion.div>
+        ) : (
+          <div className="w-full max-w-md mt-6">
+            <div className="bg-white/80 backdrop-blur-3xl p-2 rounded-[24px] flex mb-6 shadow-sm border border-white">
+              <button 
+                onClick={() => setActiveTab('show')}
+                className={`flex-1 py-3 text-sm font-bold rounded-[16px] transition-all flex items-center justify-center gap-2 ${activeTab === 'show' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                <Smartphone className="w-4 h-4" /> Show Code
+              </button>
+              <button 
+                onClick={() => setActiveTab('scan')}
+                className={`flex-1 py-3 text-sm font-bold rounded-[16px] transition-all flex items-center justify-center gap-2 ${activeTab === 'scan' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                <Camera className="w-4 h-4" /> Scan Code
+              </button>
             </div>
-          </div>
 
-          <div className="flex bg-gray-200/50 p-1 rounded-lg">
-            <button 
-              onClick={() => setActiveTab('show')}
-              className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'show' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              <QrCode className="w-4 h-4" /> My Code
-            </button>
-            <button 
-              onClick={() => setActiveTab('scan')}
-              className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'scan' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              <Camera className="w-4 h-4" /> Scan Code
-            </button>
-          </div>
-
-          <AnimatePresence mode="wait">
-            {activeTab === 'show' && (
-              <motion.div 
-                key="show"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white rounded-3xl p-8 card-shadow border border-gray-100 flex flex-col items-center text-center"
-              >
-                <h2 className="text-lg font-bold text-gray-900 mb-2">Show this to your partner</h2>
-                <p className="text-sm text-gray-500 mb-8">They will scan it using their app to verify the trade.</p>
-                
-                {/* Simulated QR Code */}
-                <div className="w-64 h-64 bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center p-4 relative mb-6">
-                   <QrCode className="w-32 h-32 text-gray-800" strokeWidth={1} />
-                   <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-green-500/10 rounded-3xl"></div>
-                   <div className="absolute -inset-1 border border-green-500/20 rounded-[1.75rem]"></div>
-                </div>
-
-                <div className="bg-gray-100 px-6 py-3 rounded-2xl flex flex-col items-center">
-                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Manual Code</span>
-                  <span className="text-xl font-mono font-bold text-gray-900 tracking-widest">{myCode}</span>
-                </div>
-              </motion.div>
-            )}
-
-            {activeTab === 'scan' && (
-              <motion.div 
-                key="scan"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-gray-900 rounded-3xl p-6 card-shadow flex flex-col items-center text-center relative overflow-hidden h-[400px]"
-              >
-                <div className="absolute inset-0 bg-black/40 z-10 flex flex-col items-center justify-center">
-                   {isScanning ? (
-                     <div className="flex flex-col items-center">
-                       <Loader2 className="w-12 h-12 text-green-500 animate-spin mb-4" />
-                       <p className="text-white font-medium text-lg">Verifying Trade...</p>
-                     </div>
-                   ) : (
-                     <>
-                        <div className="w-56 h-56 border-2 border-green-500 rounded-3xl relative mb-6">
-                            {/* Scanning line animation */}
-                            <motion.div 
-                              animate={{ y: [0, 220, 0] }}
-                              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                              className="w-full h-0.5 bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.8)] absolute top-0"
-                            />
-                            
-                            {/* Corner markers */}
-                            <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-white rounded-tl-lg -translate-x-1 -translate-y-1"></div>
-                            <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-white rounded-tr-lg translate-x-1 -translate-y-1"></div>
-                            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-white rounded-bl-lg -translate-x-1 translate-y-1"></div>
-                            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-white rounded-br-lg translate-x-1 translate-y-1"></div>
-                        </div>
-                        <Button 
-                          onClick={handleSimulateScan}
-                          className="bg-white hover:bg-gray-100 text-gray-900 rounded-full px-8 py-6 font-bold shadow-xl"
-                        >
-                          <Camera className="w-5 h-5 mr-2" /> Simulate Scan
-                        </Button>
-                     </>
-                   )}
-                </div>
-              </motion.div>
-            )}
-
-            {activeTab === 'certificate' && verifiedTrade && (
-              <motion.div 
-                key="cert"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-3xl p-6 card-shadow border border-gray-100"
-              >
-                <div className="flex flex-col items-center text-center border-b border-dashed border-gray-200 pb-6 mb-6">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <CheckCircle className="w-8 h-8 text-green-600" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-900">Trade Verified</h2>
-                  <p className="text-gray-500 mt-1">Official SwapSoko Certificate</p>
-                </div>
-                
-                <div className="space-y-4 mb-8">
-                  <div className="flex justify-between items-center py-2 border-b border-gray-50">
-                    <span className="text-sm text-gray-500 font-medium">Transaction ID</span>
-                    <span className="text-sm font-bold text-gray-900 font-mono">{verifiedTrade.id}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-50">
-                    <span className="text-sm text-gray-500 font-medium">Date & Time</span>
-                    <span className="text-sm font-bold text-gray-900">{verifiedTrade.date}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-50">
-                    <span className="text-sm text-gray-500 font-medium">Trading Partner</span>
-                    <span className="text-sm font-bold text-blue-600">@{verifiedTrade.partner}</span>
-                  </div>
+            <AnimatePresence mode="wait">
+              {activeTab === 'show' && (
+                <motion.div 
+                  key="show"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="bg-white/80 backdrop-blur-3xl rounded-[32px] p-8 shadow-sm border border-white flex flex-col items-center text-center"
+                >
+                  <h2 className="text-xl font-black text-slate-900 mb-2 tracking-tight">Your Verification Code</h2>
+                  <p className="text-sm text-slate-500 font-medium mb-8">Show this to your partner so they can scan it with their device.</p>
                   
-                  <div className="bg-gray-50 rounded-2xl p-4 mt-6">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-3">Exchanged Items</span>
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1 font-medium text-sm text-gray-900 text-center">{verifiedTrade.item1}</div>
-                      <div className="px-4 text-gray-300">
-                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 3h5v5"/><path d="M21 3 9 15"/><path d="M8 21H3v-5"/><path d="M3 21l12-12"/></svg>
-                      </div>
-                      <div className="flex-1 font-medium text-sm text-gray-900 text-center">{verifiedTrade.item2}</div>
-                    </div>
+                  <div className="bg-white p-4 rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-100 mb-6">
+                     <QRCode value={myCodePayload} size={200} className="w-full h-full object-contain" />
                   </div>
-                </div>
-                
-                <div className="flex gap-3">
-                  <Button variant="outline" className="flex-1 rounded-xl py-6 font-bold text-gray-700">
-                    <Download className="w-4 h-4 mr-2" /> Save PDF
-                  </Button>
-                  <Button onClick={() => setLocation('/chat')} className="flex-1 rounded-xl py-6 font-bold bg-green-500 hover:bg-[#16A34A] text-white">
-                    Done
-                  </Button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+
+                  <div className="bg-emerald-500/10 px-6 py-4 rounded-[20px] flex flex-col items-center border border-emerald-500/20 w-full">
+                    <span className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest mb-1">Proposal ID</span>
+                    <span className="text-lg font-mono font-black text-emerald-700 tracking-widest">TRD-{proposal.id.toString().padStart(6, '0')}</span>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'scan' && (
+                <motion.div 
+                  key="scan"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="bg-white/80 backdrop-blur-3xl rounded-[32px] p-4 shadow-sm border border-white flex flex-col items-center text-center relative overflow-hidden"
+                >
+                   <h2 className="text-xl font-black text-slate-900 mb-2 mt-4 tracking-tight">Scan Partner's Code</h2>
+                   <p className="text-sm text-slate-500 font-medium mb-6">Position your partner's QR code inside the frame to verify.</p>
+                   
+                   <div className="w-full rounded-[24px] overflow-hidden shadow-inner border-[4px] border-slate-100 relative">
+                       {updateProposalMutation.isPending ? (
+                          <div className="w-full h-[300px] bg-slate-900 flex flex-col items-center justify-center">
+                              <Loader2 className="w-10 h-10 text-emerald-500 animate-spin mb-4" />
+                              <p className="text-white font-bold tracking-tight">Verifying Trade...</p>
+                          </div>
+                       ) : (
+                          <div id="reader" className="w-full h-full bg-slate-900"></div>
+                       )}
+                   </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
       </div>
     </div>
   );

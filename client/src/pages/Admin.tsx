@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import {
   Shield, Users, Box, Flag, Building2, BarChart2,
   ScrollText, UserCog, User, CheckCircle, XCircle, Search, ChevronRight, Activity, ArrowUpRight, AlertTriangle, X, Loader2
-} from "lucide-react";
+} from "@/lib/icons";
 import { formatDistanceToNow } from "date-fns";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";

@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { ChevronLeft, Plus, Star, ArrowRight, Repeat2, Check, X, Flame, Zap, Leaf, Package, Repeat, Heart } from "lucide-react";
+import { ChevronLeft, Plus, Star, ArrowRight, Repeat2, Check, X, Flame, Zap, Leaf, Package, Repeat, Heart } from "@/lib/icons";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { ProposeSwapModal } from "./Swipes";
