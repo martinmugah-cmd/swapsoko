@@ -540,6 +540,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               uniVal = u.val || profile.campus || "University";
               institutionName = u.institution || "";
               isStudentVerified = isStudentVerified || u.isStudentVerified;
+              extractedAvatar = u.avatarUrl || extractedAvatar;
           } catch(e) {}
       } else {
           institutionName = profile.university;
@@ -552,7 +553,7 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
   try {
      const d = JSON.parse(profile?.description || "{}");
      isStudentVerified = isStudentVerified || d.isStudentVerified;
-     extractedAvatar = d.avatarUrl || "";
+     extractedAvatar = d.avatarUrl || extractedAvatar;
   } catch(e) {}
   
   // Clean up corrupted JSON location strings that might have leaked into campus
