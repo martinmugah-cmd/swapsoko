@@ -200,15 +200,15 @@ export default function OnboardingPage() {
         yearOfStudy,
         graduationYear,
         studentEmail,
-        isStudentVerified: emailVerified
-      } : { val: "Other / Not a student", isStudentVerified: false };
+        isStudentVerified: emailVerified,
+        avatarUrl: avatarUrl || undefined
+      } : { val: "Other / Not a student", isStudentVerified: false, avatarUrl: avatarUrl || undefined };
 
       const updates = {
         id: user?.id,
         name: fullName,
         username,
-        avatar_url: avatarUrl || user?.user_metadata?.avatar_url || null,
-        university: universityData.val,
+        university: JSON.stringify(universityData),
         course: universityData.course,
         year_of_study: universityData.yearOfStudy,
         graduation_year: universityData.graduationYear,
@@ -224,7 +224,7 @@ export default function OnboardingPage() {
       if (profileError) throw profileError;
       
       const { error: authError } = await supabase.auth.updateUser({
-        data: { is_onboarded: true, name: fullName, username: username }
+        data: { is_onboarded: true, name: fullName, username: username, avatar_url: avatarUrl || undefined }
       });
       if (authError) throw authError;
 
