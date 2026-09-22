@@ -658,8 +658,10 @@ const createProxy = (path: string[] = []): any => {
                       return camelItem;
                   }).filter(Boolean);
                   
-                  // Filter out non-videos for the video feed
-                  listings = listings.filter((l: any) => l && l.media && l.media.some((m: any) => m.type === 'video'));
+                  // Filter out non-videos if videoOnly flag is set
+                  if (input?.videoOnly) {
+                      listings = listings.filter((l: any) => l && l.media && l.media.some((m: any) => m.type === 'video'));
+                  }
                   
                   // Sort by final score initially
                   listings.sort((a: any, b: any) => (b.feedScore || 0) - (a.feedScore || 0));

@@ -212,7 +212,7 @@ export function FeedVideo({ listing, isActive, onPropose, onReport }: { listing:
 }
 
 export function Feed({ onPropose, onReport, coords }: { onPropose: (listing: any) => void, onReport: (listing: any) => void, coords?: {lat: number, lng: number} | null }) {
-    const { data, isLoading } = trpc.feed.list.useQuery({ coords });
+    const { data, isLoading } = trpc.feed.list.useQuery({ coords, videoOnly: true });
     const [activeIndex, setActiveIndex] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
 

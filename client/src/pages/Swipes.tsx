@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion, useMotionValue, useTransform, useAnimation, AnimatePresence } from "framer-motion";
 import React, { useState, useRef, useEffect } from "react";
-import { Sparkles, MapPin, Navigation, Compass, ChevronLeft, Search, Filter, MessageCircle, RefreshCw, Layers, Zap, Info, Shield, Plus, Heart, X, CheckCircle, Star, Clock, Gift, Flame, Tag, Repeat2, GraduationCap, AlertTriangle, Coins } from "@/lib/icons";
+import { Sparkles, MapPin, Navigation, Compass, ChevronLeft, Search, Filter, MessageCircle, RefreshCw, Layers, Zap, Info, Shield, Plus, Heart, X, CheckCircle, Star, Clock, Gift, Flame, Tag, Repeat2, GraduationCap, AlertTriangle, Coins, RotateCcw } from "@/lib/icons";
 import { FilterSheet } from "@/components/FilterSheet";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
@@ -668,7 +668,7 @@ export default function SwipesPage() {
   const { user, isAuthenticated } = useAuth();
   const { filters, toggleSavedItem, savedItemIds, watchedCategoryIds, toggleWatchedCategory, coords, setCoords } = useAppStore();
   
-  const feedQuery = trpc.listings.feed.useQuery({ limit: 50, filters, coords });
+  const feedQuery = trpc.feed.list.useQuery({ limit: 50, filters, coords });
   const cyclesQuery = trpc.multiWay.findCycles.useQuery(undefined, { enabled: !!user });
   const myListingsQuery = trpc.listings.myListings.useQuery({}, { enabled: !!user });
   const myWishesQuery = trpc.wishes.myWishes.useQuery({}, { enabled: !!user });
@@ -818,15 +818,22 @@ const [detailedListing, setDetailedListing] = useState<any>(null);
   const remaining = items.slice(currentIndex);
 
   // ─── Step 9: Feedback Loop (Learning Engine) ─────────────────────────────
-  const trackTelemetry = (action: string, item: any) => {
-    // In production, this persists to user profile preferences
-    console.log(`[Telemetry Engine] ${action}: Adjusting weights for category [${item?.category}] and keywords...`);
+  const logEvent = trpc.feed.logEvent.useMutation();
+
+  const trackTelemetry = (eventType: 'SKIP' | 'LIKE' | 'OFFER' | 'SAVE', item: any) => {
+    if (!item) return;
+    console.log(`[Telemetry Engine] ${eventType}: Adjusting weights for category [${item?.category}] and keywords...`);
+    logEvent.mutate({
+      listingId: item.id,
+      eventType,
+      listingCategory: item.category
+    });
   };
 
   const handleSwipeRight = () => {
     const item = items[currentIndex];
     if (!item) return;
-    trackTelemetry("Strong Positive Signal (Saved / Swipe Right)", item);
+    trackTelemetry("LIKE", item);
     if (!isAuthenticated) {
       toast("Login to propose swaps!", { action: { label: "Login", onClick: () => setLocation("/login") } });
       setCurrentIndex(prev => prev + 1);
@@ -837,14 +844,21 @@ const [detailedListing, setDetailedListing] = useState<any>(null);
 
   const handleSwipeLeft = () => {
     const item = remaining[0];
-    if (item) trackTelemetry("Negative Signal (Ignored / Swipe Left)", item);
+    if (item) trackTelemetry("SKIP", item);
     setCurrentIndex(prev => prev + 1);
     setSwipedCount(prev => prev + 1);
   };
 
+  const handleUndo = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+      setSwipedCount(prev => Math.max(0, prev - 1));
+    }
+  };
+
   const handleSendProposal = (message: string, cashTopUp: number, options?: any) => {
     if (!proposeListing) return;
-    trackTelemetry("Very Strong Signal (Proposal Sent)", proposeListing);
+    trackTelemetry("OFFER", proposeListing);
     const toastId = toast.loading("Sending proposal...");
     sendProposal.mutate({
       listingId: proposeListing.id,
@@ -1111,10 +1125,12 @@ const [detailedListing, setDetailedListing] = useState<any>(null);
 
                   <motion.button
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => remaining[0]?.id && toggleSavedItem(remaining[0].id.toString())}
-                    className="w-12 h-12 rounded-full flex items-center justify-center transition-colors hover:bg-slate-100/80"
+                    onClick={handleUndo}
+                    className="w-12 h-12 rounded-full flex items-center justify-center transition-colors hover:bg-slate-100/80 text-yellow-500 hover:text-yellow-600"
+                    disabled={currentIndex === 0}
+                    style={{ opacity: currentIndex === 0 ? 0.3 : 1 }}
                   >
-                    <Star className={`w-5 h-5 ${remaining[0]?.id && Array.isArray(savedItemIds) && savedItemIds.includes(remaining[0].id.toString()) ? 'text-yellow-400 fill-yellow-400' : 'text-slate-400 hover:text-slate-900'}`} strokeWidth={2.5} />
+                    <RotateCcw className="w-5 h-5" strokeWidth={2.5} />
                   </motion.button>
 
                   <div className="w-px h-6 bg-slate-200 mx-1" />
