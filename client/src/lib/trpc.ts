@@ -605,9 +605,8 @@ const createProxy = (path: string[] = []): any => {
                       return camelItem;
                   });
                   
-                  // User requested to see all listings in Swipes (not just videos)
-                  
-                  listings = listings.filter(Boolean);
+                  // Filter out non-videos for the video feed
+                  listings = listings.filter((l: any) => l && l.media && l.media.some((m: any) => m.type === 'video'));
                   listings.sort((a: any, b: any) => (b.feedScore || 0) - (a.feedScore || 0));
                   
                   return { items: listings.slice(0, 20) };
