@@ -401,8 +401,6 @@ function ChatBubble({ msg, isOwn, allMessages, currentUserId, partnerFullName, o
                               key={i} 
                               layoutId={`cycle-card-${leg.id || leg.receiveListingId}`}
                               onClick={async () => {
-              if (isSubmitting) return;
-              setIsSubmitting(true); 
                                  if (!isOwnListing) {
                                     setFrontCardId(leg.id || leg.receiveListingId);
                                     onPreviewClick?.(leg);
@@ -801,6 +799,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
   const [isReporting, setIsReporting] = useState(false);
   const [, navigate] = useLocation();
   const [input, setInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [mentionState, setMentionState] = useState({ active: false, query: "" });
   const [showQuickReplies, setShowQuickReplies] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -1222,9 +1221,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
         <button onClick={onBack} className="p-1 -ml-1">
           <ChevronLeft className="w-6 h-6 text-slate-900" />
         </button>
-        <button onClick={async () => {
-              if (isSubmitting) return;
-              setIsSubmitting(true); if (room?.user2Id === null) setShowMenu(true); else navigate(`/profile/${partnerId}`); }} className="flex items-center gap-2 flex-1 min-w-0 text-left">
+        <button onClick={async () => { if (room?.user2Id === null) setShowMenu(true); else navigate(`/profile/${partnerId}`); }} className="flex items-center gap-2 flex-1 min-w-0 text-left">
           <div className="w-10 h-10 rounded-full gradient-green flex items-center justify-center overflow-hidden flex-shrink-0">
             {partnerAvatar ? (
               <img src={partnerAvatar} alt={partnerName} className="w-full h-full object-cover" />
@@ -1241,7 +1238,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
           </div>
         </button>
         <div className="flex items-center gap-2 relative">
-          <button onClick={() => navigate(`/verification?proposal=${pData.proposalId || ''}`)} className="p-2 bg-green-50 rounded-full hover:bg-green-100 transition-colors" title="In-Person Verification">
+          <button onClick={() => navigate(`/verification?proposal=${room?.proposalId || ''}`)} className="p-2 bg-green-50 rounded-full hover:bg-green-100 transition-colors" title="In-Person Verification">
             <ShieldCheck className="w-5 h-5 text-green-600" />
           </button>
           <button onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }} className="p-1">
@@ -1257,9 +1254,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                 className="absolute right-0 top-10 bg-white rounded-xl shadow-lg border border-gray-100 py-1 min-w-[140px] z-50"
               >
                 <button onClick={() => handleMenuAction("delete")} className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 font-bold">Delete Chat</button>
-                <button onClick={async () => {
-              if (isSubmitting) return;
-              setIsSubmitting(true); setShowMenu(false); setIsReporting(true); }} className="w-full px-4 py-2 text-left text-sm text-orange-600 hover:bg-orange-50 font-bold border-t border-gray-100">Report User</button>
+                <button onClick={async () => { setShowMenu(false); setIsReporting(true); }} className="w-full px-4 py-2 text-left text-sm text-orange-600 hover:bg-orange-50 font-bold border-t border-gray-100">Report User</button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -1578,9 +1573,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
               <div className="flex justify-between items-center mb-6">
                 <ModalBodyLock />
                 <h3 className="font-bold text-xl text-slate-900">Reject Offer</h3>
-                <button onClick={async () => {
-              if (isSubmitting) return;
-              setIsSubmitting(true); setRejectState({isOpen: false}); setCustomRejectMsg(""); }} className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200">
+                <button onClick={async () => { setRejectState({isOpen: false}); setCustomRejectMsg(""); }} className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -1596,8 +1589,6 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                 />
                 <button 
                   onClick={async () => {
-              if (isSubmitting) return;
-              setIsSubmitting(true);
                     if (customRejectMsg.trim()) handleRejectSubmit(customRejectMsg);
                   }}
                   disabled={!customRejectMsg.trim()}
@@ -1823,9 +1814,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
             className="px-4 py-4 bg-white border-t border-gray-100"
           >
             <div className="flex gap-6 mb-4 pb-4 border-b border-gray-50 overflow-x-auto scrollbar-hide">
-              <button onClick={async () => {
-              if (isSubmitting) return;
-              setIsSubmitting(true); fileInputRef.current?.click(); setShowQuickReplies(false); }} className="flex flex-col items-center flex-shrink-0">
+              <button onClick={async () => { fileInputRef.current?.click(); setShowQuickReplies(false); }} className="flex flex-col items-center flex-shrink-0">
                 <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-500 shadow-sm">
                   <Image className="w-5 h-5" />
                 </div>
@@ -2225,6 +2214,7 @@ function CounterProposalModal({ onClose, partnerName, originalData, onSend }: { 
   }
 
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [offeredItems, setOfferedItems] = useState(originalData?.offerItems || "");
   const [cashTopUp, setCashTopUp] = useState(initialCashTopUp);
   const [meetingLocation, setMeetingLocation] = useState(originalData?.meetingLocation || "");
@@ -2575,8 +2565,6 @@ const MentionOption = ({ pid, input, setInput, setMentionState, query }: any) =>
    
    return (
        <div onClick={async () => {
-              if (isSubmitting) return;
-              setIsSubmitting(true);
            const words = input.split(' ');
            words.pop(); // remove the @query part
            setInput(words.join(' ') + (words.length > 0 ? ' ' : '') + '@' + name + ' ');

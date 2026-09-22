@@ -153,22 +153,6 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
 
   // Initial States derived directly from guaranteed data
   const [avatarUrl, setAvatarUrl] = useState(initAvatarUrl);
-  useEffect(() => {
-    if (profileQuery.isSuccess && profileQuery.data) {
-       const p = profileQuery.data;
-       const ud = safeParse(p.university);
-       setAvatarUrl(ud.avatarUrl || p.avatarUrl || user.metadata?.avatar_url || "");
-       setUsername(ud.username || user.metadata?.username || nameParts.join("").toLowerCase() || "");
-       setBio(ud.bio || "");
-       setUniversity(ud.val || "");
-       setCourse(ud.course || "");
-       setYearOfStudy(ud.yearOfStudy || "");
-       setGraduationYear(ud.graduationYear || "");
-       setStudentEmail(ud.studentEmail || "");
-       setPrefs(ud.prefs || { notifications: true, nearby: true, communities: true, proposals: true });
-       setPrivacy(ud.privacy || { visibility: "SwapSoko Users", showDistance: true, showLastActive: true });
-    }
-  }, [profileQuery.isSuccess, profileQuery.data]);
   const [firstName, setFirstName] = useState(initFirstName);
   const [lastName, setLastName] = useState(initLastName);
   const [username, setUsername] = useState(initUsername);
@@ -227,13 +211,13 @@ function EditProfileForm({ user, profile }: { user: any, profile: any }) {
       
       if (username.length < 4 && username !== "m3" && username !== "m") {
          toast.error("Username must be at least 4 characters.", { id: "save" });
-         setSaving(false);
+         setLoading(false);
          return;
       }
       const { data: existing } = await supabase.from('profiles').select('user_id').ilike('university', `%"username":"${username}"%`);
       if (existing && existing.length > 0 && existing.some(p => p.user_id !== user?.id)) {
          toast.error("Username is already taken.", { id: "save" });
-         setSaving(false);
+         setLoading(false);
          return;
       }
       const metadata = {
