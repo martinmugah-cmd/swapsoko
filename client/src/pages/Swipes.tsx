@@ -983,9 +983,7 @@ const [detailedListing, setDetailedListing] = useState<any>(null);
           ))}
           <button 
              onClick={() => {
-               useAppStore.setState({ 
-                 filters: { ...filters, categories: ['All'], wantedCategories: ['All'], conditions: ['Any'], maxDistanceKm: null, minEsv: null, maxEsv: null, verifiedOnly: false, noCashNeeded: false, directSwapOnly: false, multiWayAvailable: false, minTrustRating: null, minCompletedSwaps: null, communityId: null }
-               });
+               useAppStore.getState().setFilters({ categories: ['All'], wantedCategories: ['All'], conditions: ['Any'], maxDistanceKm: null, minEsv: null, maxEsv: null, verifiedOnly: false, noCashNeeded: false, directSwapOnly: false, multiWayAvailable: false, minTrustRating: null, minCompletedSwaps: null, communityId: null });
              }} 
              className="text-xs font-bold text-gray-500 underline ml-2 shrink-0"
           >
@@ -1020,43 +1018,32 @@ const [detailedListing, setDetailedListing] = useState<any>(null);
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden relative">
           {feedQuery.isLoading ? (
             <div className="relative w-[94%] max-w-[360px] flex-1 aspect-[9/16] max-h-[700px] min-h-[500px]">
-              <div className="absolute inset-0 bg-slate-900 rounded-[32px] flex flex-col pointer-events-none overflow-hidden animate-pulse shadow-[0_12px_40px_rgba(0,0,0,0.2)]">
-                {/* Full Bleed Image Placeholder */}
-                <div className="absolute inset-0 bg-slate-800" />
-                
-                {/* Gradient Overlay Placeholder */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
-
-                {/* Bottom Content Area Placeholder */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col justify-end z-10">
-                  <div className="flex items-end justify-between mb-3">
-                    <div className="space-y-2 w-3/4">
-                      {/* Title */}
-                      <div className="w-full h-8 bg-white/20 rounded-full"></div>
-                      <div className="w-2/3 h-8 bg-white/20 rounded-full"></div>
-                      {/* Location */}
-                      <div className="w-1/2 h-4 bg-white/10 rounded-full mt-2"></div>
-                    </div>
-                    {/* Score badge */}
-                    <div className="w-12 h-12 rounded-full bg-white/10 shrink-0"></div>
+              <div className="absolute inset-0 bg-white rounded-3xl flex flex-col pointer-events-none overflow-hidden animate-pulse shadow-sm border border-gray-100">
+                <div className="relative h-[60%] bg-slate-200">
+                  <div className="absolute bottom-4 left-4 right-4 space-y-2">
+                     <div className="w-3/4 h-6 bg-slate-300 rounded-full"></div>
+                     <div className="w-1/3 h-4 bg-slate-300 rounded-full"></div>
                   </div>
-
-                  {/* Context Row */}
-                  <div className="flex gap-2 mb-4">
-                    <div className="w-20 h-6 bg-white/10 rounded-full"></div>
-                    <div className="w-24 h-6 bg-white/10 rounded-full"></div>
+                </div>
+                <div className="p-4 h-[40%] flex flex-col justify-between">
+                  <div>
+                    <div className="w-16 h-4 bg-slate-200 rounded-full mb-3"></div>
+                    <div className="w-full h-4 bg-slate-200 rounded-full mb-2"></div>
+                    <div className="w-4/5 h-4 bg-slate-200 rounded-full mb-3"></div>
+                    <div className="w-24 h-6 bg-slate-200 rounded-full"></div>
                   </div>
-
-                  {/* User Profile Row */}
-                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white/10"></div>
-                      <div className="space-y-2">
-                        <div className="w-24 h-4 bg-white/20 rounded-full"></div>
-                        <div className="w-16 h-3 bg-white/10 rounded-full"></div>
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-slate-200"></div>
+                      <div className="space-y-1.5">
+                        <div className="w-20 h-3 bg-slate-200 rounded-full"></div>
+                        <div className="w-16 h-2.5 bg-slate-200 rounded-full"></div>
                       </div>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-white/10"></div>
+                    <div className="flex gap-2">
+                      <div className="w-10 h-10 rounded-full bg-slate-200"></div>
+                      <div className="w-10 h-10 rounded-full bg-slate-200"></div>
+                    </div>
                   </div>
                 </div>
               </div>

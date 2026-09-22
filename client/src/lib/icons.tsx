@@ -194,7 +194,7 @@ export const Mail = ({ size, className, strokeWidth, ...props }: any) => {
   };
 
 export const MapPin = ({ size, className, strokeWidth, ...props }: any) => {
-    const Icon = (HeroIcons as any)['StarIcon'];
+    const Icon = (HeroIcons as any)['MapPinIcon'];
     if (!Icon) return <HeroIcons.StarIcon className={className} style={{ width: size || 24, height: size || 24, strokeWidth: strokeWidth || 1.5 }} {...props} />;
     return <Icon className={className} style={{ width: size || 24, height: size || 24, strokeWidth: strokeWidth || 1.5 }} {...props} />;
   };
