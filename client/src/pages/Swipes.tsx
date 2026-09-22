@@ -11,16 +11,38 @@ import { ReportModal } from "@/components/ReportModal";
 
 
 // ─── Propose Swap Modal ───────────────────────────────────────────────────────
-export function ProposeSwapModal({ listing, onClose, onSend }: { listing: any; onClose: () => void; onSend: (msg: string, cash: number, options?: any) => void }) {
+import { ValueEstimationEngine } from "@/lib/engines/ValueEstimationEngine";
+
+export function ProposeSwapModal({ listing, myListings, onClose, onSend }: { listing: any; myListings?: any[]; onClose: () => void; onSend: (msg: string, cash: number, options?: any) => void }) {
   const [message, setMessage] = useState("");
   const [cashTopUp, setCashTopUp] = useState(0);
   const [offerItems, setOfferItems] = useState("");
+  const [selectedListingId, setSelectedListingId] = useState<string>("");
   const [mpesaEnabled, setMpesaEnabled] = useState(false);
   let isDonation = false;
   if (Array.isArray(listing?.wantItems)) {
     isDonation = listing.wantItems.some((w: any) => typeof w === 'string' && w.includes("FREE / DONATION"));
   } else if (typeof listing?.wantItems === 'string') {
     isDonation = listing.wantItems.includes("FREE / DONATION");
+  }
+
+  // --- Value Estimation Engine (Chapter 4) ---
+  let userItemValuation = null;
+  let targetItemValuation = null;
+  let fairness = null;
+  let suggestedTopUp = 0;
+
+  if (selectedListingId && selectedListingId !== "other" && myListings?.length) {
+    const selectedItem = myListings.find(l => l.id?.toString() === selectedListingId);
+    if (selectedItem) {
+        userItemValuation = ValueEstimationEngine.estimateValue(selectedItem);
+        targetItemValuation = ValueEstimationEngine.estimateValue(listing);
+        fairness = ValueEstimationEngine.compareValues(userItemValuation.tradeValue, targetItemValuation.tradeValue);
+        
+        if (targetItemValuation.tradeValue > userItemValuation.tradeValue) {
+            suggestedTopUp = targetItemValuation.tradeValue - userItemValuation.tradeValue;
+        }
+    }
   }
 
   return (
@@ -36,7 +58,7 @@ export function ProposeSwapModal({ listing, onClose, onSend }: { listing: any; o
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 28, stiffness: 300 }}
-        className="w-full max-w-[480px] bg-white rounded-t-[32px] p-7 pb-28 shadow-[0_-20px_60px_rgba(0,0,0,0.08)] relative"
+        className="w-full max-w-[480px] bg-white rounded-t-[32px] p-7 pb-28 shadow-[0_-20px_60px_rgba(0,0,0,0.08)] relative max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         <button onClick={onClose} className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-full text-gray-400 transition-colors">
@@ -54,12 +76,81 @@ export function ProposeSwapModal({ listing, onClose, onSend }: { listing: any; o
           {!isDonation && (
             <div>
               <label className="text-[12px] font-semibold text-gray-500 mb-1.5 block">What you're offering</label>
-              <input
-                value={offerItems}
-                onChange={e => setOfferItems(e.target.value)}
-                placeholder="e.g. iPhone 11, Laptop..."
-                className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 transition-all font-medium text-gray-900 placeholder:text-gray-400"
-              />
+              
+              {myListings && myListings.length > 0 ? (
+                <div className="space-y-3">
+                  <select
+                    value={selectedListingId}
+                    onChange={e => {
+                        setSelectedListingId(e.target.value);
+                        if (e.target.value !== "other") {
+                            const item = myListings.find(l => l.id?.toString() === e.target.value);
+                            setOfferItems(item ? item.title : "");
+                        } else {
+                            setOfferItems("");
+                        }
+                    }}
+                    className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 transition-all font-medium text-gray-900"
+                  >
+                    <option value="" disabled>Select from your listings...</option>
+                    {myListings.map(item => (
+                        <option key={item.id} value={item.id.toString()}>{item.title}</option>
+                    ))}
+                    <option value="other">Other (type manually)</option>
+                  </select>
+                  
+                  {(selectedListingId === "other" || selectedListingId === "") && (
+                    <input
+                      value={offerItems}
+                      onChange={e => setOfferItems(e.target.value)}
+                      placeholder="e.g. iPhone 11, Laptop..."
+                      className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 transition-all font-medium text-gray-900 placeholder:text-gray-400"
+                    />
+                  )}
+
+                  {/* Value Estimation Engine - Fair Trade Indicator */}
+                  {fairness && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className={`mt-2 p-4 rounded-xl border ${fairness.status === 'CLOSE_VALUE' ? 'bg-emerald-50 border-emerald-100' : 'bg-orange-50 border-orange-100'}`}
+                      >
+                          <div className="flex items-center justify-between">
+                              <span className={`text-[13px] font-bold ${fairness.status === 'CLOSE_VALUE' ? 'text-emerald-700' : 'text-orange-700'}`}>
+                                  {fairness.label}
+                              </span>
+                              <span className="text-[12px] font-medium text-gray-600">
+                                  Gap: KES {fairness.difference.toLocaleString()}
+                              </span>
+                          </div>
+                          
+                          <div className="mt-2 flex justify-between text-[11px] text-gray-500">
+                             <div>Their Estimate: KES {targetItemValuation?.tradeValue.toLocaleString()}</div>
+                             <div>Your Estimate: KES {userItemValuation?.tradeValue.toLocaleString()}</div>
+                          </div>
+
+                          {suggestedTopUp > 0 && !mpesaEnabled && (
+                              <button 
+                                onClick={() => {
+                                    setMpesaEnabled(true);
+                                    setCashTopUp(suggestedTopUp);
+                                }}
+                                className="mt-3 w-full py-2 bg-white border border-gray-200 rounded-lg text-[12px] font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+                              >
+                                  Add suggested KES {suggestedTopUp.toLocaleString()} top-up
+                              </button>
+                          )}
+                      </motion.div>
+                  )}
+                </div>
+              ) : (
+                <input
+                  value={offerItems}
+                  onChange={e => setOfferItems(e.target.value)}
+                  placeholder="e.g. iPhone 11, Laptop..."
+                  className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 transition-all font-medium text-gray-900 placeholder:text-gray-400"
+                />
+              )}
             </div>
           )}
 
@@ -1154,6 +1245,7 @@ const [detailedListing, setDetailedListing] = useState<any>(null);
         {proposeListing && (
           <ProposeSwapModal
             listing={proposeListing}
+            myListings={myListingsQuery.data}
             onClose={() => { setProposeListing(null); if (viewMode === "swipe") setCurrentIndex(prev => prev + 1); }}
             onSend={handleSendProposal}
           />

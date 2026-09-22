@@ -1,3 +1,4 @@
+import { ValueEstimationEngine } from "@/lib/engines/ValueEstimationEngine";
 import { trpc } from "@/lib/trpc";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -601,23 +602,52 @@ export default function PostPage() {
                 <p className="text-slate-500 text-[15px] font-bold mt-1">What are you looking for?</p>
               </div>
 
+// Inside the render function (Step 3)
               {type !== "donation" && (
-                <div className="bg-emerald-50/60 backdrop-blur-xl border border-emerald-100 rounded-[28px] p-6 space-y-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Tag className="w-5 h-5 text-emerald-600" />
-                    <h3 className="font-black text-emerald-800 text-[16px]">Estimated Value</h3>
+                <>
+                  {/* SwapSoko Value Estimation Engine (Chapter 4) */}
+                  {title && category && (
+                    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-[28px] p-6 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                           <Sparkles className="w-5 h-5 text-indigo-500" />
+                           <h3 className="font-black text-indigo-900 text-[15px]">Engine Estimate</h3>
+                        </div>
+                        <span className="text-xs font-bold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">
+                           {ValueEstimationEngine.estimateValue({ title, category, condition }).confidence} Confidence
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                         <span className="text-[22px] font-black text-indigo-950 tracking-tight">
+                            KES {ValueEstimationEngine.estimateValue({ title, category, condition }).estimatedMin.toLocaleString()} – {ValueEstimationEngine.estimateValue({ title, category, condition }).estimatedMax.toLocaleString()}
+                         </span>
+                         <span className="text-[13px] font-medium text-indigo-600/80 mt-1">
+                            Based on AI market analysis, condition, and depreciation models.
+                         </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="bg-emerald-50/60 backdrop-blur-xl border border-emerald-100 rounded-[28px] p-6 space-y-4 mt-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Tag className="w-5 h-5 text-emerald-600" />
+                      <h3 className="font-black text-emerald-800 text-[16px]">Your Expected Value</h3>
+                    </div>
+                    <div className="relative">
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-black text-lg">KES</span>
+                      <input
+                        type="number"
+                        value={estimatedValue}
+                        onChange={e => setEstimatedValue(e.target.value as any)}
+                        placeholder="0"
+                        className="w-full border-none bg-white/80 backdrop-blur-xl rounded-[20px] pl-16 pr-5 py-4 text-[18px] outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all shadow-sm font-black text-slate-900 placeholder:text-slate-300"
+                      />
+                    </div>
+                    <p className="text-[12px] font-medium text-emerald-600/70 px-2 leading-snug">
+                       Your expected value is what you claim the item is worth. It does not overwrite SwapSoko's objective market estimate.
+                    </p>
                   </div>
-                  <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-black text-lg">KES</span>
-                    <input
-                      type="number"
-                      value={estimatedValue}
-                      onChange={e => setEstimatedValue(e.target.value as any)}
-                      placeholder="0"
-                      className="w-full border-none bg-white/80 backdrop-blur-xl rounded-[20px] pl-16 pr-5 py-4 text-[18px] outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all shadow-sm font-black text-slate-900 placeholder:text-slate-300"
-                    />
-                  </div>
-                </div>
+                </>
               )}
 
               {type === "item" && (
