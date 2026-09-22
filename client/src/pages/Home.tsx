@@ -20,13 +20,13 @@ import { ThinkingOrb } from "thinking-orbs";
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [showFilters, setShowFilters] = useState(false);
-  const activeFilterCount = [(filters.categories || []).filter(c => c !== 'All').length > 0, (filters.wantedCategories || []).filter(c => c !== 'All').length > 0, (filters.conditions || []).filter(c => c !== 'Any').length > 0, filters.maxDistanceKm, filters.minEsv !== null, filters.maxEsv !== null, filters.cashTopUpAllowed, (filters as any).noCashNeeded, (filters as any).multiWayAvailable].filter(Boolean).length;
 
   const [, navigate] = useLocation();
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [showLocationSelector, setShowLocationSelector] = useState(false);
   
   const { filters, setFilters } = useAppStore();
+  const activeFilterCount = [(filters.categories || []).filter(c => c !== "All").length > 0, (filters.wantedCategories || []).filter(c => c !== "All").length > 0, (filters.conditions || []).filter(c => c !== "Any").length > 0, filters.maxDistanceKm, filters.minEsv !== null, filters.maxEsv !== null, filters.cashTopUpAllowed, (filters as any).noCashNeeded, (filters as any).multiWayAvailable].filter(Boolean).length;
   
   useEffect(() => {
     if (filters.query || filters.condition || filters.category) {
