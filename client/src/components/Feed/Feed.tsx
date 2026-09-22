@@ -136,7 +136,7 @@ export function FeedVideo({ listing, isActive, onPropose, onReport }: { listing:
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isMuted, setIsMuted] = useState(true);
     const logEvent = trpc.feed.logEvent.useMutation();
-    const hasLogged100 = useRef(false);
+    const hasLogged = useRef({ 25: false, 50: false, 75: false, 100: false });
 
     useEffect(() => {
         if (isActive) {
@@ -145,16 +145,29 @@ export function FeedVideo({ listing, isActive, onPropose, onReport }: { listing:
         } else {
             videoRef.current?.pause();
             if (videoRef.current) videoRef.current.currentTime = 0;
-            hasLogged100.current = false;
+            hasLogged.current = { 25: false, 50: false, 75: false, 100: false };
         }
     }, [isActive]);
 
     const handleTimeUpdate = () => {
-        if (!videoRef.current || hasLogged100.current) return;
+        if (!videoRef.current) return;
         const pct = videoRef.current.currentTime / videoRef.current.duration;
-        if (pct >= 0.95) {
+        
+        if (pct >= 0.25 && !hasLogged.current[25]) {
+            logEvent.mutate({ listingId: listing.id, eventType: 'WATCH_25', listingCategory: listing.category });
+            hasLogged.current[25] = true;
+        }
+        if (pct >= 0.50 && !hasLogged.current[50]) {
+            logEvent.mutate({ listingId: listing.id, eventType: 'WATCH_50', listingCategory: listing.category });
+            hasLogged.current[50] = true;
+        }
+        if (pct >= 0.75 && !hasLogged.current[75]) {
+            logEvent.mutate({ listingId: listing.id, eventType: 'WATCH_75', listingCategory: listing.category });
+            hasLogged.current[75] = true;
+        }
+        if (pct >= 0.95 && !hasLogged.current[100]) {
             logEvent.mutate({ listingId: listing.id, eventType: 'WATCH_100', listingCategory: listing.category });
-            hasLogged100.current = true;
+            hasLogged.current[100] = true;
         }
     };
 
@@ -251,15 +264,24 @@ export function Feed({ onPropose, onReport, coords }: { onPropose: (listing: any
                 }
             `}</style>
             
-            {data.items.map((listing: any, index: number) => (
-                <FeedVideo 
-                    key={listing.id} 
-                    listing={listing} 
-                    isActive={index === activeIndex} 
-                    onPropose={() => onPropose(listing)} 
-                    onReport={() => onReport(listing)}
-                />
-            ))}
+            {data.items.map((listing: any, index: number) => {
+                // Buffer Strategy (Chapter 2, Section 17): Memory = Current + Previous + Next
+                // Only 3 videos in memory. Everything else destroyed (replaced with a placeholder to keep scroll height)
+                const distance = Math.abs(index - activeIndex);
+                if (distance > 1) {
+                    return <div key={listing.id} className="w-full h-[100dvh] snap-start bg-black shrink-0" />;
+                }
+                
+                return (
+                    <FeedVideo 
+                        key={listing.id} 
+                        listing={listing} 
+                        isActive={index === activeIndex} 
+                        onPropose={() => onPropose(listing)} 
+                        onReport={() => onReport(listing)}
+                    />
+                );
+            })}
         </div>
     );
 }

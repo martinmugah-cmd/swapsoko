@@ -541,52 +541,105 @@ const createProxy = (path: string[] = []): any => {
                   const userLat = input?.coords?.lat || myProfile?.lat;
                   const userLng = input?.coords?.lng || myProfile?.lng;
                   
-                  // Basic Ranking Formula Implementation
+                  // CHAPTER 1 - RECOMMENDATION ENGINE SCORING PIPELINE
+                  
+                  const userAvgValue = myProfile?.average_trade_value || 50000;
+                  const wishlist = (myProfile?.wishlist || []).map((w: string) => w.toLowerCase());
+                  
                   listings = listings.map((item: any) => {
                       const camelItem = snakeToCamel(item);
                       camelItem.media = mediaMap[String(item.id)] || [];
                       
+                      let distanceScore = 0;
                       if (userLat && userLng && camelItem.lat && camelItem.lng) {
                           camelItem.distanceKm = Math.round(LocationEngine.calculateDistanceKm(userLat, userLng, camelItem.lat, camelItem.lng) * 10) / 10;
+                          if (camelItem.distanceKm <= 2) distanceScore = 100;
+                          else if (camelItem.distanceKm <= 5) distanceScore = 90;
+                          else if (camelItem.distanceKm <= 10) distanceScore = 75;
+                          else if (camelItem.distanceKm <= 20) distanceScore = 55;
+                          else if (camelItem.distanceKm <= 50) distanceScore = 30;
+                          else distanceScore = 10;
+                      } else {
+                          distanceScore = 50; // Default if no location
                       }
                       
-                      let score = 0;
-                      
-                      // 1. Freshness (10% - roughly based on days old)
-                      const daysOld = (new Date().getTime() - new Date(item.created_at).getTime()) / (1000 * 3600 * 24);
-                      const freshnessScore = Math.max(0, 10 - daysOld);
-                      score += freshnessScore;
-                      
-                      // 2. Popularity (15% - based on views/saves)
-                      const popularityScore = Math.min(15, ((camelItem.views || 0) * 0.1) + ((camelItem.saveCount || 0) * 0.5));
-                      score += popularityScore;
-                      
-                      // 3. Seller Reputation (10%)
-                      const repScore = Math.min(10, ((camelItem.profiles?.avgRating || 0) / 5) * 10);
-                      score += repScore;
-                      
-                      // 4. AI / Category Preference (40%)
+                      // 1. Category Score (max 100)
                       const cat = camelItem.category?.toLowerCase() || '';
-                      let prefScore = 5; // default
-                      if (cat.includes('electronic')) prefScore += (prefs.electronics_score || 0) * 0.5;
-                      else if (cat.includes('book')) prefScore += (prefs.books_score || 0) * 0.5;
-                      else if (cat.includes('fashion') || cat.includes('cloth')) prefScore += (prefs.fashion_score || 0) * 0.5;
-                      else if (cat.includes('vehicle') || cat.includes('car')) prefScore += (prefs.vehicles_score || 0) * 0.5;
-                      else if (cat.includes('furniture')) prefScore += (prefs.furniture_score || 0) * 0.5;
-                      else if (cat.includes('sport')) prefScore += (prefs.sports_score || 0) * 0.5;
-                      else if (cat.includes('gam')) prefScore += (prefs.gaming_score || 0) * 0.5;
+                      let categoryScore = 50;
+                      if (prefs) {
+                          if (cat.includes('electronic')) categoryScore = prefs.electronics_score || 50;
+                          else if (cat.includes('book')) categoryScore = prefs.books_score || 50;
+                          else if (cat.includes('fashion') || cat.includes('cloth')) categoryScore = prefs.fashion_score || 50;
+                          else if (cat.includes('vehicle') || cat.includes('car')) categoryScore = prefs.vehicles_score || 50;
+                          else if (cat.includes('furniture')) categoryScore = prefs.furniture_score || 50;
+                          else if (cat.includes('sport')) categoryScore = prefs.sports_score || 50;
+                          else if (cat.includes('gam')) categoryScore = prefs.gaming_score || 50;
+                          else if (cat.includes('phone')) categoryScore = prefs.phones_score || 50;
+                          else if (cat.includes('music')) categoryScore = prefs.music_score || 50;
+                      }
                       
-                      score += Math.min(40, prefScore);
+                      // 2. Wishlist Score (max 100)
+                      let wishlistScore = 10;
+                      const titleLower = (camelItem.title || "").toLowerCase();
+                      for (const w of wishlist) {
+                          if (titleLower.includes(w)) {
+                              wishlistScore = 100;
+                              break;
+                          }
+                      }
                       
-                      // Add jitter for randomness (discovery)
-                      score += Math.random() * 5;
+                      // 3. Swap Compatibility / Value Score (max 100)
+                      const itemValue = camelItem.estimatedValue || camelItem.price || 0;
+                      let valueScore = 50;
+                      if (itemValue > 0 && userAvgValue > 0) {
+                          const ratio = Math.max(itemValue, userAvgValue) / Math.min(itemValue, userAvgValue);
+                          valueScore = Math.max(5, 100 - ((ratio - 1) * 30)); 
+                      }
                       
+                      // 4. Seller Trust Score (max 100)
+                      const trustScore = camelItem.profiles?.trust_score || (camelItem.profiles?.avgRating ? (camelItem.profiles.avgRating/5)*100 : 80);
+                      
+                      // 5. Freshness Score (max 100)
+                      const hoursOld = (new Date().getTime() - new Date(item.created_at).getTime()) / (1000 * 3600);
+                      let freshnessScore = 10;
+                      if (hoursOld < 1) freshnessScore = 100;
+                      else if (hoursOld < 24) freshnessScore = 92;
+                      else if (hoursOld < 48) freshnessScore = 60;
+                      else if (hoursOld < 720) freshnessScore = Math.max(8, 60 - (hoursOld/24));
+                      
+                      // 6. Popularity Score (max 100)
+                      const popularityScore = Math.min(100, 
+                          ((camelItem.offersCount || 0) * 5) + 
+                          ((camelItem.saveCount || 0) * 3) + 
+                          ((camelItem.sharesCount || 0) * 2) + 
+                          ((camelItem.views || 0) * 0.1)
+                      );
+                      
+                      // 7. Community Score (max 100)
+                      let communityScore = 50;
+                      if (myProfile?.campus_id && camelItem.profiles?.campus_id === myProfile.campus_id) communityScore = 85;
+
+                      // Apply Weights (Chapter 1, section 17)
+                      let finalScore = 
+                          (categoryScore * 0.20) +
+                          (wishlistScore * 0.15) +
+                          (valueScore * 0.10) + 
+                          (valueScore * 0.30) + // Swap Compatibility (merged with value logic)
+                          (distanceScore * 0.10) +
+                          (trustScore * 0.05) +
+                          (freshnessScore * 0.05) +
+                          (popularityScore * 0.03) +
+                          (communityScore * 0.02);
+                          
+                      // Reserve 15% for exploration (Jitter)
+                      if (Math.random() < 0.15) {
+                          finalScore += (Math.random() * 40);
+                      }
+                          
                       // Apply Filters
                       if (input?.q) {
                           const search = input.q.toLowerCase();
-                          if (!camelItem.title?.toLowerCase().includes(search) && !camelItem.description?.toLowerCase().includes(search)) {
-                              return null;
-                          }
+                          if (!camelItem.title?.toLowerCase().includes(search) && !camelItem.description?.toLowerCase().includes(search)) return null;
                       }
                       if (input?.category && input.category !== "all") {
                           if (camelItem.category !== input.category) return null;
@@ -601,15 +654,33 @@ const createProxy = (path: string[] = []): any => {
                           } catch(e) { return null; }
                       }
                       
-                      camelItem.feedScore = score;
+                      camelItem.feedScore = finalScore;
                       return camelItem;
-                  });
+                  }).filter(Boolean);
                   
                   // Filter out non-videos for the video feed
                   listings = listings.filter((l: any) => l && l.media && l.media.some((m: any) => m.type === 'video'));
+                  
+                  // Sort by final score initially
                   listings.sort((a: any, b: any) => (b.feedScore || 0) - (a.feedScore || 0));
                   
-                  return { items: listings.slice(0, 20) };
+                  // Diversity Penalty (Chapter 1, section 16)
+                  const diversified = [];
+                  const seenCategories = new Map();
+                  for (const l of listings) {
+                      const cat = l.category || 'other';
+                      const count = seenCategories.get(cat) || 0;
+                      if (count > 0) {
+                          l.feedScore -= (count * 15); // Penalty for repeated categories
+                      }
+                      seenCategories.set(cat, count + 1);
+                      diversified.push(l);
+                  }
+                  
+                  // Re-sort after applying diversity penalty
+                  diversified.sort((a: any, b: any) => (b.feedScore || 0) - (a.feedScore || 0));
+                  
+                  return { items: diversified.slice(0, 20) };
               }
               
               if (path[0] === 'multiWay' && path[1] === 'findCycles') {
@@ -1693,13 +1764,15 @@ const createProxy = (path: string[] = []): any => {
                       let scoreChange = 0;
                       switch(variables.eventType) {
                           case 'LIKE': scoreChange = 5; break;
-                          case 'SAVE': scoreChange = 8; break;
+                          case 'SAVE': scoreChange = 15; break;  // Chapter 1: strong positive signal
                           case 'SHARE': scoreChange = 10; break;
-                          case 'OFFER': scoreChange = 15; break;
-                          case 'WATCH_100': scoreChange = 3; break;
-                          case 'WATCH_75': scoreChange = 2; break;
-                          case 'WATCH_50': scoreChange = 1; break;
-                          case 'SKIP': scoreChange = -2; break;
+                          case 'OFFER': scoreChange = 30; break; // Chapter 1: very strong signal
+                          case 'COMPLETE_SWAP': scoreChange = 50; break; // Chapter 1: strongest signal
+                          case 'WATCH_100': scoreChange = 5; break; // Chapter 1: positive signal
+                          case 'WATCH_75': scoreChange = 3; break;
+                          case 'WATCH_50': scoreChange = 2; break;
+                          case 'WATCH_25': scoreChange = 1; break;
+                          case 'SKIP': scoreChange = -5; break; // Chapter 1: small negative signal
                       }
                       
                       if (scoreChange !== 0) {
