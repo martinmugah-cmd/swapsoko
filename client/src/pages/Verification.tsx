@@ -14,7 +14,8 @@ export default function VerificationPage() {
   const { user } = useAuth();
   
   const proposalIdStr = new URLSearchParams(window.location.search).get("proposal");
-  const proposalId = proposalIdStr ? parseInt(proposalIdStr, 10) : null;
+  const parsedId = parseInt(proposalIdStr || "", 10);
+  const proposalId = isNaN(parsedId) ? null : parsedId;
 
   const proposalQuery = trpc.proposals.myProposals.useQuery({ userId: user?.id }, { enabled: !!user?.id });
   const proposal = proposalQuery.data?.items?.find((p: any) => p.id === proposalId);

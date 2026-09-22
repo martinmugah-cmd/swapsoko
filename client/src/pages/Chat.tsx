@@ -943,6 +943,15 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
     }
   }, [roomId, user?.id, messagesQuery.data]);
 
+  const allMessagesArray = Array.isArray(messagesQuery.data) ? messagesQuery.data : (messagesQuery.data?.messages || []);
+  let derivedProposalId = room?.proposalId;
+  if (!derivedProposalId) {
+     const pMsg = allMessagesArray.find((m: any) => m.type === 'proposal');
+     if (pMsg) {
+        try { derivedProposalId = JSON.parse(pMsg.content).proposalId; } catch(e) {}
+     }
+  }
+
   const sendMutation = trpc.chat.sendMessage.useMutation({
     onSuccess: (data: any) => {
       if (data) {
@@ -1238,7 +1247,7 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
           </div>
         </button>
         <div className="flex items-center gap-2 relative">
-          <button onClick={() => navigate(`/verification?proposal=${room?.proposalId || ''}`)} className="p-2 bg-green-50 rounded-full hover:bg-green-100 transition-colors" title="In-Person Verification">
+          <button onClick={() => navigate(`/verification?proposal=${derivedProposalId || ''}`)} className="p-2 bg-green-50 rounded-full hover:bg-green-100 transition-colors" title="In-Person Verification">
             <ShieldCheck className="w-5 h-5 text-green-600" />
           </button>
           <button onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }} className="p-1">
@@ -1788,7 +1797,15 @@ function ChatRoom({ roomId, onBack }: { roomId: number; onBack: () => void }) {
                 </div>
                 
                 <div className="mt-6">
-                  <button onClick={() => { setFullscreenReceipt(null); navigate(`/verification?proposal=${fullscreenReceipt.proposalId || ""}`); }} className="w-full py-4 bg-slate-900 text-white text-sm font-black tracking-wide rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2">
+                  <button onClick={() => { 
+                    setFullscreenReceipt(null); 
+                    let pId = fullscreenReceipt.proposalId;
+                    if (!pId && messagesQuery.data) {
+                       const pMsg = messagesQuery.data.find((m: any) => m.type === 'proposal');
+                       if (pMsg) { try { pId = JSON.parse(pMsg.content).proposalId; } catch(e){} }
+                    }
+                    navigate(`/verification?proposal=${pId || ""}`); 
+                  }} className="w-full py-4 bg-slate-900 text-white text-sm font-black tracking-wide rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2">
                     <CheckCircle className="w-5 h-5 text-emerald-400" />
                     Verify In-Person
                   </button>
@@ -2176,12 +2193,12 @@ function SwapAgreementModal({ onClose, partnerName, partnerAvatar, listingId, is
               if (!isReview) {
                   let finalItems = itemsExchanged.trim();
                   if (!finalItems) finalItems = initialData?.offerItems ? `${initialData.offerItems} for ${listingQuery.data?.title || autoItemsExchanged}` : autoItemsExchanged;
-                  onSend({ itemsExchanged: finalItems, cashTopUp, meetupPlace, timeWindow, conditionNotes, listingId });
+                  onSend({ itemsExchanged: finalItems, cashTopUp, meetupPlace, timeWindow, conditionNotes, listingId, proposalId: initialData?.proposalId });
                   toast.success("Agreement sent for review!");
                   onClose();
                   return;
               }
-              onSend({ itemsExchanged, cashTopUp, meetupPlace, timeWindow, conditionNotes, listingId });
+              onSend({ itemsExchanged, cashTopUp, meetupPlace, timeWindow, conditionNotes, listingId, proposalId: initialData?.proposalId });
               toast.success("Agreement sent for review!");
               onClose();
             }}
