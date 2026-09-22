@@ -507,6 +507,9 @@ export default function OnboardingPage() {
     }
   };
 
+  if (!user || (isSuccess && myProfile?.userId) || !isSuccess) {
+    return <div className="min-h-[100dvh] flex items-center justify-center bg-[#F8FAFC]"><div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div></div>;
+  }
   return (
     <div className="min-h-[100dvh] bg-[#F8FAFC] flex flex-col relative overflow-hidden">
       

@@ -12,7 +12,6 @@ import {
   Sparkles, Shield, Flame, Gift, Bot, Package, ArrowRight, Activity, Clock
 } from "@/lib/icons";
 
-import { PullToRefresh } from "@/components/PullToRefresh";
 import { FilterSheet } from "@/components/FilterSheet";
 import { createPortal } from "react-dom";
 import { ThinkingOrb } from "thinking-orbs";
@@ -84,7 +83,7 @@ export default function Home() {
   };
 
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
+    
       <div className="pb-32 min-h-[100dvh] font-sans relative overflow-hidden">
         
         
@@ -120,16 +119,7 @@ export default function Home() {
             </div>
             
             <div className="flex items-center gap-2.5 pr-1">
-              <motion.button
-                onClick={() => setShowFilters(true)}
-                className="relative w-11 h-11 flex items-center justify-center rounded-[20px] bg-white/50 backdrop-blur-md hover:bg-white/80 transition-colors border border-white/60 shadow-sm"
-                whileTap={{ scale: 0.9 }}
-              >
-                <Filter size={20} className="text-slate-800" />
-                {activeFilterCount > 0 && (
-                  <span className="absolute top-2 right-2 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full flex items-center justify-center shadow-sm text-[8px] font-bold text-white">{activeFilterCount}</span>
-                )}
-              </motion.button>
+              
               
               <FilterSheet open={showFilters} onOpenChange={setShowFilters} />
 
@@ -418,6 +408,6 @@ export default function Home() {
         </div>
         
       </div>
-    </PullToRefresh>
+    
   );
 }

@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
-import { Home, MessageCircle, Plus, Copy, Package, User, Bell, Shield, Store } from "@/lib/icons";
+import { Home, MessageCircle, Plus, Repeat2, User, Bell, Shield } from "@/lib/icons";
 import { Route, Switch, useLocation, Link } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -52,11 +52,11 @@ function BottomNav() {
   const isAdmin = profileQuery.data?.role === "admin" || profileQuery.data?.role === "super_admin" || profileQuery.data?.role === "moderator";
 
   const tabs: Array<{ path: string, icon: any, label: string, isCenter?: boolean, badge?: number }> = [
-    { path: "/", icon: Home, label: "Home" },
-    { path: "/swipes", icon: Copy, label: "Swipes" },
-    { path: "/post", icon: Store, label: "Post", isCenter: true },
-    { path: "/chat", icon: MessageCircle, label: "Chat", badge: unreadMessagesCount },
-    { path: "/profile", icon: User, label: "Profile" },
+    { path: "/", icon: Home01Icon, label: "Home" },
+    { path: "/swipes", icon: Copy01Icon, label: "Swipes" },
+    { path: "/post", icon: Store01Icon, label: "Post", isCenter: true },
+    { path: "/chat", icon: Comment01Icon, label: "Chat", badge: unreadMessagesCount },
+    { path: "/profile", icon: UserIcon, label: "Profile" },
   ];
 
   const isActive = (path: string) => {
@@ -96,23 +96,34 @@ function BottomNav() {
             <Link href={tab.path} key={tab.path}>
               <motion.div
                 whileTap={{ scale: 0.88 }}
-                className="flex flex-col items-center gap-1 min-w-[56px] relative cursor-pointer pt-2 pb-1"
+                className="flex flex-col items-center gap-1 min-w-[56px] relative cursor-pointer pt-1"
               >
-                <div className="relative flex flex-col items-center justify-center">
+                <div className="relative">
                   <tab.icon
-                    className={`w-[24px] h-[24px] transition-all duration-300 ${active ? "text-emerald-500 drop-shadow-[0_2px_8px_rgba(16,185,129,0.4)]" : "text-slate-400"}`}
-                    strokeWidth={active ? 2.5 : 2.0}
-                    color="currentColor"
+                    className={`w-[22px] h-[22px] transition-colors duration-200 ${active ? "text-[#10B981]" : "text-[#94A3B8]"}`}
+                    strokeWidth={active ? 2.5 : 2}
+                    
                   />
                   {tab.badge && tab.badge > 0 ? (
-                    <div className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center border-[2px] border-white shadow-sm leading-none">
+                    <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                       {tab.badge > 99 ? '99+' : tab.badge}
                     </div>
                   ) : null}
                 </div>
-                <span className={`text-[10px] font-bold tracking-tight transition-colors duration-300 ${active ? "text-emerald-600" : "text-slate-500"}`}>
+                <span className={`text-[10px] font-semibold transition-colors duration-200 ${active ? "text-[#10B981]" : "text-[#94A3B8]"}`}>
                   {tab.label}
                 </span>
+                <AnimatePresence>
+                  {active && (
+                    <motion.div
+                      layoutId="nav-active-dot"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="w-1.5 h-1.5 rounded-full bg-[#10B981] absolute -bottom-2.5"
+                    />
+                  )}
+                </AnimatePresence>
               </motion.div>
             </Link>
           );
@@ -162,6 +173,7 @@ import AppealsPage from "./pages/Appeals";
 import VerificationPage from "./pages/Verification";
 
 import { useAppStore } from "./store";
+import { Home01Icon, Copy01Icon, Store01Icon, Comment01Icon, UserIcon } from "hugeicons-react";
 
 function SavedItemsSyncer() {
   const { isAuthenticated, user } = useAuth();
