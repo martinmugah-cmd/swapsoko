@@ -507,7 +507,7 @@ const createProxy = (path: string[] = []): any => {
                   const activeUserId = authSession?.user?.id || null;
                   
                   // Fetch active listings
-                  const { data: listingsData } = await supabase.from('listings').select('*, profiles!user_id(*)').eq('status', 'active').limit(50);
+                  const { data: listingsData } = await supabase.from('listings').select('*, profiles!user_id(*)').eq('status', 'active').order('created_at', { ascending: false }).limit(50);
                   let listings = listingsData || [];
                   if (activeUserId) {
                       listings = listings.filter((l: any) => l.user_id !== activeUserId);

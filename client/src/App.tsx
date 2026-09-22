@@ -56,7 +56,7 @@ function BottomNav() {
     { path: "/swipes", icon: Copy01Icon, label: "Swipes" },
     { path: "/post", icon: Store01Icon, label: "Post", isCenter: true },
     { path: "/chat", icon: Comment01Icon, label: "Chat", badge: unreadMessagesCount },
-    { path: "/profile", icon: UserCircleIcon, label: "Profile" },
+    { path: "/profile", icon: UserIcon, label: "Profile" },
   ];
 
   const isActive = (path: string) => {
@@ -96,34 +96,23 @@ function BottomNav() {
             <Link href={tab.path} key={tab.path}>
               <motion.div
                 whileTap={{ scale: 0.88 }}
-                className="flex flex-col items-center gap-1 min-w-[56px] relative cursor-pointer pt-1"
+                className="flex flex-col items-center gap-1 min-w-[56px] relative cursor-pointer pt-2 pb-1"
               >
-                <div className="relative">
+                <div className="relative flex flex-col items-center justify-center">
                   <tab.icon
-                    className={`w-[22px] h-[22px] transition-colors duration-200 ${active ? "text-[#10B981]" : "text-[#94A3B8]"}`}
-                    strokeWidth={active ? 2.5 : 2}
-                    
+                    className={`w-[24px] h-[24px] transition-all duration-300 ${active ? "text-emerald-500 drop-shadow-[0_2px_8px_rgba(16,185,129,0.4)]" : "text-slate-400"}`}
+                    strokeWidth={active ? 2.5 : 2.0}
+                    color="currentColor"
                   />
-                  {tab.badge ? (tab.badge > 0 ? (
-                    <div className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                  {tab.badge && tab.badge > 0 ? (
+                    <div className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center border-[2px] border-white shadow-sm leading-none">
                       {tab.badge > 99 ? '99+' : tab.badge}
                     </div>
-                  ) : null) : null}
+                  ) : null}
                 </div>
-                <span className={`text-[10px] font-semibold transition-colors duration-200 ${active ? "text-[#10B981]" : "text-[#94A3B8]"}`}>
+                <span className={`text-[10px] font-bold tracking-tight transition-colors duration-300 ${active ? "text-emerald-600" : "text-slate-500"}`}>
                   {tab.label}
                 </span>
-                <AnimatePresence>
-                  {active && (
-                    <motion.div
-                      layoutId="nav-active-dot"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      className="w-1.5 h-1.5 rounded-full bg-[#10B981] absolute -bottom-2.5"
-                    />
-                  )}
-                </AnimatePresence>
               </motion.div>
             </Link>
           );
@@ -173,7 +162,7 @@ import AppealsPage from "./pages/Appeals";
 import VerificationPage from "./pages/Verification";
 
 import { useAppStore } from "./store";
-import { Home01Icon, Copy01Icon, Store01Icon, Comment01Icon, UserCircleIcon } from "hugeicons-react";
+import { Home01Icon, Copy01Icon, Store01Icon, Comment01Icon, UserIcon } from "hugeicons-react";
 
 function SavedItemsSyncer() {
   const { isAuthenticated, user } = useAuth();
