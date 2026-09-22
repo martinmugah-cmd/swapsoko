@@ -52,11 +52,11 @@ function BottomNav() {
   const isAdmin = profileQuery.data?.role === "admin" || profileQuery.data?.role === "super_admin" || profileQuery.data?.role === "moderator";
 
   const tabs: Array<{ path: string, icon: any, label: string, isCenter?: boolean, badge?: number }> = [
-    { path: "/", icon: Home01Icon, label: "Home" },
-    { path: "/swipes", icon: Copy01Icon, label: "Swipes" },
-    { path: "/post", icon: Store01Icon, label: "Post", isCenter: true },
-    { path: "/chat", icon: Comment01Icon, label: "Chat", badge: unreadMessagesCount },
-    { path: "/profile", icon: UserIcon, label: "Profile" },
+    { path: "/", icon: HomeDoodleIcon, label: "Home" },
+    { path: "/swipes", icon: CopyDoodleIcon, label: "Swipes" },
+    { path: "/post", icon: ShopDoodleIcon, label: "Post", isCenter: true },
+    { path: "/chat", icon: MessageDoodleIcon, label: "Chat", badge: unreadMessagesCount },
+    { path: "/profile", icon: UserDoodleIcon, label: "Profile" },
   ];
 
   const isActive = (path: string) => {
@@ -162,7 +162,7 @@ import AppealsPage from "./pages/Appeals";
 import VerificationPage from "./pages/Verification";
 
 import { useAppStore } from "./store";
-import { Home01Icon, Copy01Icon, Store01Icon, Comment01Icon, UserIcon } from "hugeicons-react";
+import { HomeDoodleIcon, CopyDoodleIcon, ShopDoodleIcon, MessageDoodleIcon, UserDoodleIcon } from "./lib/doodle-icons";
 
 function SavedItemsSyncer() {
   const { isAuthenticated, user } = useAuth();
