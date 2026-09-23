@@ -1128,8 +1128,8 @@ const createProxy = (path: string[] = []): any => {
                     return true;
                  });
                  
-                 // Apply ChatGPT Algorithm if this is the Feed
-                 if (path[1] === 'feed') {
+                 // Chapter 6 Recommendation Engine
+                 if (path[1] === 'feed' || path[1] === 'list') {
                     // Fetch user profile and preferences for personalization
                     let myProfile: any = null;
                     let myWishes: any[] = [];
@@ -1149,164 +1149,22 @@ const createProxy = (path: string[] = []): any => {
                        if (resMC.data) myCommunities = resMC.data.map((m: any) => m.community_id);
                     }
                     
-                    const userCampus = filters.campus || myProfile?.campus || "";
-                    const userInterests = Array.isArray(myProfile?.interests) ? myProfile.interests : [];
+                    const userInterests: Record<string, number> = {};
+                    if (myProfile?.interests && Array.isArray(myProfile.interests)) {
+                        myProfile.interests.forEach((c: string) => { userInterests[c.toLowerCase()] = 0.9; });
+                    }
                     
-                    const myHavesText = myListings.map((l: any) => `${l.title} ${l.category} ${l.description}`).join(" ").toLowerCase();
-                    const myWantsText = [
-                      ...userInterests,
-                      ...myWishes.map((w: any) => `${w.title} ${Array.isArray(w.offerItems) ? w.offerItems.join(' ') : w.offerItems}`),
-                      ...myListings.map((l: any) => typeof l.wantItems === 'string' ? l.wantItems : (Array.isArray(l.wantItems) ? l.wantItems : []).join(' '))
-                    ].join(" ").toLowerCase();
+                    const { RecommendationEngine } = await import('@/lib/engines/RecommendationEngine');
                     
-                    camelData.forEach((item: any) => {
-                       let score = 0;
-                       
-                       // Step 3 - Location Filter (14 Points)
-                       let distanceScore = 1;
-                       if (userLat && userLng && item.lat && item.lng) {
-                          const d = getDistance(userLat, userLng, item.lat, item.lng);
-                          item.distanceKm = Math.round(d * 10) / 10;
-                          if (d <= 5) distanceScore = 14;
-                          else if (d <= 15) distanceScore = 10;
-                          else if (d <= 50) distanceScore = 5;
-                          else if (d > 50) distanceScore = -10; // Penalize far away locations heavily!
-                        } else if (item.campus && item.campus === userCampus) {
-                          distanceScore = 14; 
-                        }
-                       score += distanceScore;
-                       
-                       // Step 4 - Category Preferences (15 Points)
-                       if (userInterests.includes(item.category)) {
-                         score += 15;
-                       } else if (item.category === filters.category) {
-                         score += 15;
-                       } else {
-                         score += 2; // Serendipity discovery
-                       }
-                       
-                       // Step 5 - Need Matching & Synonym Engine (40 Points)
-                       let needScore = 0;
-                       const synonymDictionary: Record<string, string[]> = {
-                          "laptop": ["notebook", "ultrabook", "macbook", "gaming laptop", "pc"],
-                          "phone": ["smartphone", "iphone", "android", "samsung", "pixel"],
-                          "bike": ["bicycle", "mtb", "road bike", "bmx"]
-                       };
-                       const expandSynonyms = (text: string) => {
-                          let expanded = text;
-                          Object.entries(synonymDictionary).forEach(([key, syns]) => {
-                             if (text.includes(key) || syns.some(s => text.includes(s))) {
-                                expanded += " " + key + " " + syns.join(" ");
-                             }
-                          });
-                          return expanded;
-                       };
-
-
-                       const itemHavesText = expandSynonyms((item.title + " " + (item.description || "")).toLowerCase());
-                       let itemWantsText = parsePgArray(item.wantItems).join(" ").toLowerCase();
-                       
-                       // Explainability Metadata
-                       item._matchReasons = [];
-
-                       itemWantsText = expandSynonyms(itemWantsText);
-                       
-                       const expandedMyWants = expandSynonyms(myWantsText);
-                       const expandedMyHaves = expandSynonyms(myHavesText);
-
-                       const iWantWhatTheyHave = expandedMyWants.split(/\s+/).some((w: string) => w.length > 3 && itemHavesText.includes(w));
-                       if (iWantWhatTheyHave) {
-                          needScore += 20;
-                          item._matchReasons.push("Matches your wishlist");
-                       }
-                       
-                       const theyWantWhatIHave = itemWantsText && expandedMyHaves.split(/\s+/).some((w: string) => w.length > 3 && itemWantsText.includes(w));
-                       if (theyWantWhatIHave) {
-                          needScore += 20;
-                          item._matchReasons.push("Wants what you have");
-                       }
-                       
-                       score += needScore;
-                       
-                       // Step 6 - Value Matcher (9 Points)
-                       let valueScore = 0;
-                       if (item.cashTopUpAllowed) {
-                          valueScore += 9;
-                          if (theyWantWhatIHave) item._matchReasons.push("Flexible value (Top-up)");
-                       }
-                       else if (item.cashTopUpAmount === 0) valueScore += 5; 
-                       score += valueScore;
-                       
-                       // Step 7 - Trust Filter (5 Points)
-                       let trustScore = 0;
-                       if (item.profiles?.isStudentVerified) {
-                          trustScore += 2;
-                          item._matchReasons.push("Verified Student");
-                       }
-                       if ((item.profiles?.completedSwaps || 0) > 0) trustScore += 2;
-                       if ((item.profiles?.acceptanceRate || 0) > 80) trustScore += 1;
-                       score += trustScore;
-                       
-                       // Step 8 - Community Boost (10 Points)
-                       if (item.communityId && myCommunities.includes(item.communityId)) {
-                         score += 10;
-                         item._matchReasons.push("Same Community");
-                       }
-                       
-                       // Step 9 - Recency (6 Points)
-                       const ageHrs = (now - new Date(item.createdAt || 0).getTime()) / (1000 * 60 * 60);
-                       if (ageHrs < 24) {
-                         score += 6;
-                         item._matchReasons.push("Listed Recently");
-                       }
-                       else if (ageHrs < 72) score += 4;
-                       else if (ageHrs < 168) score += 2;
-                       
-                       // Step 10 - Popularity (3 Points)
-                       const popularity = (item.views || 0) + (item.saves || 0) * 2;
-                       if (popularity > 50) score += 3;
-                       else if (popularity > 10) score += 1;
-                       
-                       // Step 11 - Activity (2 Points)
-                       if (item.status === 'active') score += 2;
-                       
-                       // ─── Value Engine ─────────────────────────────────────────────────────────────
-                       item._esv = null;
-                       item._esvConfidence = 0;
-                       try {
-                           const valMatch = item.description?.match(/<!--value_engine:(.+?)-->/);
-                           if (valMatch) {
-                               const vMeta = JSON.parse(valMatch[1]);
-                               let baseVal = vMeta.estimatedValue || vMeta.originalPrice || 0;
-                               if (baseVal > 0) {
-                                   let multiplier = 1.0;
-                                   if (item.condition === 'brand_new') multiplier = 1.0;
-                                   else if (item.condition === 'like_new') multiplier = 0.95;
-                                   else if (item.condition === 'excellent') multiplier = 0.90;
-                                   else if (item.condition === 'good') multiplier = 0.80;
-                                   else if (item.condition === 'fair') multiplier = 0.65;
-                                   else if (item.condition === 'repair') multiplier = 0.40;
-                                   
-                                   let esv = Math.round(baseVal * multiplier);
-                                   let conf = vMeta.estimatedValue ? 85 : (vMeta.originalPrice ? 60 : 34);
-                                   
-                                   // Demand bump
-                                   if (popularity > 50) {
-                                      esv = Math.round(esv * 1.05); // High demand increases value by 5%
-                                      conf = Math.min(100, conf + 5);
-                                   }
-                                   
-                                   item._esv = esv;
-                                   item._esvConfidence = conf;
-                               }
-                           }
-                       } catch(e) {}
-                       
-                       item._matchScore = score;
-                    });
+                    // We generate candidates directly on the filtered pool
+                    const context = {
+                        userId: activeUserId,
+                        userListings: myListings,
+                        userInterests: userInterests,
+                        surface: path[1] === 'feed' ? 'swipe' : 'home'
+                    };
                     
-                    // Rank Listings
-                    camelData.sort((a: any, b: any) => (b._matchScore || 0) - (a._matchScore || 0));
+                    camelData = RecommendationEngine.generateFeed(camelData, context as any);
                     
                     // Front-end requested filters (hard filters)
                     if (filters) {
