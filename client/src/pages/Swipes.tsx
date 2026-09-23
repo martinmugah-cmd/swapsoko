@@ -268,21 +268,18 @@ export function ProposeSwapModal({ listing, myListings, onClose, onSend }: { lis
 // ─── Chameleon Score Badge ───────────────────────────────────────────────────
 function ChameleonScore({ item }: { item: any }) {
   const score = item._matchScore || 0;
-  let color = "#EF4444"; // red < 50
-  let label = "Weak Match";
+  const tier = item._matchTier || "WEAK";
+  let color = "#EF4444";
+  let label = "Poor Match";
 
-  if (score >= 95) {
-    color = "#10B981"; // emerald
-    label = "Excellent Match";
-  } else if (score >= 85) {
-    color = "#22C55E"; // green
-    label = "Strong Match";
-  } else if (score >= 70) {
-    color = "#EAB308"; // yellow
-    label = "Good Match";
-  } else if (score >= 50) {
-    color = "#F97316"; // orange
-    label = "Possible Match";
+  if (tier === "EXCELLENT") {
+    color = "#10B981"; label = "Excellent Match";
+  } else if (tier === "STRONG") {
+    color = "#22C55E"; label = "Strong Match";
+  } else if (tier === "POSSIBLE") {
+    color = "#EAB308"; label = "Possible Match";
+  } else if (tier === "WEAK") {
+    color = "#F97316"; label = "Weak Match";
   }
 
   const handleClick = (e: React.MouseEvent) => {
@@ -292,8 +289,16 @@ function ChameleonScore({ item }: { item: any }) {
       : "Our algorithm found some similarities based on your preferences.";
     
     toast.custom((t) => (
-      <ExpandableMatchToast t={t} color={color} label={label} score={score} reasons={reasons} />
-    ), { duration: 8000 });
+      <ExpandableMatchToast 
+        t={t} 
+        color={color} 
+        label={label} 
+        score={score} 
+        reasons={reasons} 
+        confidence={item._matchConfidence}
+        breakdown={item._matchBreakdown} 
+      />
+    ), { duration: 10000 });
   };
 
   return (

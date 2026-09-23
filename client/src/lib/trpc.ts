@@ -1166,6 +1166,28 @@ const createProxy = (path: string[] = []): any => {
                     
                     camelData = RecommendationEngine.generateFeed(camelData, context as any);
                     
+                    // Chapter 7 Match Engine
+                    const { MatchEngine } = await import('@/lib/engines/MatchEngine');
+                    const matchCtx = {
+                       userWishes: myWishes,
+                       userListings: myListings,
+                       userInterests: userInterests,
+                       userCoords: { lat: userLat, lng: userLng },
+                       maxTopUp: 10000 // In future, load from user profile
+                    };
+                    
+                    camelData = camelData.map((l: any) => {
+                       const matchResult = MatchEngine.calculateMatch(l, matchCtx);
+                       return {
+                           ...l,
+                           _matchScore: matchResult.score,
+                           _matchTier: matchResult.tier,
+                           _matchConfidence: matchResult.confidence,
+                           _matchReasons: matchResult.reasons,
+                           _matchBreakdown: matchResult.breakdown
+                       };
+                    });
+                    
                     // Front-end requested filters (hard filters)
                     if (filters) {
                       if (filters.category && filters.category !== "All") camelData = camelData.filter((i: any) => i.category === filters.category);
