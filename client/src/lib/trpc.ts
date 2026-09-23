@@ -2605,170 +2605,40 @@ const createProxy = (path: string[] = []): any => {
               }
 
               // Swap Guru - Rule-Based Intent & Recommendation Engine
+              // Swap Guru - Chapter 5 AI Engine Hook
               if (path[0] === 'swapGuru' && path[1] === 'ask') {
                 await new Promise(resolve => setTimeout(resolve, 800)); // Simulate thinking
                 const p = variables.prompt?.toLowerCase() || "";
                 
-                let intent = "unknown";
-                let have = "";
-                let want = "";
-
-                // 1. Casual Conversation Intent & Entity Extraction
-                const cleanP = p.toLowerCase().replace(/[\.,\?!\'\"]/g, "");
-                
-                intent = "find_listing";
-                if (cleanP.includes("trend") || cleanP.includes("market") || cleanP.includes("hot")) intent = "analyze_trends";
-                else if (cleanP.includes("value") || cleanP.includes("worth") || cleanP.includes("price") || cleanP.includes("how much") || cleanP.includes("analyze")) intent = "analyze_value";
-                else if (cleanP.includes("idea") || cleanP.includes("what can i get") || cleanP.includes("recommend") || cleanP.includes("trade for my")) intent = "trade_ideas";
-
-                const stopwords = new Set(["a","an","the","and","but","if","or","because","as","until","while","of","at","by","for","with","about","against","between","into","through","during","before","after","above","below","to","from","up","down","in","out","on","off","over","under","again","further","then","once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only","own","same","so","than","too","very","s","t","can","will","just","don","should","now","i","me","my","myself","we","our","ours","ourselves","you","your","yours","yourself","yourselves","he","him","his","himself","she","her","hers","herself","it","its","itself","they","them","their","theirs","themselves","what","which","who","whom","this","that","these","those","am","is","are","was","were","be","been","being","have","has","had","having","do","does","did","doing","would","could","ought","im","youre","hes","shes","its","were","theyre","ive","youve","weve","theyve","id","youd","hed","shed","wed","theyd","ill","youll","hell","shell","well","theyll","isnt","arent","wasnt","werent","hasnt","havent","hadnt","doesnt","dont","didnt","wont","wouldnt","shant","shouldnt","cant","cannot","couldnt","mustnt","lets","thats","whos","whats","heres","theres","whens","wheres","whys","hows", "swap", "trade", "exchange", "sell", "buy", "get", "give", "want", "looking", "need", "find", "someone", "anyone", "please", "hey", "hi", "hello", "guru", "worth", "value", "price", "cost", "much", "many", "idea", "ideas", "trend", "trends", "market", "hot", "right", "recommend", "analyze", "good", "bad", "new", "old"]);
-                
-                const queryWords = cleanP.split(/\s+/).filter((w: string) => !stopwords.has(w) && w.length > 1);
-                const target = queryWords.join(" ");
-
-                // 2. Fetch Datamuse Synonyms for exhaustive matching
-                let expandedQueryWords = [...queryWords];
-                for (const word of queryWords) {
-                   try {
-                      // ml = means like (synonyms, related concepts)
-                      const res = await fetch(`https://api.datamuse.com/words?ml=${word}&max=8`);
-                      if (res.ok) {
-                          const data = await res.json();
-                          expandedQueryWords.push(...data.map((d: any) => d.word));
-                      }
-                   } catch(e) {}
+                let userListings = [];
+                if (activeUserId) {
+                   const { data } = await supabase.from('listings').select('*').eq('user_id', activeUserId);
+                   userListings = data || [];
                 }
-                // Unique lowercase words
-                expandedQueryWords = Array.from(new Set(expandedQueryWords.map(w => w.toLowerCase())));
 
-                // 3. Fetch Data
-                const { data: listings } = await supabase.from('listings').select('*, profiles!user_id(*)');
-                let results: any[] = [];
+                const { SwapGuruEngine } = await import('@/lib/engines/SwapGuruEngine');
+                
+                const { data: allListings } = await supabase.from('listings').select('*, profiles!user_id(*)');
+                const othersListings = (allListings || []).filter(l => l.user_id !== activeUserId);
+                
+                const guruResponse = await SwapGuruEngine.processMessage(p, userListings, null);
 
-                const parsePgArray = (val: any) => {
-                  if (Array.isArray(val)) return val;
-                  if (typeof val === 'string') {
-                    if (val.startsWith('{') && val.endsWith('}')) return val.slice(1, -1).split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-                    try { const parsed = JSON.parse(val); return Array.isArray(parsed) ? parsed : [parsed]; } catch (e) { return [val]; }
-                  }
-                  return val ? [val] : [];
-                };
-
-                // 4. Match listings using exhaustive synonyms
-                if (intent !== "analyze_trends") {
-                    results = (listings || []).filter((l: any) => {
-                       if (activeUserId && l.user_id === activeUserId) return false;
+                let finalListings = [];
+                if (guruResponse.actions?.some(a => a.actionType === 'SHOW_LISTINGS' || a.actionType === 'NAVIGATE' || a.actionType === 'PROPOSE_SWAP')) {
+                    const cleanP = p.toLowerCase().replace(/[\.,\?!\'\"]/g, "");
+                    const stopwords = new Set(["a","an","the","and","but","if","or","with","to","for"]);
+                    const queryWords = cleanP.split(/\s+/).filter((w) => !stopwords.has(w) && w.length > 2);
+                    
+                    finalListings = othersListings.filter((l) => {
                        const title = (l.title || "").toLowerCase();
                        const cat = (l.category || "").toLowerCase();
-                       const desc = (l.description || "").toLowerCase();
-                       
-                       // Match if ANY of our expanded synonym query words are found in the listing!
-                       const match = expandedQueryWords.some(w => title.includes(w) || cat.includes(w));
-                       
-                       // Boost score if the actual target words match exactly
-                       if (queryWords.some((w: string) => title.includes(w))) l._guruScore = 20;
-                       else if (match) l._guruScore = 10;
-                       
-                       return match;
-                    }).sort((a: any, b: any) => (b._guruScore || 0) - (a._guruScore || 0));
+                       return queryWords.some((w) => title.includes(w) || cat.includes(w));
+                    }).slice(0, 3);
+                    
+                    if (finalListings.length === 0) finalListings = othersListings.slice(0, 3);
                 }
 
-                // 5. Response Builder
-                let response = "";
-                
-                if (intent === "analyze_trends") {
-                   const categories = (listings || []).map((l: any) => l.category).filter(Boolean);
-                   const counts = categories.reduce((acc: any, c: string) => ({ ...acc, [c]: (acc[c] || 0) + 1 }), {} as Record<string, number>);
-                   const sorted = Object.entries(counts).sort((a: any, b: any) => b[1] - a[1]);
-                   const topCats = sorted.slice(0, 2).map((x: any) => x[0]);
-                   response = `📊 **Market Trends Engine**\n\nRight now, **${topCats[0] || 'various items'}** and **${topCats[1] || 'other tech'}** are seeing a huge surge in demand on campus. If you have any items in these categories, now is the perfect time to list them for high-value trades!`;
-                   return { response, listings: [] };
-                }
-                
-                if (intent === "trade_ideas" || intent === "analyze_value") {
-                   if (!target || target.length < 2) {
-                       response = "I need to know which item you want to value or trade! Just talk to me naturally, like: 'What can I get for my PlayStation?'";
-                       return { response, listings: [] };
-                   }
-                   
-                   if (results.length === 0) {
-                      response = `💡 **Valuation Engine**\n\nI couldn't find any historical data or active listings related to **${target}** right now. Try being less specific, or you can list it and see what offers you get!`;
-                      return { response, listings: [] };
-                   }
-
-                   // Calculate ESV (mock values since db doesn't have estimated_value)
-                   const esvValues = results.map((m: any) => m.estimated_value || (m.title.length * 1000 + 5000)).filter((v: number) => v > 0).sort((a: number, b: number) => a - b);
-                   let minEsv = 0, maxEsv = 0;
-                   if (esvValues.length > 0) {
-                       minEsv = esvValues[Math.floor(esvValues.length * 0.1)] || esvValues[0];
-                       maxEsv = esvValues[Math.floor(esvValues.length * 0.9)] || esvValues[esvValues.length - 1];
-                   }
-
-                   // Find what they want
-                   const commonWants = results.flatMap((m: any) => parsePgArray(m.want_items)).filter(Boolean);
-                   const wantCounts = commonWants.reduce((acc: any, c: string) => ({ ...acc, [c]: (acc[c] || 0) + 1 }), {} as Record<string, number>);
-                   const topWant = Object.entries(wantCounts).sort((a: any, b: any) => b[1] - a[1])[0]?.[0] || 'cash or electronics';
-
-                   const valStr = esvValues.length > 0 ? `KES ${minEsv.toLocaleString()} to KES ${maxEsv.toLocaleString()}` : "an unknown amount";
-                   const conf = Math.min(95, 40 + (results.length * 10));
-
-                   response = `💡 **Trade Ideas & Valuation**\n\nBased on ${results.length} similar active and historical listings for **${target}**, the Estimated Swap Value (ESV) is **${valStr}** with ${conf}% confidence.\n\n**Opportunity:** Most people trading this are looking for **${topWant}**. You could trade yours directly for that, or bundle it for something even better!`;
-                   return { response, listings: results.slice(0, 3) };
-                }
-
-                let returnedListings: any[] = [];
-                if (results.length === 0) {
-                   response = `I couldn't find any exact matches for **${target || 'that'}** right now in the marketplace. Try adjusting your search or setting up a Wish so I can notify you when one becomes available!`;
-                   
-                   // 5. Multi-Swap Engine (Trade Paths) Hook
-                   if (intent === 'recommend_swap' && target && have) {
-                       const myWantWords = target.split(/\s+/).filter((w: string) => w.length > 2);
-                       const myHaveWords = have.split(/\s+/).filter((w: string) => w.length > 2);
-                       
-                       for (const l1 of listings || []) {
-                          const l1Title = (l1.title || "").toLowerCase();
-                          if (myWantWords.some((w: string) => l1Title.includes(w))) {
-                             const l1Wants = parsePgArray(l1.want_items);
-                             if (l1Wants.length > 0) {
-                                for (const l2 of listings || []) {
-                                   if (l1.id === l2.id) continue;
-                                   const l2Title = (l2.title || "").toLowerCase();
-                                   const l2HasWhatL1Wants = l1Wants.some(w1 => {
-                                      const w1Expanded = w1.toLowerCase();
-                                      return w1Expanded.split(/\s+/).some((word: string) => word.length > 3 && l2Title.includes(word));
-                                   });
-                                   if (l2HasWhatL1Wants) {
-                                      const l2Wants = parsePgArray(l2.want_items);
-                                      const l2WantsWhatIHave = l2Wants.some(w2 => {
-                                          const w2Expanded = w2.toLowerCase();
-                                          return myHaveWords.some(hw => w2Expanded.includes(hw));
-                                      });
-                                      if (l2WantsWhatIHave) {
-                                         response = `There isn't a direct **${target}** swap available right now, but you could reach your goal in two swaps!\n\nFirst trade your **${have}** for **${l2.title}**, then trade that for the **${l1.title}**.`;
-                                         const returnedListings = [l2, l1];
-                                         return { response, listings: returnedListings || [] };
-                                      }
-                                   }
-                                }
-                             }
-                          }
-                       }
-                   }
-                } else {
-                   results.sort((a, b) => (b._guruScore || 0) - (a._guruScore || 0));
-                   returnedListings = results.slice(0, 3);
-                   const perfectMatches = returnedListings.filter((l: any) => l._guruScore >= 20);
-                   
-                   if (perfectMatches.length > 0 && intent === 'recommend_swap') {
-                      response = `Perfect! I found ${perfectMatches.length} listing(s) that match what you want, AND they are looking for what you have!`;
-                   } else if (intent === 'recommend_swap') {
-                      response = `I found some matches! However, they aren't explicitly looking for what you have. You could still propose a swap and offer a cash top-up!`;
-                   } else {
-                      response = `Good news! I found ${results.length} possible swap${results.length > 1 ? 's' : ''}. Here are the top matches:`;
-                   }
-                }
-
-                return { response, listings: returnedListings || [] };
+                return { response: guruResponse.text, listings: finalListings, actions: guruResponse.actions };
               }
 
               // If it's a markRead operation

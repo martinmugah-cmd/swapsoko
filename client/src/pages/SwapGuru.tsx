@@ -31,7 +31,7 @@ function GuruLoader({ state }: { state: "working" | "solving" | "searching" | "c
 }
 
 // ─── Message Bubble ───────────────────────────────────────────────────────────
-function MessageBubble({ msg, onPropose }: { msg: { role: "user" | "guru"; content: string; listings?: any[] }, onPropose: (l: any) => void }) {
+function MessageBubble({ msg, onPropose, onAction }: { msg: { role: "user" | "guru"; content: string; listings?: any[]; actions?: any[] }, onPropose: (l: any) => void, onAction: (a: any) => void }) {
   const isUser = msg.role === "user";
   return (
     <motion.div
@@ -53,6 +53,23 @@ function MessageBubble({ msg, onPropose }: { msg: { role: "user" | "guru"; conte
         ) : (
           <div className="prose prose-sm max-w-none text-slate-800 prose-p:leading-[24px] relative z-10 prose-strong:text-slate-900 prose-strong:font-bold prose-a:text-emerald-500">
             <Streamdown>{msg.content}</Streamdown>
+            
+            {/* Render Engine Actions */}
+            {msg.actions && msg.actions.length > 0 && (
+              <div className="mt-4 flex flex-col gap-2">
+                {msg.actions.map((act, i) => (
+                  <motion.button
+                    key={i}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => onAction(act)}
+                    className="w-full text-[13px] bg-slate-900 text-white font-bold px-4 py-2.5 rounded-[12px] flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                    {act.label}
+                  </motion.button>
+                ))}
+              </div>
+            )}
             
             {/* Render tagged listings if they exist */}
             {msg.listings && msg.listings.length > 0 && (
@@ -94,7 +111,18 @@ function MessageBubble({ msg, onPropose }: { msg: { role: "user" | "guru"; conte
 export default function SwapGuruPage() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
-  const [messages, setMessages] = useState<Array<{ role: "user" | "guru"; content: string; listings?: any[] }>>([]);
+  const [messages, setMessages] = useState<Array<{ role: "user" | "guru"; content: string; listings?: any[]; actions?: any[] }>>([]);
+
+
+  const handleGuruAction = (act: any) => {
+      if (act.actionType === 'NAVIGATE') {
+          navigate(act.payload);
+      } else if (act.actionType === 'PROPOSE_SWAP') {
+          // You could automatically open the propose modal, but for now we just show a toast or navigate
+          toast.success("Ready to propose swap with top-up KES " + (act.payload.cashTopUp || 0));
+          navigate('/swipes');
+      }
+  };
 
   const getGreeting = useCallback(() => {
     let username = "there";
@@ -174,7 +202,7 @@ export default function SwapGuruPage() {
 
     try {
       const result = await askMutation.mutateAsync({ prompt });
-      setMessages(prev => [...prev, { role: "guru" as const, content: String(result.response), listings: result.listings as any[] }]);
+      setMessages(prev => [...prev, { role: "guru" as const, content: String(result.response), listings: result.listings as any[], actions: result.actions as any[] }]);
     } catch {
       setMessages(prev => [...prev, { role: "guru", content: "Sorry, I couldn't process that. Please try again!" }]);
     } finally {
@@ -214,7 +242,7 @@ export default function SwapGuruPage() {
       <div className="flex-1 overflow-y-auto px-4 py-4 w-full max-w-[800px] mx-auto relative z-10" style={{ paddingBottom: "120px" }}>
         <AnimatePresence>
           {messages.map((msg, i) => (
-            <MessageBubble key={i} msg={msg} onPropose={(l) => setProposeListing(l)} />
+            <MessageBubble key={i} msg={msg} onPropose={(l) => setProposeListing(l)} onAction={handleGuruAction} />
           ))}
         </AnimatePresence>
         {isLoading && <GuruLoader state={orbState} />}
