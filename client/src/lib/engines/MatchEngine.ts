@@ -156,11 +156,11 @@ export const MatchEngine = {
   calculateIntentScore(target: any, context: MatchContext): number {
     if (!context.userWishes) return 0;
     
-    const targetText = \`\${target.title} \${target.category} \${target.description || ''}\`.toLowerCase();
+    const targetText = `${target.title} ${target.category} ${target.description || ''}`.toLowerCase();
     
     let bestIntent = 0;
     for (const wish of context.userWishes) {
-        const wishText = \`\${wish.title} \${Array.isArray(wish.offerItems) ? wish.offerItems.join(' ') : (wish.offerItems || '')}\`.toLowerCase();
+        const wishText = `${wish.title} ${Array.isArray(wish.offerItems) ? wish.offerItems.join(' ') : (wish.offerItems || '')}`.toLowerCase();
         
         // Semantic overlap check (mocked via word tokens for now)
         const words = wishText.split(/\s+/).filter(w => w.length > 3);
@@ -176,7 +176,7 @@ export const MatchEngine = {
   calculateItemScore(myListing: any, target: any): number {
      if (!myListing) return 50;
      // Does my listing match their 'wantItems'?
-     const myText = \`\${myListing.title} \${myListing.category}\`.toLowerCase();
+     const myText = `${myListing.title} ${myListing.category}`.toLowerCase();
      const theirWants = Array.isArray(target.wantItems) ? target.wantItems.join(' ').toLowerCase() : (target.wantItems || '').toLowerCase();
      
      if (!theirWants) return 50;

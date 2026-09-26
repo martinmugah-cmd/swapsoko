@@ -133,14 +133,14 @@ function MatchSuggestionsModal({ listing, onClose }: { listing: any, onClose: ()
 
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
-function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string | number; color: string }) {
+function StatCard({ icon, label, value, color, isText }: { icon: React.ReactNode; label: string; value: string | number; color: string; isText?: boolean }) {
   return (
     <div className="bg-white/60 backdrop-blur-3xl rounded-[24px] p-4 shadow-[0_8px_32px_rgba(15,23,42,0.04)] border border-white/80 text-center relative overflow-hidden group hover:bg-white transition-all hover:scale-[1.02] active:scale-[0.98]">
       <div className="absolute inset-0 rounded-[24px] border border-white pointer-events-none mix-blend-overlay"></div>
       <div className={`w-10 h-10 rounded-2xl mx-auto mb-3 flex items-center justify-center shadow-inner`} style={{ backgroundColor: color + "15" }}>
         <div style={{ color }}>{icon}</div>
       </div>
-      <p className="font-black text-slate-900 text-2xl leading-none mb-1 tracking-tight drop-shadow-sm">{value}</p>
+      <p className={`font-black text-slate-900 ${isText ? 'text-xs' : 'text-2xl'} leading-tight mb-1 tracking-tight drop-shadow-sm`}>{value}</p>
       <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">{label}</p>
     </div>
   );
@@ -725,14 +725,36 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
               <Edit className="w-3.5 h-3.5" /> Edit Profile
             </motion.button>
           </div>
+          
+          <div className="flex flex-wrap gap-2 mt-3">
+             {badges.map(b => (
+                 <span key={b} className="bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full flex items-center gap-1 backdrop-blur-sm shadow-sm border border-white/10">
+                    <CheckCircle2 className="w-3 h-3" /> {b.replace('_', ' ')}
+                 </span>
+             ))}
+          </div>
+          
         </div>
+        
+        {/* Trust Score Badge */}
+        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-lg border border-white/40 flex flex-col items-center">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Trust Score</span>
+            <div className="flex items-baseline gap-1">
+               <span className="text-2xl font-black text-slate-800 leading-none">{trustScore}</span>
+               <span className="text-xs font-bold text-slate-400">/100</span>
+            </div>
+            <div className="w-full h-1 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${trustScore}%` }} />
+            </div>
+        </div>
+
       </div>
 
       {/* Stats */}
       <div className="px-4 mt-8 grid grid-cols-3 gap-3 relative z-10 bg-white">
         <StatCard icon={<Repeat2 className="w-4 h-4" />} label={"Completed Swaps"} value={completedSwaps} color="#22C55E" />
         <StatCard icon={<TrendingUp className="w-4 h-4" />} label={"Acceptance Rate"} value={`${acceptanceRate}%`} color="#2563EB" />
-        <StatCard icon={<Clock className="w-4 h-4" />} label={"Response Time"} value={avgResponseTime} color="#F59E0B" />
+        <StatCard icon={<Clock className="w-4 h-4" />} label={"Response Time"} value={avgResponseTime} color="#F59E0B" isText={true} />
       </div>
 
       {/* Tabs */}
