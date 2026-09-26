@@ -673,15 +673,26 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
        />
      );
   }
-  const completedSwaps = profile?.completedSwaps ?? 0;
-  let trustScore = 75;
-  if (isStudentVerified) trustScore += 10;
-  if (completedSwaps > 0) trustScore += 5;
-  if (profile?.avatarUrl) trustScore += 5;
+  const rawStats = {
+    completedSwaps: profile?.completedSwaps ?? 0,
+    acceptanceRate: profile?.acceptanceRate ?? 0,
+    avgResponseTime: (profile?.avgResponseTimeMinutes ?? 30) + 'm'
+  };
   
-  const acceptanceRate = profile?.acceptanceRate ?? 0;
-  const avgResponseMinutes = profile?.avgResponseTimeMinutes ?? 0;
-  const avgResponseTime = avgResponseMinutes < 60 ? `< ${Math.max(avgResponseMinutes, 1)} min` : `< ${Math.ceil(avgResponseMinutes / 60)} hr`;
+  const mockEvents = TrustEngine.generateMockEvents(rawStats);
+  const verifications = { 
+    isStudentVerified: !!isStudentVerified, 
+    isEmailVerified: true, 
+    isPhoneVerified: true 
+  };
+  const trustData = TrustEngine.calculate(mockEvents, verifications, isMe ? 10 : 150);
+  
+  const completedSwaps = trustData.metrics.completedSwaps;
+  const acceptanceRate = trustData.metrics.acceptanceRate;
+  const avgResponseTime = trustData.responseTimeLabel;
+  const trustScore = trustData.trustScore;
+  const badges = trustData.badges;
+  const trustConfidence = trustData.trustConfidence;
 
   return (
     <motion.div
@@ -738,7 +749,10 @@ export default function ProfilePage({ uid, onBack }: { uid?: string, onBack?: ()
         
         {/* Trust Score Badge */}
         <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-lg border border-white/40 flex flex-col items-center">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Trust Score</span>
+            <div className="w-full flex justify-between items-end mb-0.5 px-1">
+               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Trust</span>
+               <span className="text-[8px] font-bold text-emerald-500 uppercase">{trustConfidence}</span>
+            </div>
             <div className="flex items-baseline gap-1">
                <span className="text-2xl font-black text-slate-800 leading-none">{trustScore}</span>
                <span className="text-xs font-bold text-slate-400">/100</span>

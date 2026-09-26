@@ -26,6 +26,8 @@ export interface MatchResult {
   reasons: string[];
 }
 
+import { TrustEngine } from './TrustEngine';
+
 export const MatchEngine = {
   MODEL_VERSION: 'match_v1',
   WEIGHTS: {
@@ -246,14 +248,19 @@ export const MatchEngine = {
   },
 
   calculateTrustScore(target: any): number {
-     let score = 50; // Base score for new users
-     if (target.profiles?.isStudentVerified) score += 20;
-     if (target.profiles?.verifiedIdentity) score += 20;
-     
-     const completed = target.profiles?.swapsCompleted || 0;
-     if (completed > 10) score += 30;
-     else if (completed > 2) score += 15;
-
-     return Math.min(100, score);
+     // Run the target through the Trust Engine (Event-driven calculation)
+     const rawStats = {
+         completedSwaps: target.profiles?.swapsCompleted || 0,
+         acceptanceRate: target.profiles?.acceptanceRate || 80,
+         avgResponseTime: (target.profiles?.avgResponseTimeMinutes || 30) + 'm'
+     };
+     const mockEvents = TrustEngine.generateMockEvents(rawStats);
+     const verifications = {
+         isStudentVerified: !!target.profiles?.isStudentVerified,
+         isEmailVerified: true,
+         isPhoneVerified: !!target.profiles?.verifiedIdentity
+     };
+     const trustData = TrustEngine.calculate(mockEvents, verifications, 60);
+     return trustData.trustScore;
   }
 };

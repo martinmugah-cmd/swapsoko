@@ -1,6 +1,21 @@
+export type TrustEventType = 
+  | 'OFFER_RECEIVED' 
+  | 'OFFER_ACCEPTED' 
+  | 'OFFER_REJECTED' 
+  | 'OFFER_EXPIRED'
+  | 'SWAP_COMPLETED' 
+  | 'SWAP_CANCELLED_USER' 
+  | 'SWAP_CANCELLED_OTHER' 
+  | 'NO_SHOW_CONFIRMED'
+  | 'DISPUTE_OPENED' 
+  | 'DISPUTE_RESOLVED'
+  | 'REPORT_CREATED'
+  | 'POLICY_VIOLATION_CONFIRMED'
+  | 'POLICY_VIOLATION_REVERSED';
+
 export interface TrustEvent {
   id: string;
-  type: 'OFFER_RECEIVED' | 'OFFER_ACCEPTED' | 'OFFER_REJECTED' | 'OFFER_RESPONDED' | 'SWAP_COMPLETED' | 'SWAP_CANCELLED_USER' | 'SWAP_CANCELLED_OTHER' | 'DISPUTE_OPENED' | 'DISPUTE_RESOLVED';
+  type: TrustEventType;
   timestamp: number;
 }
 
@@ -8,45 +23,51 @@ export interface VerificationData {
   isStudentVerified: boolean;
   isEmailVerified: boolean;
   isPhoneVerified: boolean;
+  isIdentityVerified?: boolean;
 }
 
 export interface TrustMetrics {
   offersReceived: number;
   offersAccepted: number;
+  offersRejected: number;
+  offersResponded: number;
   completedSwaps: number;
   cancellations: number;
-  acceptanceRate: number;
-  completionRate: number;
-  cancellationRate: number;
+  noShows: number;
+  confirmedViolations: number;
+  
+  acceptanceRate: number; // accepted / (accepted + rejected)
+  responseRate: number; // responded / received
+  completionRate: number; // completed / accepted
+  cancellationRate: number; // cancelled / accepted
+  noShowRate: number; // no-shows / handovers
   medianResponseTimeSec: number;
-  recentReliability: number;
-  lifetimeReliability: number;
 }
 
 export interface TrustResult {
-  score: number;
-  confidence: number;
+  trustScore: number;
+  riskScore: number;
+  trustConfidence: 'New' | 'Emerging' | 'Established' | 'Highly Established';
   metrics: TrustMetrics;
   badges: string[];
   responseTimeLabel: string;
+  safeguardsRequired: string[];
 }
 
 export const TrustEngine = {
-  MODEL_VERSION: 'trust_v1',
+  MODEL_VERSION: 'trust_v2_chap11',
 
-  calculateTrust(events: TrustEvent[], verifications: VerificationData): TrustResult {
-    // 1. Process Events into Base Metrics
-    const now = Date.now();
+  calculate(events: TrustEvent[], verifications: VerificationData, accountAgeDays: number): TrustResult {
+    // 1. Process Event Ledger
     let offersReceived = 0;
     let offersAccepted = 0;
+    let offersRejected = 0;
     let offersResponded = 0;
     let completedSwaps = 0;
     let userCancellations = 0;
+    let noShows = 0;
+    let confirmedViolations = 0;
     let responseTimes: number[] = [];
-
-    // Group events by a simulated offerId for response time tracking.
-    // In a real system, events would be tied to specific offers/swaps.
-    // We will just process them linearly for the simulation.
     let lastOfferTime: number | null = null;
 
     events.sort((a, b) => a.timestamp - b.timestamp).forEach(e => {
@@ -54,28 +75,35 @@ export const TrustEngine = {
             offersReceived++;
             lastOfferTime = e.timestamp;
         }
-        else if (e.type === 'OFFER_RESPONDED' || e.type === 'OFFER_ACCEPTED' || e.type === 'OFFER_REJECTED') {
-            if (e.type === 'OFFER_ACCEPTED') offersAccepted++;
-            if (lastOfferTime) {
-                const rt = (e.timestamp - lastOfferTime) / 1000; // seconds
-                if (rt > 0 && rt < 86400 * 7) { // filter out anomalies > 7 days
-                    responseTimes.push(rt);
-                }
-                lastOfferTime = null; // reset
-            }
+        else if (e.type === 'OFFER_ACCEPTED') {
+            offersAccepted++;
+            offersResponded++;
+            if (lastOfferTime) responseTimes.push((e.timestamp - lastOfferTime) / 1000);
+            lastOfferTime = null;
         }
-        else if (e.type === 'SWAP_COMPLETED') {
-            completedSwaps++;
+        else if (e.type === 'OFFER_REJECTED') {
+            offersRejected++;
+            offersResponded++;
+            if (lastOfferTime) responseTimes.push((e.timestamp - lastOfferTime) / 1000);
+            lastOfferTime = null;
         }
-        else if (e.type === 'SWAP_CANCELLED_USER') {
-            userCancellations++;
-        }
+        else if (e.type === 'SWAP_COMPLETED') completedSwaps++;
+        else if (e.type === 'SWAP_CANCELLED_USER') userCancellations++;
+        else if (e.type === 'NO_SHOW_CONFIRMED') noShows++;
+        else if (e.type === 'POLICY_VIOLATION_CONFIRMED') confirmedViolations++;
+        else if (e.type === 'POLICY_VIOLATION_REVERSED') confirmedViolations = Math.max(0, confirmedViolations - 1);
     });
 
-    // 2. Calculate Derived Rates
-    const acceptanceRate = offersReceived > 0 ? (offersAccepted / offersReceived) * 100 : 100;
+    // 2. Calculate Derived Rates (Chapter 11 specific formulas)
+    const decidedOffers = offersAccepted + offersRejected;
+    const acceptanceRate = decidedOffers > 0 ? (offersAccepted / decidedOffers) * 100 : 100;
+    const responseRate = offersReceived > 0 ? (offersResponded / offersReceived) * 100 : 100;
     const completionRate = offersAccepted > 0 ? (completedSwaps / offersAccepted) * 100 : 100;
     const cancellationRate = offersAccepted > 0 ? (userCancellations / offersAccepted) * 100 : 0;
+    
+    // Scheduled handovers roughly = accepted swaps - cancelled before handover (approximated here)
+    const scheduledHandovers = Math.max(0, offersAccepted - userCancellations);
+    const noShowRate = scheduledHandovers > 0 ? (noShows / scheduledHandovers) * 100 : 0;
     
     responseTimes.sort((a, b) => a - b);
     const medianResponseTimeSec = responseTimes.length > 0 
@@ -84,27 +112,69 @@ export const TrustEngine = {
           : responseTimes[Math.floor(responseTimes.length/2)]) 
        : 0;
 
-    // 3. Reliability Scoring (Base: 100)
-    let lifetimeReliability = completionRate * 0.40 + acceptanceRate * 0.40 - cancellationRate * 1.5;
+    // 3. Trust Score Component Weighting
+    // Completion reliability: 30%, Transaction history: 20%, Response: 15%, Acceptance: 10%, Community: 10%, Verification: 10%, Maturity: 5%
+    let completionScore = completionRate - (noShowRate * 2); // No-shows heavily penalize completion reliability
+    let txScore = Math.min(100, completedSwaps * 5); // 20 swaps = 100
+    let respScore = responseRate;
+    if (medianResponseTimeSec > 86400) respScore -= 20; // slow response penalty
+    let accScore = acceptanceRate;
+    let commScore = 100 - (confirmedViolations * 25);
     
-    // Penalize for bad response time (if over 12 hours)
-    if (medianResponseTimeSec > 43200) lifetimeReliability -= 10;
-    else if (medianResponseTimeSec > 86400) lifetimeReliability -= 25;
+    let verifScore = 0;
+    if (verifications.isStudentVerified) verifScore += 40;
+    if (verifications.isEmailVerified) verifScore += 30;
+    if (verifications.isPhoneVerified) verifScore += 30;
+
+    let matScore = Math.min(100, accountAgeDays * 2); // 50 days = max maturity
+
+    let trustScore = Math.round(
+       (completionScore * 0.30) + 
+       (txScore * 0.20) + 
+       (respScore * 0.15) + 
+       (accScore * 0.10) + 
+       (commScore * 0.10) + 
+       (verifScore * 0.10) + 
+       (matScore * 0.05)
+    );
+    trustScore = Math.max(0, Math.min(100, trustScore));
+
+    // 4. Risk Engine
+    let riskScore = 0;
+    riskScore += userCancellations * 5;
+    riskScore += noShows * 20;
+    riskScore += confirmedViolations * 30;
+    if (accountAgeDays < 7) riskScore += 10;
+    if (!verifications.isPhoneVerified && !verifications.isStudentVerified) riskScore += 20;
+    riskScore = Math.max(0, Math.min(100, riskScore));
+
+    // 5. Confidence Level
+    let trustConfidence: TrustResult['trustConfidence'] = 'New';
+    if (completedSwaps >= 25) trustConfidence = 'Highly Established';
+    else if (completedSwaps >= 10) trustConfidence = 'Established';
+    else if (completedSwaps >= 3) trustConfidence = 'Emerging';
+
+    // 6. Badges (Historical Rules)
+    const badges: string[] = [];
+    if (verifications.isStudentVerified) badges.push("Verified Student");
     
-    lifetimeReliability = Math.max(0, Math.min(100, lifetimeReliability));
+    // Fast Responder: min responses = 10, median time < 30 mins (1800s)
+    if (offersResponded >= 10 && medianResponseTimeSec < 1800) badges.push("Fast Responder");
+    
+    // Reliable Trader: completed swaps >= 10, completion rate >= 95%
+    if (completedSwaps >= 10 && completionRate >= 95) badges.push("Reliable Trader");
+    
+    // Swap Veteran: completed swaps >= 25
+    if (completedSwaps >= 25) badges.push("Swap Veteran");
 
-    // 4. Confidence (Bayesian Shrinkage concept)
-    // If you only have 1 swap, confidence is low.
-    const evidenceCount = offersReceived + completedSwaps;
-    const confidence = Math.min(100, evidenceCount * 5); // 20+ events = 100% confidence
+    // 7. Safeguards
+    const safeguardsRequired: string[] = [];
+    if (riskScore > 60) safeguardsRequired.push('MANUAL_REVIEW');
+    if (trustScore < 40 && riskScore > 40) safeguardsRequired.push('ESCROW_PROTECTION_REQUIRED');
 
-    // Shrink trust score toward average (e.g. 70) if confidence is low
-    const avgTrust = 70;
-    const trustScore = Math.round((lifetimeReliability * (confidence/100)) + (avgTrust * (1 - (confidence/100))));
-
-    // 5. Response Time Label
+    // 8. Labels
     let responseTimeLabel = "New responder";
-    if (responseTimes.length > 0) {
+    if (offersResponded > 0) {
         if (medianResponseTimeSec < 300) responseTimeLabel = "Usually responds instantly";
         else if (medianResponseTimeSec < 1800) responseTimeLabel = "Usually responds quickly";
         else if (medianResponseTimeSec < 7200) responseTimeLabel = "Usually responds within a few hours";
@@ -112,64 +182,53 @@ export const TrustEngine = {
         else responseTimeLabel = "Slow responder";
     }
 
-    // 6. Badges
-    const badges: string[] = [];
-    if (verifications.isStudentVerified) badges.push("VERIFIED_STUDENT");
-    if (verifications.isEmailVerified) badges.push("VERIFIED_EMAIL");
-    if (completedSwaps >= 5 && completionRate > 90) badges.push("RELIABLE_TRADER");
-    if (responseTimes.length >= 3 && medianResponseTimeSec < 1800) badges.push("FAST_RESPONDER");
-
     return {
-        score: trustScore,
-        confidence,
+        trustScore,
+        riskScore,
+        trustConfidence,
         metrics: {
-            offersReceived,
-            offersAccepted,
-            completedSwaps,
-            cancellations: userCancellations,
+            offersReceived, offersAccepted, offersRejected, offersResponded,
+            completedSwaps, cancellations: userCancellations, noShows, confirmedViolations,
             acceptanceRate: Math.round(acceptanceRate),
+            responseRate: Math.round(responseRate),
             completionRate: Math.round(completionRate),
             cancellationRate: Math.round(cancellationRate),
-            medianResponseTimeSec,
-            recentReliability: Math.round(lifetimeReliability),
-            lifetimeReliability: Math.round(lifetimeReliability)
+            noShowRate: Math.round(noShowRate),
+            medianResponseTimeSec
         },
         badges,
-        responseTimeLabel
+        responseTimeLabel,
+        safeguardsRequired
     };
   },
 
-  // Mock function to generate events backwards from profile stats
+  // Backward compatible mock generator for UI test data
   generateMockEvents(stats: any): TrustEvent[] {
       const events: TrustEvent[] = [];
       const now = Date.now();
       
       const compSwaps = stats.completedSwaps || 0;
-      // Reverse engineer offers based on acceptance rate
-      const accRate = stats.acceptanceRate ? (stats.acceptanceRate / 100) : 0.8;
-      const offAcc = compSwaps > 0 ? Math.max(compSwaps, Math.floor(compSwaps * 1.1)) : (stats.acceptanceRate ? 5 : 0);
-      const offRec = offAcc > 0 ? Math.floor(offAcc / accRate) : 0;
+      const accRate = stats.acceptanceRate ? (stats.acceptanceRate / 100) : 0.9;
       
-      const avgResp = stats.avgResponseTime || '1h'; // string like '5m', '1h'
-      let respSec = 3600;
-      if (typeof avgResp === 'string') {
-         if (avgResp.includes('m')) respSec = parseInt(avgResp) * 60;
-         else if (avgResp.includes('h')) respSec = parseInt(avgResp) * 3600;
-      }
+      const offAcc = compSwaps > 0 ? Math.max(compSwaps, Math.floor(compSwaps * 1.05)) : 5;
+      const offRej = Math.floor(offAcc / accRate) - offAcc;
+      const offRec = offAcc + offRej;
+      
+      let respSec = 1800; // 30 min default
 
-      // Add dummy events spread over time
       for (let i = 0; i < offRec; i++) {
           const t = now - (i * 86400000) - 100000;
-          events.push({ id: `e_rec_${i}`, type: 'OFFER_RECEIVED', timestamp: t });
+          events.push({ id: `er_${i}`, type: 'OFFER_RECEIVED', timestamp: t });
           
           if (i < offAcc) {
-              events.push({ id: `e_acc_${i}`, type: 'OFFER_ACCEPTED', timestamp: t + (respSec * 1000) });
+              events.push({ id: `ea_${i}`, type: 'OFFER_ACCEPTED', timestamp: t + (respSec * 1000) });
               if (i < compSwaps) {
-                  events.push({ id: `e_com_${i}`, type: 'SWAP_COMPLETED', timestamp: t + (respSec * 1000) + 172800000 });
+                  events.push({ id: `ec_${i}`, type: 'SWAP_COMPLETED', timestamp: t + (respSec * 1000) + 172800000 });
               } else {
-                  // Some were cancelled
-                  if (i % 2 === 0) events.push({ id: `e_can_${i}`, type: 'SWAP_CANCELLED_USER', timestamp: t + 86400000 });
+                  events.push({ id: `cx_${i}`, type: 'SWAP_CANCELLED_USER', timestamp: t + 86400000 });
               }
+          } else {
+              events.push({ id: `ej_${i}`, type: 'OFFER_REJECTED', timestamp: t + (respSec * 1000) });
           }
       }
       
