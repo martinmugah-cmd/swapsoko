@@ -359,12 +359,14 @@ function App() {
 
         <LanguageProvider>
           <TooltipProvider>
+            <NotificationProvider>
             <Toaster
               position="top-center"
             />
             <SavedItemsSyncer />
             <LocationTracker />
             <Router />
+                      </NotificationProvider>
           </TooltipProvider>
         </LanguageProvider>
 

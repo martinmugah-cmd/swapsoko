@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { trpc } from '@/lib/trpc';
 import { ArrowRight, CheckCircle2, ShieldCheck, MapPin, Shuffle, Sparkles, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'wouter';
 
 export default function MultiSwap() {
   const { data: chains, isLoading } = trpc.multiSwap.discover.useQuery({ userId: 'user_martin' });

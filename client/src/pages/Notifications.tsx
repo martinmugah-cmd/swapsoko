@@ -1,314 +1,115 @@
-import { trpc } from "@/lib/trpc";
-import { useAuth } from "@/_core/hooks/useAuth";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useRef } from "react";
-import { ChevronLeft, Bell, Check, ArrowRightLeft, MessageCircle, Star, Shield, CheckCircle2, Users } from "@/lib/icons";
-import { useLocation } from "wouter";
-import { formatDistanceToNow } from "date-fns";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'wouter';
+import { ChevronLeft, Bell, CheckCircle2, ShieldCheck, Shuffle, Handshake, AlertTriangle, MessageCircle, X } from 'lucide-react';
+import { useNotifications } from '@/contexts/NotificationContext';
+import { formatDistanceToNow } from 'date-fns';
 
-function NotificationItem({ notif, index, onMarkRead, onAccept, onDecline, navigate }: any) {
-  const [swiped, setSwiped] = useState(false);
-  const isDraggingRef = useRef(false);
-  const swipeThreshold = -60;
-
-  const isUnread = !notif.isRead;
-
-  // Render a secondary icon based on notification type
-  const renderSecondaryIcon = () => {
-    switch (notif.icon) {
-      case "proposal": return <ArrowRightLeft className="w-3 h-3 text-white" strokeWidth={3} />;
-      case "message": return <MessageCircle className="w-3 h-3 text-white" strokeWidth={3} />;
-      case "wish_match": return <Star className="w-3 h-3 text-white" strokeWidth={3} />;
-      case "swap_completed": return <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />;
-      case "trust": return <Shield className="w-3 h-3 text-white" strokeWidth={3} />;
-      case "community": return <Users className="w-3 h-3 text-white" strokeWidth={3} />;
-      default: return <Bell className="w-3 h-3 text-white" strokeWidth={3} />;
-    }
-  };
-
-  const getSecondaryIconColor = () => {
-    switch (notif.icon) {
-      case "proposal": return "bg-blue-500";
-      case "message": return "bg-indigo-500";
-      case "wish_match": return "bg-yellow-500";
-      case "swap_completed": return "bg-emerald-500";
-      case "trust": return "bg-purple-500";
-      case "community": return "bg-orange-500";
-      default: return "bg-slate-500";
-    }
-  };
-
-  return (
-    <div className="relative mb-3 group rounded-[24px] overflow-hidden" style={{ transform: 'translateZ(0)' }}>
-      {/* Background Action: Delete */}
-      <div className="absolute inset-0 flex items-center justify-end px-6 bg-red-500">
-        <span className="text-white font-extrabold text-sm tracking-wide">Delete</span>
-      </div>
-
-      <motion.div
-        drag="x"
-        dragConstraints={{ left: -100, right: 0 }}
-        dragElastic={{ left: 0.5, right: 0 }}
-        onDragStart={() => isDraggingRef.current = true}
-        onDragEnd={(e, info) => {
-          setTimeout(() => isDraggingRef.current = false, 150);
-          if (info.offset.x < swipeThreshold) {
-            onMarkRead(notif.id);
-            toast("Notification deleted", { icon: "🗑️" });
-          }
-        }}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0, x: 0 }}
-        exit={{ opacity: 0, x: -50 }}
-        transition={{ delay: index * 0.04 }}
-        onClick={(e) => {
-          if (isDraggingRef.current) {
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-          }
-          onMarkRead(notif.id);
-          if (notif.type === 'proposal' || notif.type === 'proposal_received') {
-            navigate(`/chat`);
-          } else if (notif.type === 'message' || notif.type === 'new_message' || notif.type === 'voice_note') {
-            navigate('/chat');
-          } else if (notif.type === 'community_post') {
-            navigate(`/community/${notif.entityId || ''}`);
-          } else if (notif.type === 'wishlist_match' || notif.type === 'recommendation') {
-            navigate(`/listing/${notif.entityId || ''}`);
-          } else if (notif.type === 'verification') {
-            navigate('/profile');
-          } else if (notif.link) {
-            navigate(notif.link);
-          }
-        }}
-        className={`relative z-10 w-full p-4 pl-5 rounded-[24px] flex items-start gap-4 cursor-pointer transition-all border border-slate-100 bg-white shadow-[0_8px_32px_rgba(15,23,42,0.08)] ${isUnread ? "hover:shadow-md" : ""}`}
-      >
-        {/* Unread Indicator */}
-        {isUnread && (
-          <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#22C55E]" />
-        )}
-
-        {/* Avatar with Secondary Icon */}
-        <div className="relative flex-shrink-0">
-          <div className="w-[44px] h-[44px] rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden">
-             {notif.avatarUrl ? (
-               <img src={notif.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-             ) : (
-               <span className="text-slate-500 font-extrabold text-sm uppercase">
-                 {notif.title ? notif.title.slice(0, 2) : "S"}
-               </span>
-             )}
-          </div>
-          {/* Overlapping secondary icon */}
-          <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white ${getSecondaryIconColor()}`}>
-             {renderSecondaryIcon()}
-          </div>
-        </div>
-        
-        <div className="flex-1 min-w-0 pt-0.5">
-          <div className="flex items-center justify-between mb-1">
-            <p className={`text-[15px] font-bold truncate pr-2 ${isUnread ? "text-slate-900" : "text-slate-600"}`}>
-              {notif.title}
-            </p>
-            <span className="text-[10px] font-extrabold text-slate-400 flex-shrink-0 uppercase tracking-wider">
-              {formatDistanceToNow(notif.time, { addSuffix: true })}
-            </span>
-          </div>
-          <p className={`text-[14px] mt-0.5 leading-snug line-clamp-2 ${isUnread ? "text-slate-600 font-medium" : "text-slate-500"}`}>
-            {notif.body || notif.message}
-          </p>
-          
-          {notif.type === "community_request" && isUnread && (
-            <div className="flex gap-2 mt-3">
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={(e) => onAccept(e, notif)}
-                className="px-5 py-2 bg-slate-900 text-white text-[13px] font-bold rounded-full shadow-md hover:bg-slate-800 transition-colors"
-              >
-                Approve
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={(e) => onDecline(e, notif)}
-                className="px-5 py-2 bg-slate-100 text-slate-700 text-[13px] font-bold rounded-full hover:bg-slate-200 transition-colors"
-              >
-                Decline
-              </motion.button>
-            </div>
-          )}
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-export default function NotificationsPage() {
-    const { isAuthenticated, user } = useAuth();
+export default function Notifications() {
   const [, navigate] = useLocation();
-  const [filter, setFilter] = useState<"all" | "unread">("all");
-  const [localRead, setLocalRead] = useState<Set<number>>(new Set());
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const [filter, setFilter] = useState<'ALL' | 'SWAPS' | 'SYSTEM'>('ALL');
 
-  const notifsQuery = trpc.notifications.list.useQuery({ userId: user?.id }, {
-    enabled: isAuthenticated,
-    refetchInterval: 15000,
+  const filtered = notifications.filter(n => {
+     if (filter === 'SWAPS') return n.type.includes('OFFER') || n.type.includes('MULTISWAP') || n.type === 'SWAP_COMPLETED';
+     if (filter === 'SYSTEM') return n.type === 'SYSTEM' || n.type.includes('REPORT');
+     return true;
   });
-  const markReadMutation = trpc.notifications.markRead.useMutation();
 
-  const rawItems: any[] = isAuthenticated
-    ? (notifsQuery.data?.items || [])
-    : [];
-
-  const notifications = rawItems.map((n: any) => ({
-    ...n,
-    isRead: n.isRead || localRead.has(n.id),
-    time: new Date(n.createdAt || n.time || Date.now()),
-    icon: n.icon || n.type || 'proposal',
-    color: n.color || (n.type === 'proposal' ? '#22C55E' : n.type === 'message' ? '#2563EB' : '#F59E0B'),
-  }));
-
-  const filtered = filter === "unread"
-    ? notifications.filter((n: any) => !n.isRead)
-
-    : notifications;
-
-  const markAllRead = () => {
-    notifications.forEach((n: any) => {
-      if (!n.isRead) {
-        setLocalRead(prev => new Set([...Array.from(prev), n.id]));
-        if (isAuthenticated) markReadMutation.mutate({ id: n.id });
-      }
-    });
+  const getIcon = (type: string) => {
+      if (type.includes('OFFER') || type === 'SWAP_COMPLETED') return <Handshake className="w-5 h-5 text-emerald-500" />;
+      if (type.includes('MULTISWAP')) return <Shuffle className="w-5 h-5 text-blue-500" />;
+      if (type.includes('MESSAGE')) return <MessageCircle className="w-5 h-5 text-purple-500" />;
+      if (type.includes('REPORT') || type === 'SYSTEM') return <AlertTriangle className="w-5 h-5 text-red-500" />;
+      return <Bell className="w-5 h-5 text-gray-500" />;
   };
 
-  const markRead = (id: number) => {
-    setLocalRead(prev => new Set([...Array.from(prev), id]));
-    if (isAuthenticated) markReadMutation.mutate({ id });
+  const handleNotificationClick = (n: any) => {
+      if (!n.isRead) markAsRead(n.id);
+
+      // Route based on entityType
+      if (n.type.includes('MULTISWAP')) navigate('/multiswap');
+      else if (n.type.includes('OFFER') || n.type === 'SWAP_COMPLETED') navigate('/swipes');
+      else if (n.type.includes('MESSAGE')) navigate('/chat/123'); // mock route
   };
-
-  const joinMutation = trpc.communities.join.useMutation();
-
-  const handleAcceptRequest = (e: React.MouseEvent, notif: any) => {
-    e.stopPropagation();
-    console.log("handleAcceptRequest clicked", notif);
-    if (!notif.link) {
-      toast.error("Invalid notification link");
-      return;
-    }
-    
-    // Simple parsing of link: /community-request/123?userId=abc
-    const match = notif.link.match(/\/community-request\/(\d+)\?userId=(.+)/);
-    if (match) {
-       const communityId = parseInt(match[1], 10);
-       const userId = match[2];
-       joinMutation.mutate({ communityId, userId }, {
-         onSuccess: () => {
-           toast.success("Request approved! User has been added to the community.");
-           markRead(notif.id);
-         },
-         onError: (err: any) => {
-           if (err?.code === '23505' || err?.message?.includes('already exists')) {
-             toast("User is already in the community.");
-             markRead(notif.id);
-           } else {
-             toast.error("Failed to approve request.");
-           }
-         }
-       });
-    }
-  };
-
-  const handleDeclineRequest = (e: React.MouseEvent, notif: any) => {
-    e.stopPropagation();
-    toast.success("Request declined.");
-    markRead(notif.id);
-  };
-
-  const unreadCount = notifications.filter((n: any) => !n.isRead).length;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-[100dvh] bg-white flex flex-col relative overflow-hidden"
-    >
-      {/* Dynamic Floating Header */}
-      <div className="sticky top-0 z-40 px-4 pt-4 pb-2">
-        <motion.div 
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="flex flex-col gap-3 bg-white/60 backdrop-blur-[40px] saturate-[1.1] border border-white/60 shadow-[0_8px_32px_0_rgba(15,23,42,0.06)] rounded-[32px] px-4 py-3 max-w-[800px] mx-auto w-full"
-        >
-          <div className="flex items-center justify-between relative">
-            <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/60 hover:bg-white/80 shadow-sm border border-white/60 transition-colors text-slate-900 relative z-10">
-              <ChevronLeft className="w-5 h-5 -ml-0.5" />
-            </button>
-            
-            <div className="flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2">
-              <h1 className="font-extrabold text-slate-900 text-[18px] flex items-center justify-center gap-1.5 tracking-tight">
-                <Bell className="w-4 h-4 text-emerald-500" /> Notifications
-              </h1>
-              <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Updates</p>
-            </div>
+    <div className="min-h-screen bg-gray-50 pb-24">
+      {/* Header */}
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 h-16">
+          <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-full hover:bg-gray-100">
+            <ChevronLeft className="w-6 h-6 text-slate-800" />
+          </button>
+          <h1 className="text-lg font-black text-slate-900 tracking-tight">Notifications</h1>
+          <button onClick={markAllAsRead} className="p-2 -mr-2 text-emerald-500 rounded-full hover:bg-emerald-50 relative">
+             <CheckCircle2 className="w-6 h-6" />
+             {unreadCount > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>}
+          </button>
+        </div>
 
-            <div className="flex items-center relative z-10">
-              {unreadCount > 0 ? (
-                <motion.button
-                  whileTap={{ scale: 0.9 }}
-                  onClick={markAllRead}
-                  className="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[12px] font-bold"
+        {/* Filters */}
+        <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
+           {['ALL', 'SWAPS', 'SYSTEM'].map(f => (
+               <button 
+                 key={f}
+                 onClick={() => setFilter(f as any)}
+                 className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${filter === f ? 'bg-slate-900 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+               >
+                  {f.charAt(0) + f.slice(1).toLowerCase()}
+               </button>
+           ))}
+        </div>
+      </div>
+
+      {/* List */}
+      <div className="p-4 space-y-3">
+         <AnimatePresence>
+            {filtered.map(n => (
+                <motion.div
+                   key={n.id}
+                   initial={{ opacity: 0, y: 10 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   exit={{ opacity: 0, scale: 0.95 }}
+                   onClick={() => handleNotificationClick(n)}
+                   className={`bg-white rounded-2xl p-4 shadow-sm border cursor-pointer relative overflow-hidden transition-colors ${!n.isRead ? 'border-emerald-500/30' : 'border-gray-100'}`}
                 >
-                  Read All
-                </motion.button>
-              ) : (
-                <div className="w-10 h-10" />
-              )}
-            </div>
-          </div>
-
-          {/* Filter tabs */}
-          <div className="flex gap-2">
-            {(["all", "unread"] as const).map(f => (
-              <motion.button
-                key={f}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setFilter(f)}
-                className={`flex-1 py-2 rounded-[16px] text-[13px] font-bold capitalize transition-all ${
-                  filter === f ? "bg-slate-900 text-white shadow-md" : "bg-white/60 text-slate-600 hover:bg-white/80 shadow-sm border border-white/60"
-                }`}
-              >
-                {f === "all" ? "All" : `Unread (${unreadCount})`}
-              </motion.button>
+                    {!n.isRead && (
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
+                    )}
+                    <div className="flex gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${!n.isRead ? 'bg-emerald-50' : 'bg-gray-50'}`}>
+                            {getIcon(n.type)}
+                        </div>
+                        <div className="flex-1">
+                            <div className="flex justify-between items-start">
+                                <h3 className={`text-sm ${!n.isRead ? 'font-bold text-slate-900' : 'font-medium text-slate-700'}`}>{n.title}</h3>
+                                <span className="text-[10px] text-gray-400 font-medium whitespace-nowrap">
+                                    {formatDistanceToNow(n.createdAt, { addSuffix: true })}
+                                </span>
+                            </div>
+                            <p className={`text-sm mt-0.5 leading-snug ${!n.isRead ? 'text-slate-700' : 'text-slate-500'}`}>{n.body}</p>
+                            
+                            {/* Rich Content Example */}
+                            {n.type === 'OFFER_ACCEPTED' && (
+                                <div className="mt-3 bg-gray-50 rounded-xl p-2 flex items-center justify-between">
+                                    <span className="text-xs font-bold text-emerald-600">View Swap details &rarr;</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </motion.div>
             ))}
-          </div>
-        </motion.div>
-      </div>
+         </AnimatePresence>
 
-      <div className="px-4 py-4 space-y-2">
-        <AnimatePresence>
-          {filtered.map((notif, i) => (
-            <NotificationItem 
-               key={notif.id} 
-               notif={notif} 
-               index={i} 
-               onMarkRead={markRead} 
-               onAccept={handleAcceptRequest} 
-               onDecline={handleDeclineRequest} 
-               navigate={navigate} 
-            />
-          ))}
-        </AnimatePresence>
-
-        {filtered.length === 0 && (
-          <div className="text-center py-16">
-            <Bell className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-            <p className="font-semibold text-slate-900">No notifications</p>
-            <p className="text-gray-400 text-sm mt-1">You're all caught up!</p>
-          </div>
-        )}
+         {filtered.length === 0 && (
+             <div className="text-center py-20">
+                 <Bell className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+                 <h3 className="text-lg font-bold text-slate-800">No notifications</h3>
+                 <p className="text-sm text-gray-500 mt-1">You're all caught up!</p>
+             </div>
+         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -36,8 +36,8 @@ export default function Home() {
     }
   }, [isAuthenticated, user, navigate]);
 
-  const notificationsQuery = trpc.notifications.list.useQuery({ userId: user?.id }, { enabled: !!user });
-  const unreadCount = (notificationsQuery.data?.notifications || []).filter((n: any) => !n.isRead).length;
+  
+  const { unreadCount } = useNotifications();
   const profileQuery = trpc.profile.me.useQuery(undefined, { enabled: isAuthenticated });
 
   const { coords } = useAppStore();
@@ -61,7 +61,7 @@ export default function Home() {
       communitiesQuery.refetch(),
       cyclesQuery.refetch(),
       profileQuery.refetch(),
-      notificationsQuery.refetch()
+      
     ]);
   };
 
