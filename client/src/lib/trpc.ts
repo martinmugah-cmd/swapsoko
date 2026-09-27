@@ -381,6 +381,9 @@ export const RecommendationEngine = {
 
 import { supabase } from './supabase';
 import { createClient } from '@supabase/supabase-js';
+import { ModerationEngine } from './engines/ModerationEngine';
+import { AppealEngine } from './engines/AppealEngine';
+import { LocationEngine } from './engines/LocationEngine';
 export const adminSupabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
 // Helper to convert object keys
@@ -1855,85 +1858,51 @@ const createProxy = (path: string[] = []): any => {
                  }
                  
                  if (path[1] === 'executeModerationAction') {
-                    const { reportId, action, notes } = variables;
-                    
-                    const { data: report } = await adminSupabase.from('reports').select('*').eq('id', reportId).single();
-                    if (!report) throw new Error("Report not found");
+                    const { reportId, decision, action, notes } = variables;
                     
                     // Critical Authorization checks
-                    const superadminOnlyActions = ['remove_community', 'remove_listing', 'ban_user'];
-                    if (superadminOnlyActions.includes(action) && myRole !== 'super_admin') {
-                        throw new Error(`403 Forbidden: Only super_admin can perform ${action}.`);
+                    if (!['super_admin', 'admin', 'moderator'].includes(myRole)) {
+                        throw new Error("403 Forbidden: Missing required roles.");
                     }
                     
-                    let newStatus = 'resolved';
-                    let targetUserId = null;
-                    
-                    if (report.target_type === 'user') targetUserId = report.target_id;
-                    else if (report.target_type === 'listing') {
-                        const { data: l } = await adminSupabase.from('listings').select('user_id').eq('id', parseInt(report.target_id.replace(/-/g, ''))).single();
-                        if (l) targetUserId = l.user_id;
-                    } else if (report.target_type === 'community') {
-                        const { data: c } = await adminSupabase.from('communities').select('creator_id').eq('id', parseInt(report.target_id.replace(/-/g, ''))).single();
-                        if (c) targetUserId = c.creator_id;
-                    }
-                    
-                    if (action === 'dismiss') {
-                        newStatus = 'dismissed';
-                    } else if (action === 'hide_listing' || action === 'remove_listing') {
-                        const numericId = parseInt(report.target_id.replace(/-/g, ''));
-                        if (action === 'remove_listing') {
-                            await adminSupabase.from('listings').update({ status: 'archived' }).eq('id', numericId);
-                        } else {
-                            await adminSupabase.from('listings').update({ status: 'hidden' }).eq('id', numericId);
-                        }
-                        if (targetUserId) {
-                           await adminSupabase.from('notifications').insert({ user_id: targetUserId, type: 'system', title: 'Listing Removed', message: action === 'remove_listing' ? 'Your listing was permanently archived for severe policy violations.' : 'Your listing was hidden for violating our rules.', is_read: false });
-                        }
-                    } else if (action === 'suspend_user' || action === 'ban_user') {
-                        try {
-                           if (action === 'ban_user') {
-                               // Soft-ban user: mark profile as banned, do not permanently delete Auth to preserve historical data
-                               await adminSupabase.from('profiles').update({ status: 'banned' }).eq('user_id', report.target_id);
-                           } else {
-                               await adminSupabase.from('profiles').update({ status: 'suspended' }).eq('user_id', report.target_id);
-                               await adminSupabase.from('notifications').insert({ user_id: report.target_id, type: 'system', title: 'Account Suspended', message: `Your account has been suspended due to policy violations. You may appeal this decision.`, is_read: false });
-                           }
-                        } catch(e) {}
-                    } else if (action === 'remove_community' || action === 'lock_community') {
-                        const numericId = parseInt(report.target_id.replace(/-/g, ''));
-                        if (action === 'remove_community') {
-                             await adminSupabase.from('communities').update({ status: 'archived' }).eq('id', numericId);
-                        } else {
-                             await adminSupabase.from('communities').update({ status: 'locked' }).eq('id', numericId);
-                        }
-                    } else if (action === 'warning') {
-                        if (targetUserId) {
-                           await adminSupabase.from('notifications').insert({ user_id: targetUserId, type: 'system', title: 'Official Warning', message: `You have received a warning for violating Marketplace Rules.`, is_read: false });
-                        }
-                    }
-                    
-                    const { error } = await adminSupabase.from('reports').update({ 
-                        status: newStatus,
-                        resolution: `${action.toUpperCase()}${notes ? `: ${notes}` : ''}`,
-                        resolved_at: new Date().toISOString(),
-                        assigned_to: activeUserId
-                    }).eq('id', reportId);
-                    
-                    if (error) throw error;
-                    
-                    await adminSupabase.from('audit_logs').insert({
-                        actor_id: activeUserId,
-                        action: `execute_${action}`,
-                        resource_type: report.target_type,
-                        resource_id: report.target_id,
-                        details: { reportId, notes }
+                    return await ModerationEngine.processReport({
+                         reportId,
+                         moderatorId: activeUserId,
+                         decision,
+                         action,
+                         notes
                     });
-                    
-                    // Notify reporter
-                    await adminSupabase.from('notifications').insert({ user_id: report.reporter_id, type: 'system', title: 'Report Update', message: action === 'dismiss' ? 'We reviewed your report but found insufficient evidence of a violation.' : 'Thanks for helping keep SwapSoko safe. Action has been taken based on your report.', is_read: false });
-                    
-                    return { success: true };
+                 }
+                 
+                 if (path[1] === 'createAppeal') {
+                     const { caseId, reason } = variables;
+                     return await AppealEngine.createAppeal({
+                         caseId,
+                         appellantId: activeUserId,
+                         reason
+                     });
+                 }
+                 
+                 if (path[1] === 'processAppeal') {
+                     const { appealId, decision, notes, modifiedAction } = variables;
+                     if (!['super_admin', 'admin', 'moderator'].includes(myRole)) {
+                        throw new Error("403 Forbidden");
+                     }
+                     return await AppealEngine.processAppeal({
+                         appealId,
+                         reviewerId: activeUserId,
+                         decision,
+                         notes,
+                         modifiedAction
+                     });
+                 }
+                 if (path[1] === 'getLocationContext') {
+                     const { userId } = variables;
+                     return await LocationEngine.getLocationContext(userId || activeUserId);
+                 }
+                 if (path[1] === 'getListingDistance') {
+                     const { listingId } = variables;
+                     return await LocationEngine.getListingDistance(activeUserId, listingId);
                  }
                  return null;
               }
