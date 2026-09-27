@@ -1896,6 +1896,37 @@ const createProxy = (path: string[] = []): any => {
                          modifiedAction
                      });
                  }
+
+                 if (path[1] === 'createDispute') {
+                     const { swapId, disputeType, description, evidenceUrls } = variables;
+                     return await AppealEngine.createDispute({
+                         swapId,
+                         openedBy: activeUserId,
+                         disputeType,
+                         description,
+                         evidenceUrls
+                     });
+                 }
+
+                 if (path[1] === 'submitDisputeResponse') {
+                     const { caseId, responseText, evidenceUrls } = variables;
+                     return await AppealEngine.submitDisputeResponse(caseId, activeUserId, responseText, evidenceUrls);
+                 }
+
+                 if (path[1] === 'resolveDispute') {
+                     const { disputeId, decision, reason, actions } = variables;
+                     if (!['super_admin', 'admin', 'moderator'].includes(myRole)) {
+                        throw new Error("403 Forbidden");
+                     }
+                     return await AppealEngine.resolveDispute({
+                         disputeId,
+                         reviewerId: activeUserId,
+                         decision,
+                         reason,
+                         actions
+                     });
+                 }
+
                  if (path[1] === 'getLocationContext') {
                      const { userId } = variables;
                      return await LocationEngine.getLocationContext(userId || activeUserId);
